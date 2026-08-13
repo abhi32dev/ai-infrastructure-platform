@@ -45,7 +45,14 @@ Every project folder must contain a `PROD_ARCHITECTURE_REASONING.md` file docume
 ---
 
 ## 4. Visual 2D Flowchart Architecture Standards
-- All flowcharts must be embedded as **NATIVE INLINE SVG** directly inside `FLOWCHART.html` (no broken external `<img src="...">` dependencies).
+- All flowcharts must be embedded as **NATIVE INLINE SVG AND PURE HTML/CSS 2D DIAGRAM CARDS** directly inside `FLOWCHART.html` (NO `<img src="...">` tags, zero broken image icons).
 - **NO Background Grid Lines**: Solid dark canvas background (`#0d1117`).
 - **100% Crisp High-Contrast Vector Graphics**: High-contrast process boxes (`fill="#161b22"` with `#38bdf8` or `#34d399` borders, white text `#ffffff`), gold decision diamonds (`#1f1906` fill, `#fbbf24` border, white text), and explicit multi-directional arrowheads.
 - **Executive Architecture Cards Below**: Include exact file/function signatures, rule evaluated, and directional route cards (`↙ LEFT FAST-PATH`, `↓ DOWN EXECUTION`, `↘ RIGHT EXCEPTION`, `↺ UPWARD RETRY LOOP`).
+
+---
+
+## 5. Strict Self-Evaluation & Zero Broken Image Guarantee
+- **NEVER assume a design passed UAT without inspecting the rendered output**.
+- **NEVER use external `<img src="...">` tags inside `FLOWCHART.html`**. If an image fails to load or CDN cache is delayed, it renders a broken icon box (`[2D Control Flow Architecture Diagram]`).
+- **ALWAYS use 100% self-contained native HTML5 + CSS3 elements + inline SVG** inside `FLOWCHART.html`. PURE HTML/CSS layout CANNOT produce broken image icons and will ALWAYS render cleanly in every browser under all network conditions.

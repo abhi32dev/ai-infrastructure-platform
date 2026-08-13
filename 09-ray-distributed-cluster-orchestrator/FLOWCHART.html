@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Project 09: Ray Distributed Cluster Orchestrator — Interactive 2D Architecture Blueprint</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,6 +113,118 @@
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
             overflow: hidden;
             text-align: center;
+        }
+
+        /* Pure HTML5/CSS3 2D Flowchart Layout */
+        .flow-layout-2d {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1rem 0;
+        }
+
+        .flow-pill {
+            padding: 0.6rem 1.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        .flow-pill.green {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .flow-pill.rose {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--accent-rose);
+            border: 2px solid var(--accent-rose);
+        }
+
+        .flow-arrow-v {
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .flow-arrow-v.cyan { color: var(--accent-cyan); }
+        .flow-arrow-v.green { color: var(--accent-green); }
+        .flow-arrow-v.rose { color: var(--accent-rose); }
+
+        .flow-proc-box {
+            background: #161b22;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            min-width: 380px;
+            text-align: center;
+        }
+
+        .flow-proc-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .flow-proc-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-top: 0.25rem;
+        }
+
+        .flow-diamond-node {
+            background: #1f1906;
+            border: 2.5px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 1.25rem 2.5rem;
+            min-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+        }
+
+        .diamond-badge-text {
+            color: var(--accent-gold);
+            font-weight: 800;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .diamond-title-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-top: 0.2rem;
+        }
+
+        .diamond-sub-text {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .flow-branches-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 0.5rem;
+        }
+
+        .branch-col-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .exec-grid {
@@ -396,6 +511,56 @@
     <text x="130" y="38" text-anchor="middle" fill="#f43f5e" font-family="JetBrains Mono, monospace" font-size="10">Scale Down Cloud Compute Billing</text>
   </g>
 </svg>
+    </div>
+
+    <!-- 100% Native HTML5/CSS3 Interactive 2D Flowchart (Zero Image Dependency) -->
+    <div class="diagram-container">
+        <div class="flow-layout-2d">
+            <div class="flow-pill green">▶ Start: RayClusterOrchestrator.execute_task()</div>
+            <div class="flow-arrow-v cyan">↓</div>
+
+            <div class="flow-proc-box">
+                <div class="flow-proc-title">Write Large Payload to Plasma Memory</div>
+                <div class="flow-proc-code">src/ray_cluster.py:L55</div>
+            </div>
+            <div class="flow-arrow-v cyan">↓</div>
+
+            <div class="flow-diamond-node">
+                <div class="diamond-badge-text">◆ DECISION 1</div>
+                <div class="diamond-title-text">Pending Task / Actor Ratio > Scale-Up?</div>
+                <div class="diamond-sub-text">(Autoscaler Capacity Metric)</div>
+            </div>
+
+            <div class="flow-branches-grid">
+                <div class="branch-col-card" style="border-color: var(--accent-green);">
+                    <div class="route-header" style="color: var(--accent-green);">↙ YES (High Load)</div>
+                    <div class="flow-proc-box" style="border-color: var(--accent-green); min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Provision New Ray Worker Nodes</div>
+                        <div class="flow-proc-code" style="color: var(--accent-green);">Scale Up Worker Node Pool</div>
+                    </div>
+                    <div class="flow-pill green" style="width: 100%; text-align: center;">✔ Cluster Scaled Up</div>
+                </div>
+
+                <div class="branch-col-card" style="border-color: var(--accent-cyan);">
+                    <div class="route-header" style="color: var(--accent-cyan);">↓ NO (Optimal)</div>
+                    <div class="flow-proc-box" style="min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Dispatch Task to Idle Ray Actor</div>
+                        <div class="flow-proc-code">ClusterAutoscaler.check_capacity()</div>
+                    </div>
+
+                    <div class="flow-diamond-node" style="min-width: auto; width: 100%; padding: 0.75rem;">
+                        <div class="diamond-badge-text">◆ DECISION 2</div>
+                        <div class="diamond-title-text" style="font-size: 0.95rem;">Idle Workers > 0 & Idle Time > 300s?</div>
+                    </div>
+
+                    <div class="flow-proc-box" style="border-color: var(--accent-green); min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Process Task Zero-Copy Plasma Store</div>
+                        <div class="flow-proc-code" style="color: var(--accent-green);">Emit Ray ObjectRef Result</div>
+                    </div>
+                    <div class="flow-pill green" style="width: 100%; text-align: center;">★ Actor Task Completed</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="section-title">
