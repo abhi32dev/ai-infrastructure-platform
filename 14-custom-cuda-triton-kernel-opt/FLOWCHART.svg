@@ -12,26 +12,20 @@
     <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e"/>
     </marker>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="glow-gold" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="3" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
   </defs>
 
-  <!-- Dark Canvas Background -->
-  <rect width="100%" height="100%" fill="#0a0c10" />
+  <!-- Clean, Solid Dark Background (NO GRID OVERLAY) -->
+  <rect width="100%" height="100%" fill="#0d1117" rx="12"/>
 
-  <!-- Background Grid -->
-  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#141a24" stroke-width="1"/>
-  </pattern>
-  <rect width="100%" height="100%" fill="url(#grid)" />
+  <!-- Header Text -->
+  <text x="500" y="32" text-anchor="middle" fill="#ffffff" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="20">Project 14: Custom OpenAI Triton GPU Kernels</text>
+  <text x="500" y="54" text-anchor="middle" fill="#8b949e" font-family="Inter, -apple-system, sans-serif" font-size="13">2D Control Flow Architecture Blueprint</text>
 
-  <!-- Diagram Title Header -->
-  <text x="500" y="30" text-anchor="middle" fill="#f0f6fc" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="20">Project 14: Custom OpenAI Triton GPU Kernels</text>
-  <text x="500" y="52" text-anchor="middle" fill="#8b949e" font-family="Inter, -apple-system, sans-serif" font-size="13">2D Control Flow Architecture &amp; Decision Tree Blueprint</text>
-
-  <!-- 1. Start Node (Center Top) -->
+  <!-- 1. Start Node -->
   <g transform="translate(340, 75)">
     <rect width="320" height="42" rx="21" fill="#092e20" stroke="#34d399" stroke-width="2"/>
     <text x="160" y="26" text-anchor="middle" fill="#34d399" font-family="Inter, sans-serif" font-weight="600" font-size="13">▶ TritonFusedKernels.launch()</text>
@@ -41,8 +35,8 @@
 
   <!-- Step 1 Process Node -->
   <g transform="translate(320, 150)">
-    <rect width="360" height="50" rx="8" fill="#12161f" stroke="#38bdf8" stroke-width="1.5"/>
-    <text x="180" y="22" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="13">Allocate VRAM Tensors X, W, B</text>
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="13">Allocate VRAM Tensors X, W, B</text>
     <text x="180" y="38" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-size="11">src/triton_kernels.py:L38</text>
   </g>
 
@@ -50,9 +44,9 @@
 
   <!-- DECISION 1 DIAMOND -->
   <g transform="translate(500, 275)">
-    <polygon points="0,-40 180,0 0,40 -180,0" fill="#2d2206" stroke="#fbbf24" stroke-width="2" filter="url(#glow)"/>
+    <polygon points="0,-40 180,0 0,40 -180,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2.5" filter="url(#glow-gold)"/>
     <text x="0" y="-10" text-anchor="middle" fill="#fbbf24" font-family="Inter, sans-serif" font-weight="700" font-size="11">DECISION 1</text>
-    <text x="0" y="8" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="11">Launch Fused Grid BLOCK_SIZE=1024?</text>
+    <text x="0" y="8" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="11">Launch Fused Grid BLOCK_SIZE=1024?</text>
     <text x="0" y="24" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="9">(Single SRAM Pass Execution)</text>
   </g>
 
@@ -63,8 +57,8 @@
 
   <!-- Left Action Box -->
   <g transform="translate(30, 350)">
-    <rect width="280" height="50" rx="8" fill="#12161f" stroke="#34d399" stroke-width="1.5"/>
-    <text x="140" y="22" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="12">Reduce Block Size to 512</text>
+    <rect width="280" height="50" rx="8" fill="#161b22" stroke="#34d399" stroke-width="1.5"/>
+    <text x="140" y="22" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="12">Reduce Block Size to 512</text>
     <text x="140" y="38" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="10">SRAM Memory Pressure Fallback</text>
   </g>
 
@@ -76,13 +70,13 @@
 
   <!-- DOWN BRANCH: Proceed Execution -->
   <path d="M 500 315 L 500 350" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
-  <rect x="510" y="320" width="100" height="20" rx="4" fill="#12161f" stroke="#38bdf8" stroke-width="1"/>
+  <rect x="510" y="320" width="100" height="20" rx="4" fill="#161b22" stroke="#38bdf8" stroke-width="1"/>
   <text x="560" y="334" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-weight="600" font-size="10">YES (Launched)</text>
 
   <!-- Step 2 Box -->
   <g transform="translate(320, 350)">
-    <rect width="360" height="50" rx="8" fill="#12161f" stroke="#38bdf8" stroke-width="1.5"/>
-    <text x="180" y="22" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="13">Execute Fused Bias-GELU Kernel</text>
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="13">Execute Fused Bias-GELU Kernel</text>
     <text x="180" y="38" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-size="11">RooflineAnalyzer.analyze()</text>
   </g>
 
@@ -90,9 +84,9 @@
 
   <!-- DECISION 2 DIAMOND -->
   <g transform="translate(500, 485)">
-    <polygon points="0,-40 180,0 0,40 -180,0" fill="#2d2206" stroke="#fbbf24" stroke-width="2" filter="url(#glow)"/>
+    <polygon points="0,-40 180,0 0,40 -180,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2.5" filter="url(#glow-gold)"/>
     <text x="0" y="-10" text-anchor="middle" fill="#fbbf24" font-family="Inter, sans-serif" font-weight="700" font-size="11">DECISION 2</text>
-    <text x="0" y="8" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="11">Roofline Speedup >= 1.5x Baseline?</text>
+    <text x="0" y="8" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="11">Roofline Speedup >= 1.5x Baseline?</text>
     <text x="0" y="24" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="9">(TFLOPS vs Memory Bandwidth Metric)</text>
   </g>
 
@@ -103,8 +97,8 @@
 
   <!-- Success Box -->
   <g transform="translate(320, 565)">
-    <rect width="360" height="50" rx="8" fill="#12161f" stroke="#34d399" stroke-width="1.5"/>
-    <text x="180" y="22" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="13">Register Kernel in Production Library</text>
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#34d399" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="13">Register Kernel in Production Library</text>
     <text x="180" y="38" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="11">Max Hardware Saturation</text>
   </g>
 
@@ -121,12 +115,12 @@
 
   <!-- Decision 3 Diamond (Right Side) -->
   <g transform="translate(840, 565)">
-    <polygon points="0,-35 110,0 0,35 -110,0" fill="#2d2206" stroke="#fbbf24" stroke-width="2"/>
+    <polygon points="0,-35 110,0 0,35 -110,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2"/>
     <text x="0" y="-6" text-anchor="middle" fill="#fbbf24" font-family="Inter, sans-serif" font-weight="700" font-size="10">DECISION 3</text>
-    <text x="0" y="10" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-size="10">Re-tune Stride?</text>
+    <text x="0" y="10" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-size="10">Re-tune Stride?</text>
   </g>
 
-  <!-- UPWARD RETRY LOOP ARROW (Curving from Decision 3 back up to Step 2 Box) -->
+  <!-- UPWARD RETRY LOOP ARROW -->
   <path d="M 840 530 L 840 375 L 695 375" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-amber)"/>
   <rect x="710" y="355" width="120" height="20" rx="4" fill="#2d2206" stroke="#fbbf24" stroke-width="1"/>
   <text x="770" y="369" text-anchor="middle" fill="#fbbf24" font-family="JetBrains Mono, monospace" font-weight="600" font-size="9">↻ YES: Tune Vector Stride</text>
@@ -137,8 +131,8 @@
   <text x="890" y="624" text-anchor="middle" fill="#f43f5e" font-family="JetBrains Mono, monospace" font-weight="600" font-size="10">NO (Limit Hit)</text>
 
   <g transform="translate(710, 645)">
-    <rect width="260" height="50" rx="8" fill="#12161f" stroke="#f43f5e" stroke-width="1.5"/>
-    <text x="130" y="22" text-anchor="middle" fill="#f0f6fc" font-family="Inter, sans-serif" font-weight="600" font-size="12">Re-tune SRAM Vector Memory Stride</text>
+    <rect width="260" height="50" rx="8" fill="#161b22" stroke="#f43f5e" stroke-width="1.5"/>
+    <text x="130" y="22" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="600" font-size="12">Re-tune SRAM Vector Memory Stride</text>
     <text x="130" y="38" text-anchor="middle" fill="#f43f5e" font-family="JetBrains Mono, monospace" font-size="10">Re-align Tensor Core Access</text>
   </g>
 </svg>
