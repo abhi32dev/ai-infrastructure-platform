@@ -123,8 +123,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            cursor: pointer;
-            position: relative;
         }
 
         .project-card:hover {
@@ -132,6 +130,18 @@
             border-color: var(--accent-cyan);
             transform: translateY(-3px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-main-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-main-link:hover .project-title {
+            color: var(--accent-cyan);
         }
 
         .project-num {
@@ -147,12 +157,7 @@
             font-weight: 600;
             margin-bottom: 0.75rem;
             color: var(--text-primary);
-            text-decoration: none;
-            display: block;
-        }
-
-        .project-title:hover {
-            color: var(--accent-cyan);
+            transition: color 0.2s ease;
         }
 
         .project-desc {
@@ -208,8 +213,6 @@
         .links-group {
             display: flex;
             gap: 0.75rem;
-            position: relative;
-            z-index: 2;
         }
 
         .code-link {
@@ -296,421 +299,421 @@
     <div class="projects-grid">
 
         <!-- 01 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 01</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" target="_blank" class="project-title" onclick="event.stopPropagation()">Agentic Durable Runtime</a>
+                <div class="project-title">Agentic Durable Runtime &rarr;</div>
                 <div class="project-desc">Temporal-style state machine runtime providing SQLite checkpoint persistence, step-level time-travel rollback, and crash recovery for agentic loops.</div>
                 <div class="tags">
                     <span class="tag">Python 3.10</span>
                     <span class="tag">SQLite WAL</span>
                     <span class="tag">State Machines</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/01-agent-durable-runtime/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/01-agent-durable-runtime/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 02 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 02</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" target="_blank" class="project-title" onclick="event.stopPropagation()">RAG Cost Router Engine</a>
+                <div class="project-title">RAG Cost Router Engine &rarr;</div>
                 <div class="project-desc">LangGraph & ChromaDB dynamic cost-aware query complexity classifier routing prompts between local Ollama, vector cache, and frontier LLMs.</div>
                 <div class="tags">
                     <span class="tag">ChromaDB</span>
                     <span class="tag">RRF BM25</span>
                     <span class="tag">FinOps Router</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/02-rag-cost-router/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/02-rag-cost-router/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 03 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 03</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" target="_blank" class="project-title" onclick="event.stopPropagation()">LLM Evaluation Gate</a>
+                <div class="project-title">LLM Evaluation Gate &rarr;</div>
                 <div class="project-desc">Automated LLM-as-a-Judge quality release gate executing Welch's t-test hypothesis scoring (Faithfulness, Groundedness, Toxicity) for CI/CD gates.</div>
                 <div class="tags">
                     <span class="tag">LLM Judge</span>
                     <span class="tag">RAG Triad</span>
                     <span class="tag">MLflow</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/03-llm-eval-gate/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/03-llm-eval-gate/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 04 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 04</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" target="_blank" class="project-title" onclick="event.stopPropagation()">Model Serving MLOps</a>
+                <div class="project-title">Model Serving MLOps &rarr;</div>
                 <div class="project-desc">Production model registry, canary deployment rollout engine, queue backpressure isolation, and OpenTelemetry W3C traceparent instrumentation.</div>
                 <div class="tags">
                     <span class="tag">FastAPI</span>
                     <span class="tag">Canary Shift</span>
                     <span class="tag">OpenTelemetry</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/04-model-serving-mlops/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/04-model-serving-mlops/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 05 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 05</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" target="_blank" class="project-title" onclick="event.stopPropagation()">Event Stream PySpark ETL</a>
+                <div class="project-title">Event Stream PySpark ETL &rarr;</div>
                 <div class="project-desc">PySpark Structured Streaming pipeline handling 2.4M telemetry events/day across 12,000 edge nodes with 3-Pass Storage Reconciliation.</div>
                 <div class="tags">
                     <span class="tag">PySpark</span>
                     <span class="tag">Delta Lake</span>
                     <span class="tag">SNMP Traps</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/05-event-stream-pyspark-etl/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/05-event-stream-pyspark-etl/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 06 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 06</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" target="_blank" class="project-title" onclick="event.stopPropagation()">Fine-Tuning LoRA Alignment</a>
+                <div class="project-title">Fine-Tuning LoRA Alignment &rarr;</div>
                 <div class="project-desc">Parameter-efficient fine-tuning (LoRA r=8, alpha=16) achieving 99.94% trainable parameter memory reduction and GGUF Q4_K_M quantization export.</div>
                 <div class="tags">
                     <span class="tag">PyTorch</span>
                     <span class="tag">PEFT / LoRA</span>
                     <span class="tag">GGUF</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/06-finetuning-lora-alignment/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/06-finetuning-lora-alignment/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 07 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 07</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" target="_blank" class="project-title" onclick="event.stopPropagation()">Cloud IaC Security Governance</a>
+                <div class="project-title">Cloud IaC Security Governance &rarr;</div>
                 <div class="project-desc">Automated IaC security policy validator scanning CDK/Terraform ASTs for IAM wildcard permissions, unencrypted storage, and host security compliance.</div>
                 <div class="tags">
                     <span class="tag">AWS CDK</span>
                     <span class="tag">IAM Audit</span>
                     <span class="tag">Security AST</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/07-cloud-iac-security-governance/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/07-cloud-iac-security-governance/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 08 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 08</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" target="_blank" class="project-title" onclick="event.stopPropagation()">vLLM PagedAttention & Speculative</a>
+                <div class="project-title">vLLM PagedAttention & Speculative &rarr;</div>
                 <div class="project-desc">vLLM virtual memory block manager eliminating KV-cache VRAM fragmentation (0.0% waste) and 2.67x speculative decoding verification speedup.</div>
                 <div class="tags">
                     <span class="tag">vLLM</span>
                     <span class="tag">PagedAttention</span>
                     <span class="tag">Speculative</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/08-vllm-pagedattention-spec-decoding/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/08-vllm-pagedattention-spec-decoding/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 09 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 09</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" target="_blank" class="project-title" onclick="event.stopPropagation()">Ray Distributed Cluster Orchestrator</a>
+                <div class="project-title">Ray Distributed Cluster Orchestrator &rarr;</div>
                 <div class="project-desc">Distributed stateful Ray Actor pools operating with zero-copy Plasma shared memory object stores and demand-based cluster queue autoscaling.</div>
                 <div class="tags">
                     <span class="tag">Ray Core</span>
                     <span class="tag">Plasma Store</span>
                     <span class="tag">Autoscaler</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/09-ray-distributed-cluster-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/09-ray-distributed-cluster-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 10 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 10</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" target="_blank" class="project-title" onclick="event.stopPropagation()">Triton CUDA GPU Scheduler</a>
+                <div class="project-title">Triton CUDA GPU Scheduler &rarr;</div>
                 <div class="project-desc">NVIDIA Triton Dynamic Batching Queue with power-of-2 CUDA Tensor Core alignment and AWQ INT4 weight matrix quantization (3.68x VRAM reduction).</div>
                 <div class="tags">
                     <span class="tag">Triton Server</span>
                     <span class="tag">AWQ INT4</span>
                     <span class="tag">CUDA Batching</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/10-triton-cuda-gpu-scheduler/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/10-triton-cuda-gpu-scheduler/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 11 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 11</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" target="_blank" class="project-title" onclick="event.stopPropagation()">Distributed Training (FSDP & Megatron)</a>
+                <div class="project-title">Distributed Training (FSDP & Megatron) &rarr;</div>
                 <div class="project-desc">PyTorch FSDP ZeRO-3 memory sharding (93.75% VRAM savings), Megatron-LM 3D Parallelism Grid (TP x PP x DP), and NCCL InfiniBand 400G profiling.</div>
                 <div class="tags">
                     <span class="tag">PyTorch FSDP</span>
                     <span class="tag">Megatron 3D</span>
                     <span class="tag">NCCL NVLink</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/11-distributed-training-fsdp-megatron/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/11-distributed-training-fsdp-megatron/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 12 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 12</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" target="_blank" class="project-title" onclick="event.stopPropagation()">GenAI Gateway & Semantic Cache</a>
+                <div class="project-title">GenAI Gateway & Semantic Cache &rarr;</div>
                 <div class="project-desc">Vector semantic prompt cache (< 5ms response hit), token-bucket rate limiter, and multi-provider failover router (OpenAI -> Anthropic -> Ollama).</div>
                 <div class="tags">
                     <span class="tag">GenAI Gateway</span>
                     <span class="tag">Semantic Cache</span>
                     <span class="tag">Rate Limiter</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/12-genai-gateway-semantic-cache/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/12-genai-gateway-semantic-cache/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 13 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 13</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" target="_blank" class="project-title" onclick="event.stopPropagation()">RLHF DPO Alignment Pipeline</a>
+                <div class="project-title">RLHF DPO Alignment Pipeline &rarr;</div>
                 <div class="project-desc">Direct Preference Optimization loss engine, numerically stable sigmoid calculation, pairwise preference curator, and Bradley-Terry win-rate auditor.</div>
                 <div class="tags">
                     <span class="tag">RLHF / DPO</span>
                     <span class="tag">Bradley-Terry</span>
                     <span class="tag">Alignment</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/13-rlhf-dpo-alignment-pipeline/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/13-rlhf-dpo-alignment-pipeline/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 14 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 14</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" target="_blank" class="project-title" onclick="event.stopPropagation()">Custom OpenAI Triton GPU Kernels</a>
+                <div class="project-title">Custom OpenAI Triton GPU Kernels &rarr;</div>
                 <div class="project-desc">Custom OpenAI Triton fused GPU kernels (Fused Bias-GELU & Blocked Attention), Roofline Performance Analysis, and NVTX timeline range tracing.</div>
                 <div class="tags">
                     <span class="tag">OpenAI Triton</span>
                     <span class="tag">Roofline Model</span>
                     <span class="tag">NVTX Profiler</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/14-custom-cuda-triton-kernel-opt/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/14-custom-cuda-triton-kernel-opt/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 15 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 15</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" target="_blank" class="project-title" onclick="event.stopPropagation()">Feature Store & Vector Lakehouse</a>
+                <div class="project-title">Feature Store & Vector Lakehouse &rarr;</div>
                 <div class="project-desc">Feast/Hopsworks Online (Redis < 2ms) + Offline (Parquet) Feature Store with point-in-time time-travel joins, and PyArrow zero-copy IPC vector scans.</div>
                 <div class="tags">
                     <span class="tag">Feature Store</span>
                     <span class="tag">PyArrow</span>
                     <span class="tag">Apache Iceberg</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/15-feature-store-vector-lakehouse/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/15-feature-store-vector-lakehouse/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 16 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 16</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" target="_blank" class="project-title" onclick="event.stopPropagation()">AI Safety & Policy Guardrails</a>
+                <div class="project-title">AI Safety & Policy Guardrails &rarr;</div>
                 <div class="project-desc">Real-time Prompt Injection & DAN Jailbreak Scanner, PII Data Anonymization Pipeline (SSN, credit card, email masking), and Llama Guard output policy engine.</div>
                 <div class="tags">
                     <span class="tag">AI Safety</span>
                     <span class="tag">PII Masking</span>
                     <span class="tag">Red-Teaming</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/16-ai-safety-red-teaming-guardrails/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/16-ai-safety-red-teaming-guardrails/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 17 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 17</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" target="_blank" class="project-title" onclick="event.stopPropagation()">K8s KubeRay & Kueue GPU Operator</a>
+                <div class="project-title">K8s KubeRay & Kueue GPU Operator &rarr;</div>
                 <div class="project-desc">Cloud-native Kubernetes GPU orchestrator with KubeRay RayCluster CRD specs, Kueue Priority Queueing with batch preemption, and NVIDIA MIG slicing.</div>
                 <div class="tags">
                     <span class="tag">Kubernetes</span>
                     <span class="tag">Kueue Queue</span>
                     <span class="tag">NVIDIA MIG</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/17-k8s-kuberay-kueue-gpu-operator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/17-k8s-kuberay-kueue-gpu-operator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 18 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 18</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" target="_blank" class="project-title" onclick="event.stopPropagation()">TensorRT-LLM Engine & ONNX</a>
+                <div class="project-title">TensorRT-LLM Engine & ONNX &rarr;</div>
                 <div class="project-desc">PyTorch-to-ONNX Graph Exporters and NVIDIA TensorRT-LLM Engine Compilation (INT4 SmoothQuant layer fusion, 1,480 tokens/sec throughput, < 5ms P99).</div>
                 <div class="tags">
                     <span class="tag">TensorRT-LLM</span>
                     <span class="tag">ONNX Graph</span>
                     <span class="tag">SmoothQuant</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/18-tensorrt-llm-onnx-execution/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/18-tensorrt-llm-onnx-execution/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 19 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 19</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" target="_blank" class="project-title" onclick="event.stopPropagation()">Multi-Agent Swarm Orchestrator</a>
+                <div class="project-title">Multi-Agent Swarm Orchestrator &rarr;</div>
                 <div class="project-desc">Autonomous Multi-Agent Swarm Orchestrator with stateful Agent Nodes, LangGraph DAG Task Dependency Scheduler with cycle deadlock detection, and Voting Consensus.</div>
                 <div class="tags">
                     <span class="tag">Agent Swarm</span>
                     <span class="tag">Topological DAG</span>
                     <span class="tag">Consensus</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/19-multi-agent-swarm-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/19-multi-agent-swarm-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
 
         <!-- 20 -->
-        <div class="project-card" onclick="window.open('https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog', '_blank')">
-            <div>
+        <div class="project-card">
+            <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="card-main-link" target="_blank">
                 <div class="project-num">PROJECT 20</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" target="_blank" class="project-title" onclick="event.stopPropagation()">Data Governance & OpenLineage</a>
+                <div class="project-title">Data Governance & OpenLineage &rarr;</div>
                 <div class="project-desc">Enterprise Data Governance Catalog with OpenLineage Standard Event Emitters (START, COMPLETE), Marquez Lineage Dependency Graphs, and Data Quality Contracts.</div>
                 <div class="tags">
                     <span class="tag">OpenLineage</span>
                     <span class="tag">Marquez Graph</span>
                     <span class="tag">Data Contracts</span>
                 </div>
-            </div>
+            </a>
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/20-data-governance-openlineage-catalog/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank" onclick="event.stopPropagation()">Blueprint &rarr;</a>
-                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="code-link" target="_blank" onclick="event.stopPropagation()">Code &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/20-data-governance-openlineage-catalog/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
             </div>
         </div>
