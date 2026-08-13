@@ -17,6 +17,7 @@
             --accent-cyan: #38bdf8;
             --accent-emerald: #34d399;
             --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
             --border-color: #21262d;
             --font-main: 'Inter', -apple-system, sans-serif;
             --font-code: 'JetBrains Mono', monospace;
@@ -212,11 +213,28 @@
 
         .links-group {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
+        }
+
+        .flowchart-link {
+            font-size: 0.82rem;
+            color: var(--accent-amber);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .flowchart-link:hover {
+            background: rgba(251, 191, 36, 0.25);
+            text-decoration: none;
         }
 
         .code-link {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--accent-cyan);
             text-decoration: none;
             font-weight: 600;
@@ -233,7 +251,7 @@
         }
 
         .reasoning-link {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--accent-purple);
             text-decoration: none;
             font-weight: 600;
@@ -293,7 +311,7 @@
 
     <div class="projects-header">
         <span>Architecture Projects</span>
-        <span style="font-size: 0.9rem; color: var(--text-secondary);">Source Code & Production Architecture Blueprints</span>
+        <span style="font-size: 0.9rem; color: var(--text-secondary);">Source Code, Interactive Flowcharts & Production Blueprints</span>
     </div>
 
     <div class="projects-grid">
@@ -313,6 +331,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="01-agent-durable-runtime/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/01-agent-durable-runtime/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -334,6 +353,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="02-rag-cost-router/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/02-rag-cost-router/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -355,6 +375,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="03-llm-eval-gate/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/03-llm-eval-gate/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -376,6 +397,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="04-model-serving-mlops/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/04-model-serving-mlops/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -397,6 +419,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="05-event-stream-pyspark-etl/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/05-event-stream-pyspark-etl/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -418,6 +441,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="06-finetuning-lora-alignment/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/06-finetuning-lora-alignment/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -439,6 +463,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="07-cloud-iac-security-governance/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/07-cloud-iac-security-governance/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -460,6 +485,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="08-vllm-pagedattention-spec-decoding/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/08-vllm-pagedattention-spec-decoding/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -481,6 +507,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="09-ray-distributed-cluster-orchestrator/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/09-ray-distributed-cluster-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -502,6 +529,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="10-triton-cuda-gpu-scheduler/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/10-triton-cuda-gpu-scheduler/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -523,6 +551,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="11-distributed-training-fsdp-megatron/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/11-distributed-training-fsdp-megatron/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -544,6 +573,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="12-genai-gateway-semantic-cache/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/12-genai-gateway-semantic-cache/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -565,6 +595,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="13-rlhf-dpo-alignment-pipeline/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/13-rlhf-dpo-alignment-pipeline/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -586,6 +617,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="14-custom-cuda-triton-kernel-opt/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/14-custom-cuda-triton-kernel-opt/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -607,6 +639,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="15-feature-store-vector-lakehouse/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/15-feature-store-vector-lakehouse/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -628,6 +661,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="16-ai-safety-red-teaming-guardrails/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/16-ai-safety-red-teaming-guardrails/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -649,6 +683,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="17-k8s-kuberay-kueue-gpu-operator/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/17-k8s-kuberay-kueue-gpu-operator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -670,6 +705,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="18-tensorrt-llm-onnx-execution/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/18-tensorrt-llm-onnx-execution/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -691,6 +727,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="19-multi-agent-swarm-orchestrator/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/19-multi-agent-swarm-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
                 </div>
@@ -712,6 +749,7 @@
             <div class="project-footer">
                 <div class="test-status">12 / 12 Passed</div>
                 <div class="links-group">
+                    <a href="20-data-governance-openlineage-catalog/FLOWCHART.html" class="flowchart-link" target="_blank">Flowchart 🔀</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/20-data-governance-openlineage-catalog/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
                     <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="code-link" target="_blank">Code &rarr;</a>
                 </div>

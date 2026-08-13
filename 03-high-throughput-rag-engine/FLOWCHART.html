@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 03: LLM Evaluation Gate | Flowchart & Control Flow Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-card: #12161f;
+            --bg-card-hover: #1a202c;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #34d399;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+            --accent-rose: #f43f5e;
+            --border-color: #21262d;
+            --font-main: 'Inter', -apple-system, sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .nav-back:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(192, 132, 252, 0.1);
+            color: var(--accent-purple);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f0f6fc 0%, #8b949e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Flowchart Visual Grid */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .flow-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 1.25rem;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .flow-node:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .flow-node.decision {
+            border-left-color: var(--accent-amber);
+            background: rgba(251, 191, 36, 0.03);
+        }
+
+        .flow-node-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-node-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-tag {
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .flow-node.decision .code-tag {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--accent-amber);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+
+        .flow-node-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .branches {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .branch {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-family: var(--font-code);
+        }
+
+        .branch.yes {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+
+        .branch.no {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .flow-connector {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin: -0.5rem 0;
+        }
+
+        /* Table Tutorial */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        td.code-cell {
+            font-family: var(--font-code);
+            color: var(--accent-cyan);
+            font-size: 0.82rem;
+        }
+
+        footer {
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html" class="nav-back">&larr; Back to Main Platform Showcase</a>
+        <div><span class="badge">PROJECT 03 TUTORIAL BLUEPRINT</span></div>
+        <h1>LLM Evaluation Gate</h1>
+        <p class="subtitle">Automated Welch's t-Test RAG Triad Quality Release Gate</p>
+    </header>
+
+    <div class="section-title">
+        <span>🔀 Visual Logic & Control Flow Blueprint</span>
+    </div>
+
+    <div class="flow-container">
+
+        <div class="flow-node">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Step 1: Ingest Candidate Benchmark Dataset</div>
+                <div class="code-tag">src/eval_gate.py -> LLMEvalGate.evaluate_build()</div>
+            </div>
+            <div class="flow-node-desc">Loads test set questions, candidate outputs, and ground-truth reference answers.</div>
+            
+        </div>
+        <div class="flow-connector">&darr;</div>
+        <div class="flow-node">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Step 2: Compute Metric Scores (Faithfulness, Groundedness, Toxicity)</div>
+                <div class="code-tag">src/eval_gate.py -> FaithfulnessEvaluator.score()</div>
+            </div>
+            <div class="flow-node-desc">Calculates LLM-as-a-Judge numerical metric scores across candidate output samples.</div>
+            
+        </div>
+        <div class="flow-connector">&darr;</div>
+        <div class="flow-node">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Step 3: Execute Welch's t-Test Hypothesis Testing</div>
+                <div class="code-tag">src/eval_gate.py -> WelchTTestScorer.compare()</div>
+            </div>
+            <div class="flow-node-desc">Computes Welch's unequal variances t-statistic and p-value against production baseline scores.</div>
+            
+        </div>
+        <div class="flow-connector">&darr;</div>
+        <div class="flow-node decision">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Decision 1: Is p-value < 0.05 AND Mean Delta > Minimum Threshold?</div>
+                <div class="code-tag">Condition Branch</div>
+            </div>
+            <div class="flow-node-desc">Validates statistical significance of quality improvement.</div>
+            
+            <div class="branches">
+                <div class="branch yes">✔ CONDITION TRUE: Pass Metric Gate</div>
+                <div class="branch no">✖ CONDITION FALSE: Fail Release Gate</div>
+            </div>
+            
+        </div>
+        <div class="flow-connector">&darr;</div>
+        <div class="flow-node">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Step 5: Check Toxicity Policy Enforcement</div>
+                <div class="code-tag">src/eval_gate.py -> ToxicityEvaluator.check_safety()</div>
+            </div>
+            <div class="flow-node-desc">Ensures zero samples exceed toxicity threshold score of 0.05.</div>
+            
+        </div>
+        <div class="flow-connector">&darr;</div>
+        <div class="flow-node decision">
+            <div class="flow-node-header">
+                <div class="flow-node-title">Decision 2: All Metrics Passed Gate?</div>
+                <div class="code-tag">Condition Branch</div>
+            </div>
+            <div class="flow-node-desc">Final CI/CD gate evaluation rule.</div>
+            
+            <div class="branches">
+                <div class="branch yes">✔ CONDITION TRUE: APPROVED -> Register MLflow Model Artifact</div>
+                <div class="branch no">✖ CONDITION FALSE: REJECTED -> Trigger CI/CD Build Fail & Alert</div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <div class="section-title">
+        <span>📚 Codebase Mapping & Execution Reference Table</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Step / Phase</th>
+                <th>Source Code Reference</th>
+                <th>Description & Logic Purpose</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            <td><strong>Step 1: Ingest Candidate Benchmark Dataset</strong></td>
+            <td class="code-cell">src/eval_gate.py -> LLMEvalGate.evaluate_build()</td>
+            <td>Loads test set questions, candidate outputs, and ground-truth reference answers.</td>
+            <td>Execution Action</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Step 2: Compute Metric Scores (Faithfulness, Groundedness, Toxicity)</strong></td>
+            <td class="code-cell">src/eval_gate.py -> FaithfulnessEvaluator.score()</td>
+            <td>Calculates LLM-as-a-Judge numerical metric scores across candidate output samples.</td>
+            <td>Execution Action</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Step 3: Execute Welch's t-Test Hypothesis Testing</strong></td>
+            <td class="code-cell">src/eval_gate.py -> WelchTTestScorer.compare()</td>
+            <td>Computes Welch's unequal variances t-statistic and p-value against production baseline scores.</td>
+            <td>Execution Action</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Decision 1: Is p-value < 0.05 AND Mean Delta > Minimum Threshold?</strong></td>
+            <td class="code-cell">Branch Rule</td>
+            <td>Validates statistical significance of quality improvement.</td>
+            <td>Conditional Decision</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Step 5: Check Toxicity Policy Enforcement</strong></td>
+            <td class="code-cell">src/eval_gate.py -> ToxicityEvaluator.check_safety()</td>
+            <td>Ensures zero samples exceed toxicity threshold score of 0.05.</td>
+            <td>Execution Action</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Decision 2: All Metrics Passed Gate?</strong></td>
+            <td class="code-cell">Branch Rule</td>
+            <td>Final CI/CD gate evaluation rule.</td>
+            <td>Conditional Decision</td>
+        </tr>
+        
+        </tbody>
+    </table>
+
+    <footer>
+        <p>&copy; 2026 Abhishek Singh • Staff & Principal AI Platform Architect</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="PROD_ARCHITECTURE_REASONING.md" target="_blank">Architecture Reasoning</a> • 
+            <a href="src/eval_gate.py" target="_blank">Source Code (src/eval_gate.py)</a> • 
+            <a href="../index.html">Main Platform Showcase</a>
+        </p>
+    </footer>
+
+</body>
+</html>
