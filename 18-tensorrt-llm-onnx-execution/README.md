@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 High-throughput model compilation and execution platform supporting **PyTorch-to-ONNX Graph Exporters** and **NVIDIA TensorRT-LLM Engine Compilation** (INT4 SmoothQuant, FP8 Transformer Engine execution, 1480 tokens/sec throughput).

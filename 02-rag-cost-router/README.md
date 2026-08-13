@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A production-grade, local-first **7-Stage Retrieval-Augmented Generation (RAG)** pipeline and **Cost Engineering Suite** implementing multi-strategy chunking, ChromaDB vector embeddings, BM25 sparse retrieval, Reciprocal Rank Fusion (RRF), Cross-Encoder reranking, HyDE query rewriting, and intent/token-cost-aware dynamic model routing.

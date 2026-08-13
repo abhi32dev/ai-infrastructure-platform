@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A production-grade, local-first **Model Serving & MLOps Platform** implementing matrix factorization recommendation systems, user-item embedding similarity scoring, A/B test variant assignment, Server-Sent Events (SSE) token streaming, queue backpressure isolation, and OpenTelemetry / Prometheus metric collection (TTFT, TPS, P95/P99 latency).

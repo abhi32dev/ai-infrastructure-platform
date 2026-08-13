@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 LLM alignment platform implementing **Direct Preference Optimization (DPO)** without needing separate reward model training, calculating implicit policy rewards and auditing Bradley-Terry win-rate metrics.

@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A high-performance **LLM Inference Optimization Platform** implementing PagedAttention physical GPU block allocation (Kwon et al., SOSP 2023), Speculative Decoding with draft-target parallel verification pass ($k=4$), and iteration-level Continuous Batching scheduler.

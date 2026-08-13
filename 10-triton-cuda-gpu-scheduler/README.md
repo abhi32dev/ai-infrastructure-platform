@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A high-throughput **GPU Inference Scheduler & Quantization Platform** implementing NVIDIA Triton dynamic batching queues with CUDA power-of-2 Tensor Core alignment, AWQ FP8/INT8 weight matrix quantization, and VRAM memory bandwidth saturation profiling.

@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 Cloud-native Kubernetes GPU orchestration platform managing **KubeRay Operator CRDs** (RayCluster / RayJob), **Kubernetes Kueue Priority Job Queueing & Preemption**, and **NVIDIA MIG Fractional GPU Partitioning**.

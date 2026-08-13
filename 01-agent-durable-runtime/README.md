@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A production-grade, local-first **Durable AI Agent Runtime** demonstrating workflow state machines, SQLite step checkpointing, deterministic replay, fan-out/fan-in parallel worker dispatching, Model Context Protocol (MCP) tool gates, and Human-in-the-Loop (HITL) approval patterns.

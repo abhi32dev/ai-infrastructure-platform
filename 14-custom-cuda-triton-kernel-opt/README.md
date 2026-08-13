@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 GPU performance engineering platform implementing **OpenAI Triton Fused GPU Kernels** (Fused Bias-GELU & Blocked Attention), **Roofline Model Performance Analysis** (Memory-Bound vs Compute-Bound classification), and **NVTX Range Profiling**.

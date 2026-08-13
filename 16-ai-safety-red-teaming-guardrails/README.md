@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 AI safety and red-teaming platform implementing **Real-Time Prompt Injection Scanning** (DAN jailbreak & system prompt leak detection), **PII Anonymization** (SSN/Email/Phone masking), and **NeMo / Llama Guard Policy Enforcement**.

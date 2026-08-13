@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 Enterprise data governance and compliance lineage tracking platform implementing **OpenLineage Standard Event Emitters** (START, COMPLETE, FAIL), **Marquez / DataHub Lineage Dependency Graph Visualizers**, and **Great Expectations Data Quality Contract Validation**.

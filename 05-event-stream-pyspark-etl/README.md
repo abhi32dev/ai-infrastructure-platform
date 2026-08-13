@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A production-grade, local-first **Real-Time Data & Feature Ingestion Engine** implementing persistent UDP socket trap listeners, vendor MIB OID decoding, DynamoDB-style TTL idempotency markers, Comcast CONDOR 3-Pass Storage Reconciliation, and PySpark distributed batch feature ETL pipelines.

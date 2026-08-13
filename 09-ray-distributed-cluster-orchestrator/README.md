@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 A production-grade **Distributed AI Computing & Cluster Orchestrator** implementing stateful Ray Actor worker pools, Plasma zero-copy shared memory object store referencing, multi-GPU node dynamic autoscaling, and fault-tolerant actor state recovery.

@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 Enterprise GenAI Gateway supporting **Vector Semantic Caching** (< 5ms response hits), **Token Bucket Rate Limiting** (TPM/RPM governance), and **Multi-Provider Fallback Routing** (OpenAI $\rightarrow$ Anthropic $\rightarrow$ Ollama).

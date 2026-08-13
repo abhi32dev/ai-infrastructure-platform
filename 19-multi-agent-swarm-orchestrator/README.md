@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 Autonomous multi-agent orchestration platform implementing **Autonomous Specialized Agent Nodes** (Researcher, Coder, SecurityAuditor), **LangGraph / AutoGen Task DAG Dependency Routing** with cycle/deadlock detection, and **Multi-Agent Voting Consensus Engine**.

@@ -5,6 +5,9 @@
 > 
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
+
+![2D Control Flow Diagram](FLOWCHART.png)
+
 ---
 
 Enterprise ML feature serving and vector lakehouse platform implementing **Feast / Hopsworks style Online (Redis < 2ms) + Offline (Parquet/S3) Feature Store** with point-in-time time-travel joins, and **Apache Iceberg / PyArrow zero-copy IPC buffer vector serialization**.
