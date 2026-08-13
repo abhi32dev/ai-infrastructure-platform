@@ -1,0 +1,20 @@
+[
+  {
+    "query": "How does the alarm receiver handle persistent connections?",
+    "context": "Persistent UDP Receivers run the alarm-trap receivers as Dockerized Python daemons on dedicated Amazon EC2 instances on UDP port 162 rather than Lambda, since each process holds a persistent listening socket across an unbounded lifetime.",
+    "response": "The alarm trap receiver runs as a Dockerized Python daemon on Amazon EC2 listening on UDP port 162 to hold persistent sockets.",
+    "ground_truth": "Dockerized Python daemon on Amazon EC2 holding persistent UDP port 162 socket."
+  },
+  {
+    "query": "Why was Application Load Balancer chosen over API Gateway?",
+    "context": "Application Load Balancer was chosen over API Gateway for the HTTP path because its built-in cross-AZ target routing and health checks kept the endpoint available through Lambda cold starts at a lower cost profile for sustained high-volume traffic.",
+    "response": "Application Load Balancer provided built-in cross-AZ target routing and lower cost profile for sustained high-volume traffic compared to API Gateway.",
+    "ground_truth": "ALB offers cross-AZ health checks and lower cost for high volume traffic vs API Gateway."
+  },
+  {
+    "query": "How does the orchestration pipeline self-heal failed SFTP batches?",
+    "context": "Persisted completed batch results as durable S3 checkpoints and automatically re-invoked failed batches or files, enabling resumable execution, deterministic replay, and partial recovery without restarting an entire cycle.",
+    "response": "The pipeline writes durable S3 checkpoints for completed batches and automatically re-invokes failed files for deterministic replay and recovery.",
+    "ground_truth": "S3 checkpoints enable deterministic replay and auto-reinvocation of failed batches."
+  }
+]

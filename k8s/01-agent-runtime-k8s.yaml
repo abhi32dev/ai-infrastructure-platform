@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-durable-runtime
+  namespace: ai-platform
+  labels:
+    app.kubernetes.io/name: agent-runtime
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: agent-runtime
+  template:
+    metadata:
+      labels:
+        app: agent-runtime
+    spec:
+      containers:
+      - name: agent-runtime-container
+        image: ai-platform/agent-runtime:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: ai-platform-config
+        volumeMounts:
+        - mountPath: /app/data
+          name: agent-state-storage
+      volumes:
+      - name: agent-state-storage
+        persistentVolumeClaim:
+          claimName: agent-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agent-pvc
+  namespace: ai-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-runtime-service
+  namespace: ai-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: agent-runtime
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http

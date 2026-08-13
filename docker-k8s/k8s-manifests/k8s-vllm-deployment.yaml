@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-inference-engine
+  namespace: ai-platform
+  labels:
+    app.kubernetes.io/name: vllm-engine
+    app.kubernetes.io/component: inference
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm-engine
+  template:
+    metadata:
+      labels:
+        app: vllm-engine
+    spec:
+      containers:
+      - name: vllm-container
+        image: vllm/vllm-openai:latest
+        command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+        args:
+          - "--model=meta-llama/Llama-3.2-3B-Instruct"
+          - "--max-model-len=4096"
+          - "--gpu-memory-utilization=0.90"
+          - "--enable-speculative-decoding"
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+            memory: "16Gi"
+            cpu: "8"
+          requests:
+            nvidia.com/gpu: "1"
+            memory: "8Gi"
+            cpu: "4"
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 8Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  namespace: ai-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: vllm-engine
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: vllm-hpa
+  namespace: ai-platform
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vllm-inference-engine
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80

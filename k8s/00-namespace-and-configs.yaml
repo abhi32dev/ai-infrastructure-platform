@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-platform
+  labels:
+    environment: production
+    team: ai-infrastructure
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-platform-config
+  namespace: ai-platform
+data:
+  LOG_LEVEL: "INFO"
+  ENABLE_OTEL_TRACING: "true"
+  DEFAULT_REGION: "us-west-2"
+  PROMETHEUS_METRICS_PORT: "8003"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-platform-secrets
+  namespace: ai-platform
+type: Opaque
+stringData:
+  OPENAI_API_KEY: "sk-proj-enterprise-key-placeholder"
+  AWS_SECRET_ACCESS_KEY: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

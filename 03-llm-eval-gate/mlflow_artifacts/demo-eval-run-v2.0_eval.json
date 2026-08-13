@@ -1,0 +1,112 @@
+{
+  "results": [
+    {
+      "eval_id": "eval-1",
+      "candidate_model": "candidate-llama-3",
+      "judge_model": "EvalRubricsEngine",
+      "groundedness": {
+        "rubric_name": "Groundedness",
+        "score": 1.0,
+        "passed": true,
+        "explanation": "Verified 1/1 claims supported by context (100.0%).",
+        "metadata": {
+          "supported_claims": 1,
+          "total_claims": 1
+        }
+      },
+      "context_relevance": {
+        "rubric_name": "ContextRelevance",
+        "score": 0.5,
+        "passed": false,
+        "explanation": "Context covers 4/8 query terms (50.0%).",
+        "metadata": {
+          "matched_query_terms": 4,
+          "total_query_terms": 8
+        }
+      },
+      "answer_faithfulness": {
+        "rubric_name": "AnswerFaithfulness",
+        "score": 0.875,
+        "passed": true,
+        "explanation": "Response aligned with 7/8 reference facts (87.5%).",
+        "metadata": {
+          "matched_ref_facts": 7
+        }
+      },
+      "overall_pass": false,
+      "judge_summary": "Rubric Judge Engine: Verified groundedness (1.0) and relevance (0.5)."
+    },
+    {
+      "eval_id": "eval-2",
+      "candidate_model": "candidate-llama-3",
+      "judge_model": "EvalRubricsEngine",
+      "groundedness": {
+        "rubric_name": "Groundedness",
+        "score": 1.0,
+        "passed": true,
+        "explanation": "Verified 1/1 claims supported by context (100.0%).",
+        "metadata": {
+          "supported_claims": 1,
+          "total_claims": 1
+        }
+      },
+      "context_relevance": {
+        "rubric_name": "ContextRelevance",
+        "score": 0.8889,
+        "passed": true,
+        "explanation": "Context covers 8/9 query terms (88.89%).",
+        "metadata": {
+          "matched_query_terms": 8,
+          "total_query_terms": 9
+        }
+      },
+      "answer_faithfulness": {
+        "rubric_name": "AnswerFaithfulness",
+        "score": 0.7,
+        "passed": true,
+        "explanation": "Response aligned with 7/10 reference facts (70.0%).",
+        "metadata": {
+          "matched_ref_facts": 7
+        }
+      },
+      "overall_pass": true,
+      "judge_summary": "Rubric Judge Engine: Verified groundedness (1.0) and relevance (0.8889)."
+    },
+    {
+      "eval_id": "eval-3",
+      "candidate_model": "candidate-llama-3",
+      "judge_model": "EvalRubricsEngine",
+      "groundedness": {
+        "rubric_name": "Groundedness",
+        "score": 1.0,
+        "passed": true,
+        "explanation": "Verified 1/1 claims supported by context (100.0%).",
+        "metadata": {
+          "supported_claims": 1,
+          "total_claims": 1
+        }
+      },
+      "context_relevance": {
+        "rubric_name": "ContextRelevance",
+        "score": 0.2,
+        "passed": false,
+        "explanation": "Context covers 2/10 query terms (20.0%).",
+        "metadata": {
+          "matched_query_terms": 2,
+          "total_query_terms": 10
+        }
+      },
+      "answer_faithfulness": {
+        "rubric_name": "AnswerFaithfulness",
+        "score": 0.75,
+        "passed": true,
+        "explanation": "Response aligned with 6/8 reference facts (75.0%).",
+        "metadata": {
+          "matched_ref_facts": 6
+        }
+      },
+      "overall_pass": false,
+      "judge_summary": "Rubric Judge Engine: Verified groundedness (1.0) and relevance (0.2)."
+    }
+  ]
+}

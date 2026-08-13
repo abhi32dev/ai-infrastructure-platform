@@ -1,0 +1,22 @@
+[
+  {
+    "instruction": "Why choose ALB target routing over API Gateway for CONDOR?",
+    "input_context": "CONDOR handles 100M events/day across 12,000 edge nodes.",
+    "output_response": "ALB target routing provides lower cost ($0.0225/LCU-hour vs $3.50/M) and direct cross-AZ EC2 target routing."
+  },
+  {
+    "instruction": "Explain persistent socket daemon architecture",
+    "input_context": "SNMPv1/v2c/v3 traps arriving on UDP port 162.",
+    "output_response": "Persistent Dockerized Python daemons run on EC2 instances using SO_REUSEPORT socket options to prevent packet drops."
+  },
+  {
+    "instruction": "How does 3-pass storage reconciliation eliminate S3 data gaps?",
+    "input_context": "Pass 1 ingestion, Pass 2 batch diff, Pass 3 NVMe raw recovery.",
+    "output_response": "Pass 1 streams events live to S3, Pass 2 compares S3 file prefixes against DynamoDB logs to retry missing keys, and Pass 3 recovers raw binary logs from host NVMe drives during S3 outages."
+  },
+  {
+    "instruction": "What is PagedAttention in vLLM?",
+    "input_context": "GPU VRAM allocation for LLM inference.",
+    "output_response": "PagedAttention partitions KV-cache into fixed 16-token physical GPU blocks, eliminating VRAM memory fragmentation to 0.0%."
+  }
+]

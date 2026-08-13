@@ -1,0 +1,17 @@
+[
+  {
+    "doc_id": "doc-001-alarm-receiver",
+    "text": "Alarm Receiver Infrastructure & Amazon EC2 Deployment: Persistent UDP Receivers run the alarm-trap receivers as Dockerized Python/pysnmp daemons on dedicated Amazon EC2 instances rather than Lambda, since each process holds a persistent listening socket on UDP port 162 across an unbounded connection lifetime, something a request-driven, short-lived execution model cannot hold open. Multi-Protocol MIB Decoding loads vendor MIB modules in each daemon to decode incoming traps into OID-mapped severity, probable cause, alarm type, and acknowledgment state, supporting SNMPv1, SNMPv2c, and SNMPv3 (SHA/AES) authentication simultaneously. Fronted with Network Load Balancer across multiple Availability Zones for 99.999% SLA availability.",
+    "metadata": {"author": "Abhishek Singh", "category": "Infrastructure"}
+  },
+  {
+    "doc_id": "doc-002-dual-path-ingestion",
+    "text": "Dual-Path Alarm Ingestion & Cost-Aware HTTP Routing: Operates two independent AWS ingestion paths against the same alarm source: the EC2/UDP path fanning out through Lambda into Kinesis Data Streams, Kinesis Data Firehose, and DynamoDB for durable storage and audit logging, alongside a fully serverless path using an Application Load Balancer in front of a Lambda function that accepts alarm data over HTTP. Application Load Balancer was chosen over API Gateway for the HTTP path because its built-in cross-AZ target routing and health checks kept the endpoint available through Lambda cold starts and scaling events at a lower cost profile for sustained high-volume traffic.",
+    "metadata": {"author": "Abhishek Singh", "category": "Ingestion Architecture"}
+  },
+  {
+    "doc_id": "doc-003-durable-orchestration",
+    "text": "Durable Execution & Self-Healing Workload Orchestration: SFTP collector on AWS Lambda pulls files every 30-minute cycle and writes a manifest directly to Amazon S3 instead of DynamoDB, avoiding write-concurrency limits. Master-worker execution layer reads the S3 manifest and launches synchronous RequestResponse Lambda workers in parallel for work-balanced batches. Persisted completed batch results as durable S3 checkpoints and automatically re-invoked failed batches or files, enabling resumable execution, deterministic replay, and partial recovery without restarting an entire cycle.",
+    "metadata": {"author": "Abhishek Singh", "category": "Orchestration & Checkpointing"}
+  }
+]

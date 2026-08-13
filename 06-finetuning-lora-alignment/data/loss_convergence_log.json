@@ -1,0 +1,49 @@
+{
+  "status": "COMPLETED",
+  "lora_config": {
+    "r": 8,
+    "lora_alpha": 16,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "lora_dropout": 0.05,
+    "learning_rate": 0.0002,
+    "num_epochs": 3,
+    "batch_size": 4
+  },
+  "scaling_factor": 2.0,
+  "base_model_params": 7000000000,
+  "trainable_lora_params": 4194304,
+  "param_reduction_pct": 99.9401,
+  "final_training_loss": 0.7139,
+  "final_perplexity": 2.04,
+  "total_epochs": 3,
+  "total_steps": 3,
+  "metrics_history": [
+    {
+      "epoch": 1,
+      "step": 1,
+      "training_loss": 1.4512,
+      "validation_loss": 1.5312,
+      "perplexity": 4.62,
+      "elapsed_sec": 0.0
+    },
+    {
+      "epoch": 2,
+      "step": 2,
+      "training_loss": 0.964,
+      "validation_loss": 1.044,
+      "perplexity": 2.84,
+      "elapsed_sec": 0.0
+    },
+    {
+      "epoch": 3,
+      "step": 3,
+      "training_loss": 0.7139,
+      "validation_loss": 0.7939,
+      "perplexity": 2.21,
+      "elapsed_sec": 0.0
+    }
+  ]
+}

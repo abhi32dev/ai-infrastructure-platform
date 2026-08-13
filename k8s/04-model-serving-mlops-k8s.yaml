@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-serving-mlops
+  namespace: ai-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: model-serving
+  template:
+    metadata:
+      labels:
+        app: model-serving
+    spec:
+      containers:
+      - name: model-serving-container
+        image: ai-platform/model-serving-mlops:latest
+        ports:
+        - containerPort: 8003
+          name: http
+      # OpenTelemetry Collector Sidecar Container
+      - name: otel-collector-sidecar
+        image: otel/opentelemetry-collector-contrib:latest
+        ports:
+        - containerPort: 4317
+          name: otlp-grpc
+        - containerPort: 8889
+          name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-serving-service
+  namespace: ai-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: model-serving
+  ports:
+  - port: 8003
+    targetPort: 8003
+    name: http

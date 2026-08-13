@@ -1,0 +1,17 @@
+# Python virtual environments & caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Vector DB & dynamic data persistent files
+02-rag-cost-router/data/chroma_db/
+*.sqlite
+*.sqlite3
+*.db
+
+# OS files
+.DS_Store
+*.log

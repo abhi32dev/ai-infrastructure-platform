@@ -1,0 +1,33 @@
+# Multi-Stage Production Dockerfile for Enterprise AI/ML Services
+FROM python:3.10-slim AS builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+# Final Runtime Image
+FROM python:3.10-slim AS runner
+
+WORKDIR /app
+
+RUN groupadd -g 10001 appgroup && \
+    useradd -u 10001 -g appgroup -s /bin/bash appuser
+
+COPY --from=builder /install /usr/local
+COPY . /app
+
+USER appuser
+
+EXPOSE 8000
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

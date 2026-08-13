@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  agent-runtime:
+    build:
+      context: ../01-agent-durable-runtime
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+
+  rag-cost-router:
+    build:
+      context: ../02-rag-cost-router
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8001:8000"
+    environment:
+      - PORT=8001
+
+  llm-eval-gate:
+    build:
+      context: ../03-llm-eval-gate
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8002:8000"
+    environment:
+      - PORT=8002
+
+  model-serving:
+    build:
+      context: ../04-model-serving-mlops
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8003:8000"
+    environment:
+      - PORT=8003
+
+  event-stream-pyspark:
+    build:
+      context: ../05-event-stream-pyspark-etl
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8004:8000"
+    environment:
+      - PORT=8004
+
+  finetuning-lora:
+    build:
+      context: ../06-finetuning-lora-alignment
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8005:8000"
+    environment:
+      - PORT=8005
+
+  cloud-governance:
+    build:
+      context: ../07-cloud-iac-security-governance
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8006:8000"
+    environment:
+      - PORT=8006
+
+  vllm-engine:
+    build:
+      context: ../08-vllm-pagedattention-spec-decoding
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8007:8000"
+    environment:
+      - PORT=8007
+
+  ray-cluster:
+    build:
+      context: ../09-ray-distributed-cluster-orchestrator
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8008:8000"
+    environment:
+      - PORT=8008
+
+  triton-scheduler:
+    build:
+      context: ../10-triton-cuda-gpu-scheduler
+      dockerfile: ../docker-k8s/Dockerfile.base
+    ports:
+      - "8009:8000"
+    environment:
+      - PORT=8009

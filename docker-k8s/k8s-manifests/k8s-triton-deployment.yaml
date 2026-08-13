@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: triton-inference-server
+  namespace: ai-platform
+spec:
+  serviceName: triton-service
+  replicas: 2
+  selector:
+    matchLabels:
+      app: triton-server
+  template:
+    metadata:
+      labels:
+        app: triton-server
+    spec:
+      containers:
+      - name: triton-container
+        image: nvcr.io/nvidia/tritonserver:24.05-py3
+        command: ["tritonserver"]
+        args:
+          - "--model-repository=s3://condor-model-store/triton_repository"
+          - "--strict-model-config=false"
+          - "--log-verbose=1"
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: grpc
+        - containerPort: 8002
+          name: metrics
+        resources:
+          limits:
+            nvidia.com/gpu: "4"
+            memory: "32Gi"
+          requests:
+            nvidia.com/gpu: "4"
+            memory: "16Gi"
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Gi
