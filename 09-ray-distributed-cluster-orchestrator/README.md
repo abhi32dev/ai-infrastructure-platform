@@ -6,7 +6,7 @@
 > 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
 
 
-![2D Control Flow Diagram](FLOWCHART.png)
+![2D Control Flow Diagram](FLOWCHART.svg)
 
 ---
 
