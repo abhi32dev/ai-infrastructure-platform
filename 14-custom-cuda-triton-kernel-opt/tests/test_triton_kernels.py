@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 14 - Custom OpenAI Triton & CUDA GPU Kernel Optimization.
-Tests fused Bias-GELU GPU kernel launches, block size grid allocations, Roofline Model operational intensity,
-Memory-Bound vs Compute-Bound classification, and NVTX span tracing.
+Includes production edge cases for extreme tensor dimensions, zero FLOPs roofline checks, and multi-span timeline tracing.
 """
 
 import pytest
@@ -90,3 +89,32 @@ def test_08_nvtx_multiple_spans(nvtx):
     summary = nvtx.get_timeline_summary()
     assert summary["total_spans_traced"] == 2
     assert summary["total_gpu_time_us"] == 12.0
+
+
+def test_09_triton_small_tensor_elements(triton_engine):
+    """Test 9 [Production Edge Case]: Verifies Triton kernel grid allocation on small tensor (1 element)."""
+    res = triton_engine.launch_fused_bias_gelu_kernel(num_elements=1)
+    assert res.grid_size == 1
+    assert res.status == "KERNEL_LAUNCH_SUCCESS"
+
+
+def test_10_roofline_h100_peak_specs():
+    """Test 10 [Production Edge Case]: Verifies Roofline analyzer with NVIDIA H100 GPU specs (2000 GB/s, 989 TFLOPS)."""
+    roofline_h100 = RooflineAnalyzer(peak_bandwidth_gbps=2000.0, peak_tensor_tflops=989.0)
+    res = roofline_h100.analyze_kernel_performance(flops=100000.0, bytes_transferred=50000.0, execution_time_us=5.0)
+    assert res.operational_intensity_flops_per_byte == 2.0
+    assert res.bottleneck_type == "MEMORY_BOUND"
+
+
+def test_11_nvtx_empty_timeline_summary(nvtx):
+    """Test 11 [Production Edge Case]: Verifies NVTX profiler handling timeline summary with zero recorded spans."""
+    summary = nvtx.get_timeline_summary()
+    assert summary["total_spans_traced"] == 0
+    assert summary["total_gpu_time_us"] == 0.0
+
+
+def test_12_triton_block_size_512():
+    """Test 12 [Production Edge Case]: Verifies Triton kernel launch with block size=512."""
+    eng_512 = TritonFusedKernelEngine(block_size=512)
+    res = eng_512.launch_fused_bias_gelu_kernel(num_elements=10000)
+    assert res.grid_size == 20  # ceil(10000 / 512) = 20

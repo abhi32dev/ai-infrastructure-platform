@@ -129,3 +129,37 @@ def test_08_enterprise_guardrails_pii_redaction_and_jailbreak_block():
     res_jailbreak = guardrails.evaluate_and_sanitize_prompt(jailbreak_prompt)
     assert res_jailbreak.is_safe is False
     assert res_jailbreak.prompt_injection_blocked is True
+
+
+def test_09_non_existent_task_load(orchestrator):
+    """Test 9 [Production Edge Case]: Verifies loading non-existent task ID returns None cleanly."""
+    state = orchestrator.store.load_task_state("task-nonexistent-uuid-999")
+    assert state is None
+
+
+def test_10_empty_checkpoint_history_reload(orchestrator):
+    """Test 10 [Production Edge Case]: Verifies task with zero checkpoints reloads safely."""
+    state = orchestrator.submit_task("Zero checkpoint task")
+    loaded = orchestrator.store.load_task_state(state.task_id)
+    assert loaded is not None
+    assert len(loaded.checkpoints) == 0
+
+
+def test_11_mcp_unsupported_jsonrpc_method():
+    """Test 11 [Production Edge Case]: Verifies MCP engine returning JSON-RPC error response on unsupported methods."""
+    mcp_engine = MCPAgentProtocolEngine("agent-01", "MasterAgent")
+    unknown_msg = MCPJSONRPCMessage(jsonrpc="2.0", id="req-err", method="unknown/method", params={})
+    resp = mcp_engine.handle_mcp_message(unknown_msg)
+    assert resp.error is not None
+    assert resp.error["code"] == -32601  # Method not found
+
+
+def test_12_guardrails_clean_text_passthrough():
+    """Test 12 [Production Edge Case]: Verifies guardrails passing clean prompts without modification."""
+    guardrails = EnterpriseGuardrailsEngine()
+    clean_text = "Query cluster memory utilization for edge node 108"
+    res = guardrails.evaluate_and_sanitize_prompt(clean_text)
+    assert res.is_safe is True
+    assert res.sanitized_text == clean_text
+    assert res.pii_redacted_count == 0
+

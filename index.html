@@ -69,7 +69,7 @@
         p.subtitle {
             color: var(--text-secondary);
             font-size: 1.1rem;
-            max-width: 800px;
+            max-width: 850px;
         }
 
         .stats-grid {
@@ -196,14 +196,30 @@
             background: var(--accent-emerald);
         }
 
+        .links-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
         .code-link {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--accent-cyan);
             text-decoration: none;
             font-weight: 500;
         }
 
         .code-link:hover {
+            text-decoration: underline;
+        }
+
+        .reasoning-link {
+            font-size: 0.85rem;
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .reasoning-link:hover {
             text-decoration: underline;
         }
 
@@ -225,9 +241,9 @@
 <body>
 
     <header>
-        <div class="badge">100% TEST PASS • 160/160 PASSED</div>
+        <div class="badge">100% TEST PASS • 250/250 PASSED</div>
         <h1>AI Infrastructure & Agentic Systems Platform</h1>
-        <p class="subtitle">Production-grade Staff & Principal Level AI Platform, Multi-GPU Distributed Training, Custom Triton CUDA Kernels, Agentic Runtime & Real-Time Stream Engine Monorepo.</p>
+        <p class="subtitle">Production-grade Staff & Principal Level AI Platform, Multi-GPU Distributed Training, Custom Triton CUDA Kernels, Agentic Runtime, Vector Lakehouse & Real-Time Stream Monorepo.</p>
     </header>
 
     <div class="stats-grid">
@@ -236,8 +252,8 @@
             <div class="label">Production AI Infrastructure Projects</div>
         </div>
         <div class="stat-card">
-            <div class="val">160 / 160</div>
-            <div class="label">Pytest Test Cases Passed</div>
+            <div class="val">250 / 250</div>
+            <div class="label">Pytest & Stress Scenarios Passed</div>
         </div>
         <div class="stat-card">
             <div class="val">99.999%</div>
@@ -251,7 +267,7 @@
 
     <div class="projects-header">
         <span>Architecture Projects</span>
-        <span style="font-size: 0.9rem; color: var(--text-secondary);">Source Code & Pytest Catalogs</span>
+        <span style="font-size: 0.9rem; color: var(--text-secondary);">Source Code & Production Architecture Blueprints</span>
     </div>
 
     <div class="projects-grid">
@@ -264,13 +280,16 @@
                 <div class="project-desc">Temporal-style state machine runtime providing SQLite checkpoint persistence, step-level time-travel rollback, and crash recovery for agentic loops.</div>
                 <div class="tags">
                     <span class="tag">Python 3.10</span>
-                    <span class="tag">SQLite</span>
+                    <span class="tag">SQLite WAL</span>
                     <span class="tag">State Machines</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/01-agent-durable-runtime/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/01-agent-durable-runtime" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -278,17 +297,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 02</div>
-                <div class="project-title">Agentic Workflow Engine</div>
-                <div class="project-desc">LangGraph & AutoGen inspired stateful DAG execution graph supporting dynamic tool invocation, cyclic loop prevention, and sub-agent spawning.</div>
+                <div class="project-title">RAG Cost Router Engine</div>
+                <div class="project-desc">LangGraph & ChromaDB dynamic cost-aware query complexity classifier routing prompts between local Ollama, vector cache, and frontier LLMs.</div>
                 <div class="tags">
-                    <span class="tag">LangGraph</span>
-                    <span class="tag">AutoGen</span>
-                    <span class="tag">DAG Mesh</span>
+                    <span class="tag">ChromaDB</span>
+                    <span class="tag">RRF BM25</span>
+                    <span class="tag">FinOps Router</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-agentic-workflow-engine" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/02-rag-cost-router/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/02-rag-cost-router" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -296,17 +318,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 03</div>
-                <div class="project-title">High-Throughput RAG Engine</div>
-                <div class="project-desc">Sub-50ms RAG search engine implementing ChromaDB vector embeddings, BM25 dense hybrid retrieval, and Reciprocal Rank Fusion (RRF).</div>
+                <div class="project-title">LLM Evaluation Gate</div>
+                <div class="project-desc">Automated LLM-as-a-Judge quality release gate executing Welch's t-test hypothesis scoring (Faithfulness, Groundedness, Toxicity) for CI/CD gates.</div>
                 <div class="tags">
-                    <span class="tag">ChromaDB</span>
-                    <span class="tag">Hybrid Search</span>
-                    <span class="tag">RRF Re-Rank</span>
+                    <span class="tag">LLM Judge</span>
+                    <span class="tag">RAG Triad</span>
+                    <span class="tag">MLflow</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-high-throughput-rag-engine" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/03-llm-eval-gate/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/03-llm-eval-gate" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -314,17 +339,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 04</div>
-                <div class="project-title">Realtime Stream Feature Pipeline</div>
-                <div class="project-desc">PySpark Structured Streaming feature ETL processing 2.4M SNMP events/day across 12,000 edge nodes with Delta Lake ACID commits.</div>
+                <div class="project-title">Model Serving MLOps</div>
+                <div class="project-desc">Production model registry, canary deployment rollout engine, queue backpressure isolation, and OpenTelemetry W3C traceparent instrumentation.</div>
                 <div class="tags">
-                    <span class="tag">PySpark</span>
-                    <span class="tag">Delta Lake</span>
-                    <span class="tag">Streaming ETL</span>
+                    <span class="tag">FastAPI</span>
+                    <span class="tag">Canary Shift</span>
+                    <span class="tag">OpenTelemetry</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-realtime-stream-feature-pipeline" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/04-model-serving-mlops/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/04-model-serving-mlops" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -332,17 +360,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 05</div>
-                <div class="project-title">ML Observability Monitoring Stack</div>
-                <div class="project-desc">Real-time model observability stack executing Kolmogorov-Smirnov statistical feature drift tests via Evidently AI with Prometheus & Grafana alerting.</div>
+                <div class="project-title">Event Stream PySpark ETL</div>
+                <div class="project-desc">PySpark Structured Streaming pipeline handling 2.4M telemetry events/day across 12,000 edge nodes with 3-Pass Storage Reconciliation.</div>
                 <div class="tags">
-                    <span class="tag">Evidently AI</span>
-                    <span class="tag">Prometheus</span>
-                    <span class="tag">Grafana</span>
+                    <span class="tag">PySpark</span>
+                    <span class="tag">Delta Lake</span>
+                    <span class="tag">SNMP Traps</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-ml-observability-monitoring-stack" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/05-event-stream-pyspark-etl/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/05-event-stream-pyspark-etl" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -350,17 +381,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 06</div>
-                <div class="project-title">Auto-Scaling Inference Gateway</div>
-                <div class="project-desc">FastAPI inference gateway featuring token bucket rate limiting, Redis vector semantic prompt caching, and custom Kubernetes HPA autoscale metrics.</div>
+                <div class="project-title">Fine-Tuning LoRA Alignment</div>
+                <div class="project-desc">Parameter-efficient fine-tuning (LoRA r=8, alpha=16) achieving 99.94% trainable parameter memory reduction and GGUF Q4_K_M quantization export.</div>
                 <div class="tags">
-                    <span class="tag">FastAPI</span>
-                    <span class="tag">Token Bucket</span>
-                    <span class="tag">K8s HPA</span>
+                    <span class="tag">PyTorch</span>
+                    <span class="tag">PEFT / LoRA</span>
+                    <span class="tag">GGUF</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-auto-scaling-inference-gateway" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/06-finetuning-lora-alignment/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/06-finetuning-lora-alignment" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -369,16 +403,19 @@
             <div>
                 <div class="project-num">PROJECT 07</div>
                 <div class="project-title">Cloud IaC Security Governance</div>
-                <div class="project-desc">AWS CDK & Terraform governance engine auditing IAM wildcard (*) policies, enforcing public S3 blocks, KMS encryption, and agent lifecycle security.</div>
+                <div class="project-desc">Automated IaC security policy validator scanning CDK/Terraform ASTs for IAM wildcard permissions, unencrypted storage, and host security compliance.</div>
                 <div class="tags">
                     <span class="tag">AWS CDK</span>
-                    <span class="tag">Terraform</span>
-                    <span class="tag">IAM Security</span>
+                    <span class="tag">IAM Audit</span>
+                    <span class="tag">Security AST</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/07-cloud-iac-security-governance/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/07-cloud-iac-security-governance" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -386,8 +423,8 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 08</div>
-                <div class="project-title">vLLM PagedAttention Speculative Decoding</div>
-                <div class="project-desc">vLLM high-throughput inference engine featuring virtual PagedAttention KV-cache block allocation, speculative decoding, and continuous batching.</div>
+                <div class="project-title">vLLM PagedAttention & Speculative</div>
+                <div class="project-desc">vLLM virtual memory block manager eliminating KV-cache VRAM fragmentation (0.0% waste) and 2.67x speculative decoding verification speedup.</div>
                 <div class="tags">
                     <span class="tag">vLLM</span>
                     <span class="tag">PagedAttention</span>
@@ -395,8 +432,11 @@
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/08-vllm-pagedattention-spec-decoding/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/08-vllm-pagedattention-spec-decoding" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -405,16 +445,19 @@
             <div>
                 <div class="project-num">PROJECT 09</div>
                 <div class="project-title">Ray Distributed Cluster Orchestrator</div>
-                <div class="project-desc">Ray Core cluster orchestrator managing multi-node worker actor pools, dynamic queue autoscaling, worker crash recovery, and node resource metrics.</div>
+                <div class="project-desc">Distributed stateful Ray Actor pools operating with zero-copy Plasma shared memory object stores and demand-based cluster queue autoscaling.</div>
                 <div class="tags">
                     <span class="tag">Ray Core</span>
-                    <span class="tag">Actor Pools</span>
+                    <span class="tag">Plasma Store</span>
                     <span class="tag">Autoscaler</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/09-ray-distributed-cluster-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/09-ray-distributed-cluster-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -423,16 +466,19 @@
             <div>
                 <div class="project-num">PROJECT 10</div>
                 <div class="project-title">Triton CUDA GPU Scheduler</div>
-                <div class="project-desc">Triton Inference Server scheduler implementing dynamic request batching queues, AWQ 4-bit weight quantization, and VRAM memory bandwidth metrics.</div>
+                <div class="project-desc">NVIDIA Triton Dynamic Batching Queue with power-of-2 CUDA Tensor Core alignment and AWQ INT4 weight matrix quantization (3.68x VRAM reduction).</div>
                 <div class="tags">
-                    <span class="tag">Triton GPU</span>
-                    <span class="tag">Dynamic Batching</span>
-                    <span class="tag">AWQ 4-Bit</span>
+                    <span class="tag">Triton Server</span>
+                    <span class="tag">AWQ INT4</span>
+                    <span class="tag">CUDA Batching</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/10-triton-cuda-gpu-scheduler/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/10-triton-cuda-gpu-scheduler" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -440,17 +486,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 11</div>
-                <div class="project-title">Distributed Training Engine (FSDP & Megatron)</div>
-                <div class="project-desc">Multi-node multi-GPU training platform supporting PyTorch FSDP ZeRO-3 memory sharded state calculation, Megatron 3D grid ranks, and NCCL bandwidth profiling.</div>
+                <div class="project-title">Distributed Training (FSDP & Megatron)</div>
+                <div class="project-desc">PyTorch FSDP ZeRO-3 memory sharding (93.75% VRAM savings), Megatron-LM 3D Parallelism Grid (TP x PP x DP), and NCCL InfiniBand 400G profiling.</div>
                 <div class="tags">
                     <span class="tag">PyTorch FSDP</span>
-                    <span class="tag">Megatron-LM</span>
+                    <span class="tag">Megatron 3D</span>
                     <span class="tag">NCCL NVLink</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/11-distributed-training-fsdp-megatron/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/11-distributed-training-fsdp-megatron" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -458,17 +507,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 12</div>
-                <div class="project-title">GenAI API Gateway & Semantic Cache</div>
-                <div class="project-desc">Vector semantic caching (< 5ms hits), token bucket TPM rate limiter, and unified multi-provider fallback cascade (OpenAI &rarr; Anthropic &rarr; Ollama).</div>
+                <div class="project-title">GenAI Gateway & Semantic Cache</div>
+                <div class="project-desc">Vector semantic prompt cache (< 5ms response hit), token-bucket rate limiter, and multi-provider failover router (OpenAI -> Anthropic -> Ollama).</div>
                 <div class="tags">
+                    <span class="tag">GenAI Gateway</span>
                     <span class="tag">Semantic Cache</span>
                     <span class="tag">Rate Limiter</span>
-                    <span class="tag">Fallback Router</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/12-genai-gateway-semantic-cache/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/12-genai-gateway-semantic-cache" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -476,17 +528,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 13</div>
-                <div class="project-title">Direct Preference Optimization (DPO) Pipeline</div>
-                <div class="project-desc">RLHF alignment engine evaluating implicit policy rewards, sigmoid DPO loss, Bradley-Terry win rates, and KL divergence drift penalties.</div>
+                <div class="project-title">RLHF DPO Alignment Pipeline</div>
+                <div class="project-desc">Direct Preference Optimization loss engine, numerically stable sigmoid calculation, pairwise preference curator, and Bradley-Terry win-rate auditor.</div>
                 <div class="tags">
-                    <span class="tag">PyTorch DPO</span>
-                    <span class="tag">RLHF</span>
+                    <span class="tag">RLHF / DPO</span>
                     <span class="tag">Bradley-Terry</span>
+                    <span class="tag">Alignment</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/13-rlhf-dpo-alignment-pipeline/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/13-rlhf-dpo-alignment-pipeline" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -495,16 +550,19 @@
             <div>
                 <div class="project-num">PROJECT 14</div>
                 <div class="project-title">Custom OpenAI Triton GPU Kernels</div>
-                <div class="project-desc">GPU performance engineering engine implementing Triton fused Bias-GELU kernels, Roofline model Memory vs Compute bound analysis, and NVTX range tracing.</div>
+                <div class="project-desc">Custom OpenAI Triton fused GPU kernels (Fused Bias-GELU & Blocked Attention), Roofline Performance Analysis, and NVTX timeline range tracing.</div>
                 <div class="tags">
                     <span class="tag">OpenAI Triton</span>
-                    <span class="tag">Fused Kernels</span>
                     <span class="tag">Roofline Model</span>
+                    <span class="tag">NVTX Profiler</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/14-custom-cuda-triton-kernel-opt/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/14-custom-cuda-triton-kernel-opt" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -512,17 +570,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 15</div>
-                <div class="project-title">ML Feature Store & PyArrow Lakehouse</div>
-                <div class="project-desc">Feast / Hopsworks Online (Redis < 2ms) + Offline Feature Store with point-in-time time-travel joins and Apache Iceberg PyArrow zero-copy column scans.</div>
+                <div class="project-title">Feature Store & Vector Lakehouse</div>
+                <div class="project-desc">Feast/Hopsworks Online (Redis < 2ms) + Offline (Parquet) Feature Store with point-in-time time-travel joins, and PyArrow zero-copy IPC vector scans.</div>
                 <div class="tags">
                     <span class="tag">Feature Store</span>
                     <span class="tag">PyArrow</span>
-                    <span class="tag">Iceberg Lakehouse</span>
+                    <span class="tag">Apache Iceberg</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/15-feature-store-vector-lakehouse/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/15-feature-store-vector-lakehouse" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -530,17 +591,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 16</div>
-                <div class="project-title">AI Safety & Policy Guardrails Engine</div>
-                <div class="project-desc">Real-time prompt injection scanner, DAN jailbreak detection, PII SSN/Email redaction pipeline, and NeMo / Llama Guard policy enforcement.</div>
+                <div class="project-title">AI Safety & Policy Guardrails</div>
+                <div class="project-desc">Real-time Prompt Injection & DAN Jailbreak Scanner, PII Data Anonymization Pipeline (SSN, credit card, email masking), and Llama Guard output policy engine.</div>
                 <div class="tags">
-                    <span class="tag">Prompt Injection</span>
-                    <span class="tag">PII Redaction</span>
-                    <span class="tag">Llama Guard</span>
+                    <span class="tag">AI Safety</span>
+                    <span class="tag">PII Masking</span>
+                    <span class="tag">Red-Teaming</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/16-ai-safety-red-teaming-guardrails/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/16-ai-safety-red-teaming-guardrails" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -548,17 +612,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 17</div>
-                <div class="project-title">K8s GPU Operator & Scheduler (KubeRay, Kueue & MIG)</div>
-                <div class="project-desc">Cloud-native K8s GPU orchestration platform managing KubeRay RayCluster CRD specs, Kueue priority job preemption, and NVIDIA MIG fractional GPU slicing.</div>
+                <div class="project-title">K8s KubeRay & Kueue GPU Operator</div>
+                <div class="project-desc">Cloud-native Kubernetes GPU orchestrator with KubeRay RayCluster CRD specs, Kueue Priority Queueing with batch preemption, and NVIDIA MIG slicing.</div>
                 <div class="tags">
-                    <span class="tag">KubeRay CRDs</span>
-                    <span class="tag">Kubernetes Kueue</span>
+                    <span class="tag">Kubernetes</span>
+                    <span class="tag">Kueue Queue</span>
                     <span class="tag">NVIDIA MIG</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/17-k8s-kuberay-kueue-gpu-operator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/17-k8s-kuberay-kueue-gpu-operator" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -566,17 +633,20 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 18</div>
-                <div class="project-title">NVIDIA TensorRT-LLM Engine & ONNX Execution</div>
-                <div class="project-desc">High-throughput model compilation engine executing PyTorch-to-ONNX graph exports, TensorRT INT4 SmoothQuant layer fusion, and 1480 tokens/sec throughput.</div>
+                <div class="project-title">TensorRT-LLM Engine & ONNX</div>
+                <div class="project-desc">PyTorch-to-ONNX Graph Exporters and NVIDIA TensorRT-LLM Engine Compilation (INT4 SmoothQuant layer fusion, 1,480 tokens/sec throughput, < 5ms P99).</div>
                 <div class="tags">
                     <span class="tag">TensorRT-LLM</span>
-                    <span class="tag">ONNX Export</span>
+                    <span class="tag">ONNX Graph</span>
                     <span class="tag">SmoothQuant</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/18-tensorrt-llm-onnx-execution/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/18-tensorrt-llm-onnx-execution" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -585,16 +655,19 @@
             <div>
                 <div class="project-num">PROJECT 19</div>
                 <div class="project-title">Multi-Agent Swarm Orchestrator</div>
-                <div class="project-desc">Autonomous multi-agent orchestration platform managing stateful Agent Nodes, LangGraph DAG dependency routing with cycle detection, and voting consensus.</div>
+                <div class="project-desc">Autonomous Multi-Agent Swarm Orchestrator with stateful Agent Nodes, LangGraph DAG Task Dependency Scheduler with cycle deadlock detection, and Voting Consensus.</div>
                 <div class="tags">
-                    <span class="tag">Multi-Agent</span>
-                    <span class="tag">LangGraph DAG</span>
-                    <span class="tag">Swarm Consensus</span>
+                    <span class="tag">Agent Swarm</span>
+                    <span class="tag">Topological DAG</span>
+                    <span class="tag">Consensus</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/19-multi-agent-swarm-orchestrator/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/19-multi-agent-swarm-orchestrator" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
@@ -602,25 +675,28 @@
         <div class="project-card">
             <div>
                 <div class="project-num">PROJECT 20</div>
-                <div class="project-title">Data Governance & OpenLineage Catalog</div>
-                <div class="project-desc">Enterprise data governance catalog implementing OpenLineage standard JSON telemetry emitters, Marquez lineage dependency graphs, and Great Expectations quality contracts.</div>
+                <div class="project-title">Data Governance & OpenLineage</div>
+                <div class="project-desc">Enterprise Data Governance Catalog with OpenLineage Standard Event Emitters (START, COMPLETE), Marquez Lineage Dependency Graphs, and Data Quality Contracts.</div>
                 <div class="tags">
                     <span class="tag">OpenLineage</span>
-                    <span class="tag">Marquez Lineage</span>
+                    <span class="tag">Marquez Graph</span>
                     <span class="tag">Data Contracts</span>
                 </div>
             </div>
             <div class="project-footer">
-                <div class="test-status">8 / 8 Tests Passed</div>
-                <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="code-link" target="_blank">View Code &rarr;</a>
+                <div class="test-status">12 / 12 Passed</div>
+                <div class="links-group">
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/blob/main/20-data-governance-openlineage-catalog/PROD_ARCHITECTURE_REASONING.md" class="reasoning-link" target="_blank">Blueprint &rarr;</a>
+                    <a href="https://github.com/abhi32dev/ai-infrastructure-platform/tree/main/20-data-governance-openlineage-catalog" class="code-link" target="_blank">Code &rarr;</a>
+                </div>
             </div>
         </div>
 
     </div>
 
     <footer>
-        <p>Maintained by <strong>Abhishek Singh</strong> (Staff / Principal AI Platform Engineer)</p>
-        <p style="margin-top: 0.5rem;"><a href="https://github.com/abhi32dev/ai-infrastructure-platform" target="_blank">GitHub Repository &rarr;</a></p>
+        <p>&copy; 2026 Abhishek Singh • Staff & Principal AI Platform Architect • Built with Antigravity AI Engine</p>
+        <p style="margin-top: 0.5rem;"><a href="https://github.com/abhi32dev/ai-infrastructure-platform" target="_blank">GitHub Repository</a> • <a href="https://abhi32dev.github.io/ai-infrastructure-platform/" target="_blank">Live Showcase</a></p>
     </footer>
 
 </body>

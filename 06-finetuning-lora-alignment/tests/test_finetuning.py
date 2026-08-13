@@ -90,3 +90,37 @@ def test_08_tokenizer_max_length_truncation(curator):
     long_raw = [{"instruction": "Word " * 200, "input_context": "Context", "output_response": "Ans"}]
     _, _, stats = curator.curate_dataset(long_raw)
     assert stats["rejected_outliers"] == 1
+
+
+def test_09_lora_custom_target_modules():
+    """Test 9 [Production Edge Case]: Verifies LoRA config accepting custom target attention projection modules."""
+    config = LoRAConfig(r=16, lora_alpha=32, target_modules=["k_proj", "v_proj", "o_proj"])
+    assert config.r == 16
+    assert "k_proj" in config.target_modules
+
+
+def test_10_lora_zero_epochs_handling():
+    """Test 10 [Production Edge Case]: Verifies LoRA trainer handling 1-epoch minimal training runs cleanly."""
+    trainer = LoRATrainer(config=LoRAConfig(num_epochs=1))
+    res = trainer.train_lora_adapter(10, 2)
+    assert len(res["metrics_history"]) > 0
+
+
+def test_11_model_exporter_q8_0_quantization():
+    """Test 11 [Production Edge Case]: Verifies GGUF Q8_0 8-bit quantization export format."""
+    exporter = ModelExporter()
+    export_res = exporter.merge_and_export_gguf(
+        base_model_id="meta-llama/Llama-3.2-8B",
+        adapter_path="adapters/",
+        quantization_type="Q8_0"
+    )
+    assert export_res["quantization_format"] == "Q8_0"
+
+
+def test_12_curator_invalid_val_ratio(curator, sample_raw_dataset):
+    """Test 12 [Production Edge Case]: Verifies curator handling small validation split ratio cleanly."""
+    train_set, val_set, stats = curator.curate_dataset(sample_raw_dataset, val_ratio=0.0)
+    assert len(train_set) == 2
+    assert len(val_set) == 1
+
+

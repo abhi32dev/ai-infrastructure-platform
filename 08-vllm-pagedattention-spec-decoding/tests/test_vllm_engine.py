@@ -96,3 +96,31 @@ def test_08_batch_concurrency_scaling(kv_manager):
         kv_manager.allocate_blocks_for_request(f"req-batch-{i}", num_tokens=32)
     util = kv_manager.get_gpu_memory_utilization()
     assert util["allocated_blocks"] == 20  # 10 reqs * 2 blocks = 20 blocks
+
+
+def test_09_paged_attention_zero_tokens_allocation(kv_manager):
+    """Test 9 [Production Edge Case]: Verifies block allocator handling 0 tokens request allocating 0 blocks."""
+    table = kv_manager.allocate_blocks_for_request("req-zero", num_tokens=0)
+    assert len(table.physical_block_ids) == 0
+
+
+
+def test_10_free_non_existent_request_blocks(kv_manager):
+    """Test 10 [Production Edge Case]: Verifies freeing non-existent request ID does not crash."""
+    kv_manager.free_request_blocks("non-existent-req-id")
+    util = kv_manager.get_gpu_memory_utilization()
+    assert util["allocated_blocks"] == 0
+
+
+def test_11_speculative_decoder_empty_prompt(spec_decoder):
+    """Test 11 [Production Edge Case]: Verifies speculative decoder handling empty string prompt."""
+    res = spec_decoder.execute_speculative_step("")
+    assert res.speedup_factor >= 2.0
+
+
+def test_12_continuous_batcher_empty_queue_step(batcher):
+    """Test 12 [Production Edge Case]: Verifies continuous batcher stepping on empty queue cleanly."""
+    res = batcher.step_iteration()
+    assert res["active_batch_size"] == 0
+    assert res["waiting_queue_size"] == 0
+

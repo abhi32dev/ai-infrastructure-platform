@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 19 - Multi-Agent Swarm Orchestrator.
-Tests Autonomous Agent Nodes, LangGraph DAG topological sorting, cycle/deadlock detection,
-and voting consensus engines.
+Includes production edge cases for empty vote arrays, complex multi-branch DAG topographies, and tied voting consensus.
 """
 
 import pytest
@@ -93,3 +92,34 @@ def test_08_dag_router_single_node(router):
     router.add_dependency("SingleTask", "SingleTask")
     res = router.compute_topological_execution_order()
     assert res.total_nodes == 1
+
+
+def test_09_consensus_tied_vote_evaluation(consensus):
+    """Test 9 [Production Edge Case]: Verifies consensus behavior on 50/50 tied vote split."""
+    res = consensus.evaluate_swarm_consensus(["APPROVE", "REJECT"])
+    assert res.consensus_pct == 50.0
+    assert res.is_consensus_reached is False  # 50% < 60% threshold!
+
+
+def test_10_agent_node_empty_context(agent):
+    """Test 10 [Production Edge Case]: Verifies agent node executing task with empty context dict."""
+    res = agent.execute_assigned_task("EmptyContextTask", {})
+    assert res.status == "COMPLETED"
+    assert "[]" in res.output_artifact
+
+
+def test_11_dag_multi_parent_convergence(router):
+    """Test 11 [Production Edge Case]: Verifies DAG sorting with multiple parallel parents converging to single child."""
+    router.add_dependency("BranchA", "Merge")
+    router.add_dependency("BranchB", "Merge")
+    res = router.compute_topological_execution_order()
+    assert res.has_cycle_deadlock is False
+    assert res.execution_order[-1] == "Merge"
+
+
+def test_12_orchestrator_long_goal_description(orchestrator):
+    """Test 12 [Production Edge Case]: Verifies swarm orchestrator processing complex multi-sentence goals."""
+    goal_str = "Design and deploy a multi-node Ray cluster with automated Kueue preemption and OpenLineage monitoring."
+    res = orchestrator.execute_swarm_workflow(goal_str)
+    assert res["goal"] == goal_str
+    assert res["status"] == "SWARM_WORKFLOW_COMPLETED"

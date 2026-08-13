@@ -86,3 +86,31 @@ def test_08_concurrent_serving_load_handling(recsys_engine, metrics_collector):
     assert snapshot.total_requests == 5
     assert snapshot.successful_requests == 5
     assert snapshot.slo_compliance_pct == 100.0
+
+
+def test_09_recsys_top_k_zero(recsys_engine):
+    """Test 9 [Production Edge Case]: Verifies recsys engine handling top_k=0 returning empty list."""
+    items, variant = recsys_engine.get_recommendations(user_id="user-1", top_k=0)
+    assert len(items) == 0
+
+
+def test_10_recsys_empty_user_id(recsys_engine):
+    """Test 10 [Production Edge Case]: Verifies recsys engine handling empty user_id string deterministically."""
+    items, variant = recsys_engine.get_recommendations(user_id="", top_k=3)
+    assert len(items) == 3
+
+
+def test_11_metrics_collector_zero_metrics(metrics_collector):
+    """Test 11 [Production Edge Case]: Verifies metrics collector snapshot on newly initialized collector."""
+    snapshot = metrics_collector.get_snapshot()
+    assert snapshot.total_requests == 0
+    assert snapshot.successful_requests == 0
+    assert snapshot.failed_requests == 0
+
+
+def test_12_opentelemetry_unique_span_ids(metrics_collector):
+    """Test 12 [Production Edge Case]: Verifies OpenTelemetry generating unique span IDs across multiple calls."""
+    ctx1 = metrics_collector.create_trace_context(request_id="req-1")
+    ctx2 = metrics_collector.create_trace_context(request_id="req-2")
+    assert ctx1["span_id"] != ctx2["span_id"]
+

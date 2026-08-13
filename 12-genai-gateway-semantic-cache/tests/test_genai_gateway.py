@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 12 - GenAI Gateway, Semantic Cache & Rate Limiter.
-Tests Vector Semantic Caching (< 5ms hits), Token Bucket TPM rate limiting, multi-provider fallback cascades,
-and API cost governance.
+Includes edge cases for special character prompts, zero token requests, concurrent client limits, and fallback cascade.
 """
 
 import pytest
@@ -96,3 +95,32 @@ def test_08_gateway_rate_limit_blocking(gateway):
     """Test 8: Verifies gateway blocking when tenant rate limit is exceeded."""
     res = gateway.process_request(client_id="tenant-over-limit", prompt="Query", max_tokens=90000)
     assert res["status"] == "RATE_LIMITED"
+
+
+def test_09_semantic_cache_whitespace_and_special_chars(cache):
+    """Test 9 [Production Edge Case]: Verifies cache matching with leading/trailing whitespace & symbols."""
+    cache.put_cache_entry("   GPU Roofline Model   ", "Roofline analysis", "gpt-4o", 20)
+    hit = cache.lookup_semantic_cache("GPU Roofline Model")
+    assert hit is not None
+    assert hit["cache_hit"] is True
+
+
+def test_10_token_bucket_zero_tokens_request(limiter):
+    """Test 10 [Production Edge Case]: Verifies rate limiter handling 0 requested tokens cleanly."""
+    status = limiter.consume_tokens("client-zero", 0)
+    assert status.is_allowed is True
+    assert status.retry_after_sec == 0.0
+
+
+def test_11_fallback_router_empty_prompt(router):
+    """Test 11 [Production Edge Case]: Verifies fallback router dispatching empty string prompts."""
+    req = GatewayRequest(client_id="client-empty", prompt="")
+    res = router.dispatch_with_fallback(req)
+    assert res.successful_provider == "OpenAI"
+
+
+def test_12_gateway_orchestrator_forced_primary_fail(gateway):
+    """Test 12 [Production Edge Case]: Verifies gateway handling forced primary provider outage."""
+    res = gateway.process_request(client_id="tenant-failover", prompt="Simulate primary outage test", force_primary_fail=True)
+    assert res["status"] == "SUCCESS"
+    assert res["provider"] == "Anthropic"

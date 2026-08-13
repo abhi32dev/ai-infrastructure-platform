@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 18 - TensorRT-LLM Engine & ONNX Execution.
-Tests PyTorch-to-ONNX graph exports, TensorRT engine compilation, INT4 SmoothQuant throughput scaling (1480 tokens/sec),
-FP8 Transformer Engine execution, and P99 latency SLA bounds (< 5ms).
+Includes production edge cases for dynamic batch size limits, unsupported precision fallbacks, and opset versioning.
 """
 
 import pytest
@@ -84,3 +83,30 @@ def test_08_tensorrt_engine_file_naming(trt_comp):
     """Test 8: Verifies engine binary .plan file naming format."""
     res = trt_comp.compile_tensorrt_engine("Bert-Large")
     assert res.engine_name.endswith(".plan")
+
+
+def test_09_onnx_export_large_sequence_length(onnx_exp):
+    """Test 9 [Production Edge Case]: Verifies ONNX exporter with 32k context sequence length inputs."""
+    res = onnx_exp.export_pytorch_to_onnx("LongContext-Llama", [1, 32768])
+    assert res.status == "ONNX_EXPORT_SUCCESS"
+    assert res.graph_nodes_count > 0
+
+
+def test_10_tensorrt_large_batch_size(trt_comp):
+    """Test 10 [Production Edge Case]: Verifies TensorRT compilation supporting max batch size=512."""
+    res = trt_comp.compile_tensorrt_engine("Batch512-Model", max_batch_size=512)
+    assert res.status == "TENSORRT_ENGINE_COMPILED"
+
+
+def test_11_tensorrt_unknown_precision_fallback():
+    """Test 11 [Production Edge Case]: Verifies fallback behavior when unknown precision mode is supplied."""
+    trt_unknown = TensorRTCompilerEngine(target_precision="CUSTOM_PRECISION")
+    res = trt_unknown.compile_tensorrt_engine("FallbackModel")
+    assert res.target_precision == "CUSTOM_PRECISION"
+    assert res.throughput_tokens_per_sec == 650.0  # FP16 default fallback
+
+
+def test_12_orchestrator_custom_model_name(orchestrator):
+    """Test 12 [Production Edge Case]: Verifies orchestrator handling custom fine-tuned model path names."""
+    res = orchestrator.export_and_compile_pipeline("custom/org/llama-finetuned")
+    assert res["status"] == "TENSORRT_PIPELINE_SUCCESS"

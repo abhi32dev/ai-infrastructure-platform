@@ -102,3 +102,33 @@ def test_08_cost_aware_router_decisions():
     decision2 = router.route_query("Analyze architecture tradeoffs and evaluate root cause of memory leaks")
     assert decision2.tier == ModelTier.LARGE_FRONTIER
     assert decision2.estimated_cost_usd > 0.0
+
+
+def test_09_empty_text_document_chunking(loader):
+    """Test 9 [Production Edge Case]: Verifies loader handling empty text content without crashing."""
+    doc = loader.load_raw_text(doc_id="empty.md", text_content="")
+    chunks = loader.chunk_document(doc, strategy=ChunkingStrategy.FIXED_OVERLAP)
+    assert len(chunks) == 0
+
+
+def test_10_dense_search_unindexed_query(loader):
+    """Test 10 [Production Edge Case]: Verifies retriever dense search on unindexed collection returning empty list."""
+    retriever = HybridRetriever(collection_name="empty_coll")
+    hits = retriever.dense_search("Query non-existent content", top_k=5)
+    assert len(hits) == 0
+
+
+def test_11_reranker_empty_candidate_tuples():
+    """Test 11 [Production Edge Case]: Verifies Cross-Encoder reranker handling empty candidate list cleanly."""
+    reranker = RerankerEngine()
+    results = reranker.rerank("Query", [], top_k=5)
+    assert len(results) == 0
+
+
+def test_12_cost_router_empty_prompt_default():
+    """Test 12 [Production Edge Case]: Verifies cost router handling empty prompt string defaulting to low-cost tier."""
+    router = CostAwareRouter()
+    decision = router.route_query("")
+    assert decision.tier == ModelTier.LOCAL_OLLAMA
+    assert decision.estimated_cost_usd == 0.0
+

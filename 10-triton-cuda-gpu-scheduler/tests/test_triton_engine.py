@@ -92,3 +92,42 @@ def test_08_awq_fp8_vs_int4_tradeoffs(awq_engine):
     res_int4 = awq_engine.quantize_model_weights("Model1", "AWQ_INT4")
     assert res_int4.compression_ratio > res_fp8.compression_ratio
     assert res_fp8.cosine_similarity > res_int4.cosine_similarity
+
+
+
+def test_09_triton_batch_size_over_capacity(batch_queue):
+    """Test 9 [Production Edge Case]: Verifies batch queue flushing when max_batch_size (16) capacity is breached."""
+    for i in range(20):
+        batch_queue.enqueue_request(f"req-over-{i}", [1, 64])
+    batch1 = batch_queue.flush_batch()
+    assert batch1.batch_size == 16
+    assert batch1.optimal_cuda_alignment is True
+    
+    batch2 = batch_queue.flush_batch()
+    assert batch2.batch_size == 4
+
+
+def test_10_triton_single_request_alignment(batch_queue):
+    """Test 10 [Production Edge Case]: Verifies Tensor Core alignment for batch_size=1 (power of 2: 2^0 = 1)."""
+    batch_queue.enqueue_request("req-single", [1, 128])
+    batch = batch_queue.flush_batch()
+    assert batch.batch_size == 1
+    assert batch.optimal_cuda_alignment is True
+
+
+def test_11_awq_unknown_target_format(awq_engine):
+    """Test 11 [Production Edge Case]: Verifies AWQ engine handling unknown quantization format gracefully."""
+    res = awq_engine.quantize_model_weights("ModelX", "CUSTOM_FORMAT")
+    assert res.target_format == "CUSTOM_FORMAT"
+    assert res.compression_ratio > 1.0
+
+
+def test_12_triton_serving_engine_multiple_steps(triton_engine):
+    """Test 12 [Production Edge Case]: Verifies Triton serving engine handling multiple sequential execution steps cleanly."""
+    triton_engine.submit_triton_request("req-seq-1", [1, 128])
+    res1 = triton_engine.execute_dynamic_batch_step()
+    assert res1.batch_size == 1
+
+    res2 = triton_engine.execute_dynamic_batch_step()
+    assert res2.batch_size == 0
+

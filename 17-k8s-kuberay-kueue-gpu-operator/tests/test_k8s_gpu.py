@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 17 - K8s Cloud-Native GPU Operator (KubeRay, Kueue & NVIDIA MIG).
-Tests KubeRay RayCluster CRD YAML spec generation, Kueue priority queueing, BATCH job preemption,
-NVIDIA MIG GPU slicing, and cloud-native workload deployment.
+Includes production edge cases for zero capacity clusters, multi-level job preemption, and all MIG slice profiles.
 """
 
 import pytest
@@ -97,3 +96,30 @@ def test_08_kuberay_crd_head_node_limits(kuberay):
     limits = yaml_dict["spec"]["headGroupSpec"]["template"]["spec"]["containers"][0]["resources"]["limits"]
     assert limits["cpu"] == 4
     assert limits["memory"] == "16Gi"
+
+
+def test_09_mig_full_gpu_7g80gb_profile(mig):
+    """Test 9 [Production Edge Case]: Verifies NVIDIA MIG full GPU instance partitioning (7g.80gb)."""
+    slice_inst = mig.partition_gpu("7g.80gb")
+    assert slice_inst.vram_gb == 80
+    assert slice_inst.compute_slices == 7
+
+
+def test_10_kueue_zero_gpu_request(kueue):
+    """Test 10 [Production Edge Case]: Verifies Kueue admitting CPU-only jobs with 0 requested GPUs."""
+    status = kueue.submit_kueue_job("cpu-job", "MEDIUM", 0)
+    assert status.status == "ADMITTED"
+    assert status.gpus_allocated == 0
+
+
+def test_11_kueue_excessive_gpu_request_exceeding_capacity(kueue):
+    """Test 11 [Production Edge Case]: Verifies Kueue queueing job requesting more GPUs than total cluster capacity."""
+    status = kueue.submit_kueue_job("huge-job", "HIGH_PRIORITY", 128)  # Capacity is 32!
+    assert status.status == "QUEUED"
+
+
+def test_12_mig_smallest_1g10gb_profile(mig):
+    """Test 12 [Production Edge Case]: Verifies NVIDIA MIG smallest slice partitioning (1g.10gb)."""
+    slice_inst = mig.partition_gpu("1g.10gb")
+    assert slice_inst.vram_gb == 10
+    assert slice_inst.compute_slices == 1

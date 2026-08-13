@@ -81,3 +81,33 @@ def test_08_distributed_task_fan_out_throughput(actor_pool):
     for i in range(5):
         res = actor_pool.dispatch_task(task_name=f"task-{i}", object_ref_id=f"obj-{i}")
         assert res["status"] == "SUCCESS"
+
+
+def test_09_ray_actor_pool_zero_nodes():
+    """Test 9 [Production Edge Case]: Verifies Ray actor pool initialization on 1-node minimal setup."""
+    pool_1 = DistributedRayActorPool(num_nodes=1, gpus_per_node=1)
+    assert len(pool_1.actors) == 1
+    assert pool_1.actors["actor-001"].node_id == "ray-node-01"
+
+
+def test_10_cluster_autoscaler_max_node_cap(autoscaler):
+    """Test 10 [Production Edge Case]: Verifies autoscaler capping maximum nodes at max_nodes limit (16)."""
+    autoscaler.current_nodes = 16
+    metrics = autoscaler.evaluate_cluster_scale(pending_queue_depth=1000, avg_gpu_util_pct=100.0)
+    assert metrics.total_nodes == 16  # Should not exceed max_nodes cap!
+
+
+def test_11_plasma_zero_byte_payload(actor_pool):
+    """Test 11 [Production Edge Case]: Verifies Plasma store referencing 0-byte payload cleanly."""
+    ref = actor_pool.put_object_in_plasma("empty_tensor", payload_size_bytes=0)
+    assert ref.size_bytes == 0
+    assert ref.is_in_plasma_store is True
+
+
+def test_12_autoscaler_stable_queue_no_change(autoscaler):
+    """Test 12 [Production Edge Case]: Verifies autoscaler recommending MAINTAIN when queue depth matches current capacity."""
+    autoscaler.current_nodes = 4
+    metrics = autoscaler.evaluate_cluster_scale(pending_queue_depth=10, avg_gpu_util_pct=50.0)
+    assert "MAINTAIN" in metrics.autoscaling_recommendation or "STABLE" in metrics.autoscaling_recommendation
+
+

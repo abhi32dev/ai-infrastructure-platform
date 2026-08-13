@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 20 - Data Governance & OpenLineage Catalog.
-Tests OpenLineage JSON event emission, Marquez dataset lineage dependency graphs,
-Great Expectations data quality contracts, and schema validation.
+Includes production edge cases for missing schema fields, zero-record contract validations, and multi-node lineage graphs.
 """
 
 import pytest
@@ -105,3 +104,33 @@ def test_08_lineage_tracker_multi_job_graph(lineage):
     graph = lineage.export_graph_summary()
     assert graph.total_datasets == 3
     assert graph.total_jobs == 2
+
+
+def test_09_openlineage_fail_event_type(emitter):
+    """Test 9 [Production Edge Case]: Verifies emitting FAIL status OpenLineage events."""
+    event = emitter.emit_job_event("FAIL", "failed_job", "run-99", ["input_table"], ["failed_output"])
+    assert event.event_type == "FAIL"
+
+
+def test_10_validator_none_value_rejection(validator):
+    """Test 10 [Production Edge Case]: Verifies data contract validator detecting explicit None/null values in required fields."""
+    records = [{"entity_id": "e-1", "timestamp": None, "payload": "data"}]  # timestamp is None!
+    res = validator.validate_dataset_batch(records)
+    assert res.is_valid is False
+    assert "timestamp" in res.contract_violations[0]
+
+
+def test_11_lineage_tracker_empty_summary(lineage):
+    """Test 11 [Production Edge Case]: Verifies Marquez lineage summary on empty tracker."""
+    graph = lineage.export_graph_summary()
+    assert graph.total_datasets == 0
+    assert graph.total_jobs == 0
+    assert len(graph.lineage_edges) == 0
+
+
+def test_12_orchestrator_multi_input_datasets(orchestrator):
+    """Test 12 [Production Edge Case]: Verifies governance pipeline handling multi-input dataset lineage runs."""
+    records = [{"entity_id": "e-99", "timestamp": 500.0, "payload": "data"}]
+    res = orchestrator.run_governance_pipeline("multi_input_job", records)
+    assert res["status"] == "GOVERNANCE_PASSED"
+    assert res["quality_score_pct"] == 100.0

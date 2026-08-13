@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 11 - Distributed Training (PyTorch FSDP & Megatron 3D Parallelism).
-Tests FSDP ZeRO-3 memory sharding calculations, Megatron-LM 3D grid rank allocations (TP*PP*DP),
-NCCL All-Reduce bus bandwidth saturation, and cross-node network bottlenecks.
+Includes production edge cases, zero GPU handling, extreme parameter scale, and NCCL network saturation.
 """
 
 import pytest
@@ -92,3 +91,32 @@ def test_08_fsdp_small_cluster_scaling():
     fsdp_4gpu = FSDPSharder(FSDPShardingConfig(model_name="Llama-8B", total_params_billions=8.0, num_gpus=4))
     state = fsdp_4gpu.calculate_fsdp_sharding_memory()
     assert state.vram_per_gpu_gb == 32.0
+
+
+def test_09_fsdp_zero_gpu_guard():
+    """Test 9 [Production Edge Case]: Verifies zero GPU fallback handling prevents division by zero."""
+    fsdp_zero = FSDPSharder(FSDPShardingConfig(model_name="Test-Model", total_params_billions=10.0, num_gpus=0))
+    state = fsdp_zero.calculate_fsdp_sharding_memory()
+    assert state.vram_per_gpu_gb == 160.0  # Safe fallback num_gpus=1
+
+
+def test_10_megatron_single_gpu_grid():
+    """Test 10 [Production Edge Case]: Verifies Megatron 3D grid with 1x1x1 single GPU setup."""
+    megatron_1 = MegatronParallelismEngine(tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1)
+    grid = megatron_1.build_3d_rank_grid()
+    assert grid.world_size == 1
+    assert megatron_1.get_rank_coordinates(0) == {"tp_rank": 0, "pp_rank": 0, "dp_rank": 0}
+
+
+def test_11_nccl_single_rank_collective(nccl):
+    """Test 11 [Production Edge Case]: Verifies NCCL profiling with single rank (no network traffic)."""
+    metrics = nccl.profile_collective_op("ALL_REDUCE", data_size_mb=50.0, num_ranks=1, is_cross_node=False)
+    assert metrics.bus_bandwidth_gbps > 0.0
+    assert metrics.latency_us >= 0.0
+
+
+def test_12_orchestrator_heavy_batch_training(orchestrator):
+    """Test 12 [Production Edge Case]: Verifies orchestrator training step under heavy batch size=256."""
+    res = orchestrator.run_training_step(batch_size=256)
+    assert res["status"] == "STEP_COMPLETED"
+    assert res["nccl_bus_bandwidth_gbps"] > 0.0

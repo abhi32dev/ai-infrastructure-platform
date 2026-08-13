@@ -111,3 +111,32 @@ def test_08_security_agent_outdated_patch_pending(sec_manager):
     )
     assert status.crowdstrike_agent_status == AgentHealthStatus.PATCH_PENDING
     assert status.overall_compliant is False
+
+
+def test_09_cdk_unrecognized_environment(cdk_gen):
+    """Test 9 [Production Edge Case]: Verifies CDK generator handling custom/unknown environment name gracefully."""
+    stack = cdk_gen.generate_environment_stack("CustomStaging")
+    assert stack.environment == "CustomStaging"
+    assert len(stack.vpc_subnet_tiers) == 3
+
+
+def test_10_iam_policy_missing_statement_key(iam_validator):
+    """Test 10 [Production Edge Case]: Verifies IAM validator handling policy dict missing 'Statement' key."""
+    malformed_policy = {"Version": "2012-10-17"}
+    violations = iam_validator.validate_policy("MalformedPolicy", malformed_policy, is_production=True)
+    assert len(violations) == 0
+
+
+def test_11_security_agent_zero_agents_installed(sec_manager):
+    """Test 11 [Production Edge Case]: Verifies security agent manager flagging instance with 0 agents installed."""
+    status = sec_manager.audit_host_security("i-bare-metal", "Ubuntu 22.04", {})
+    assert status.overall_compliant is False
+    assert status.crowdstrike_agent_status == AgentHealthStatus.NON_COMPLIANT
+
+
+def test_12_iam_policy_non_prod_permissive_warning(iam_validator):
+    """Test 12 [Production Edge Case]: Verifies IAM validator emitting non-blocking warnings in Dev environments."""
+    dev_wildcard = {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "s3:*", "Resource": "*"}]}
+    violations = iam_validator.validate_policy("DevWildcard", dev_wildcard, is_production=False)
+    assert len(violations) >= 1
+

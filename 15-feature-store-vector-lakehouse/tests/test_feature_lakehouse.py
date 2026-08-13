@@ -1,7 +1,6 @@
 """
 Expanded Test Suite for Project 15 - Feature Store & Vector Lakehouse (Feast, Apache Iceberg & PyArrow).
-Tests low-latency Online Feature serving (< 2ms), point-in-time time-travel feature extraction,
-PyArrow zero-copy IPC buffer serialization, and column pruning.
+Includes production edge cases for zero-row scans, missing entities, duplicate feature overrides, and high-dimensional column pruning.
 """
 
 import time
@@ -90,3 +89,32 @@ def test_08_lakehouse_empty_columns(lakehouse):
     """Test 8: Verifies PyArrow lakehouse handling zero-column scans."""
     res = lakehouse.query_columnar_vectors(columns=[], max_rows=500)
     assert res.zero_copy_bytes == 0
+
+
+def test_09_time_travel_future_timestamp_filtering(feature_store):
+    """Test 9 [Production Edge Case]: Verifies time travel join ignoring features published after as_of timestamp."""
+    t_past = time.time() - 100.0
+    feature_store.push_online_feature("user-future", "future_feat", 99.0)  # Current timestamp > t_past
+    extracted = feature_store.time_travel_join(["user-future"], as_of_timestamp=t_past)
+    assert len(extracted) == 0  # No features existed as of t_past!
+
+
+def test_10_lakehouse_high_dimensional_vector_scan(lakehouse):
+    """Test 10 [Production Edge Case]: Verifies PyArrow zero-copy scanning over 1,024 dimensional embedding tables."""
+    res = lakehouse.query_columnar_vectors(columns=[f"dim_{i}" for i in range(1024)], max_rows=5000)
+    assert res.rows_scanned == 5000
+    assert res.zero_copy_bytes == 5000 * 1024 * 64
+
+
+def test_11_store_negative_feature_values(feature_store):
+    """Test 11 [Production Edge Case]: Verifies storing and serving negative floating point feature values."""
+    feature_store.push_online_feature("entity-neg", "z_score", -2.85)
+    res = feature_store.get_online_features("entity-neg", ["z_score"])
+    assert res["features"]["z_score"] == -2.85
+
+
+def test_12_orchestrator_empty_feature_map(orchestrator):
+    """Test 12 [Production Edge Case]: Verifies feature orchestrator handling empty feature dictionary cleanly."""
+    res = orchestrator.process_feature_pipeline("entity-empty", {})
+    assert res["status"] == "PIPELINE_COMPLETED"
+    assert res["online_features"] == {}

@@ -1,11 +1,12 @@
 """
 Expanded Test Suite for Project 13 - Direct Preference Optimization (DPO) & RLHF Alignment.
-Tests pairwise preference dataset curation, implicit reward calculation, DPO loss sigmoid scaling,
-Bradley-Terry win-rate auditing, and KL divergence drift limits.
+Includes edge cases for zero/extreme logprob margins, empty evaluation arrays, and beta scaling limits.
 """
 
+import math
 import pytest
 from src.preference_dataset import PreferenceDatasetCurator
+
 from src.dpo_loss import DPOLossCalculator
 from src.reward_model_auditor import RewardModelAuditor
 from src.alignment_orchestrator import RLHFAlignmentOrchestrator
@@ -93,3 +94,33 @@ def test_08_dpo_beta_scaling(dpo):
     res_high = dpo_high_beta.compute_dpo_loss(-0.2, -0.5, -1.8, -1.2)
     res_low = dpo.compute_dpo_loss(-0.2, -0.5, -1.8, -1.2)
     assert res_high.reward_margin > res_low.reward_margin
+
+
+def test_09_dpo_extreme_negative_margin_numerical_stability(dpo):
+    """Test 9 [Production Edge Case]: Verifies DPO loss calculation stability on extreme negative margins (-500)."""
+    res = dpo.compute_dpo_loss(policy_logprob_chosen=-500.0, ref_logprob_chosen=0.0,
+                               policy_logprob_rejected=0.0, ref_logprob_rejected=-500.0)
+    assert res.dpo_loss > 0.0
+    assert not math.isnan(res.dpo_loss)
+
+
+def test_10_dpo_zero_margin_loss(dpo):
+    """Test 10 [Production Edge Case]: Verifies DPO loss value when policy equals reference model (margin = 0)."""
+    res = dpo.compute_dpo_loss(policy_logprob_chosen=-1.0, ref_logprob_chosen=-1.0,
+                               policy_logprob_rejected=-1.0, ref_logprob_rejected=-1.0)
+    assert res.reward_margin == 0.0
+    assert abs(res.dpo_loss - 0.6931) < 0.01  # -ln(0.5) = 0.6931
+
+
+def test_11_auditor_all_negative_margins(auditor):
+    """Test 11 [Production Edge Case]: Verifies auditor when 100% of preference pairs have negative margins."""
+    res = auditor.audit_alignment_epoch(margins=[-0.5, -0.2, -0.1], kl_drifts=[0.1, 0.1, 0.1])
+    assert res.win_rate_pct == 0.0
+    assert res.status == "ALIGNMENT_NEEDS_TUNING"
+
+
+def test_12_curator_empty_dataset_summary(curator):
+    """Test 12 [Production Edge Case]: Verifies dataset curator handling summary on unpopulated dataset."""
+    summary = curator.get_dataset_summary()
+    assert summary["total_preference_pairs"] == 0
+    assert summary["is_ready_for_dpo"] is False

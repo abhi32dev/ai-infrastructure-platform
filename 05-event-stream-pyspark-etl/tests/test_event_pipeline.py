@@ -107,3 +107,33 @@ def test_08_high_volume_event_burst_deduplication(dedup):
         dedup.is_duplicate(f"evt-{i}", f"hash-{i}")
     assert dedup.is_duplicate("evt-25", "hash-25") is True
     assert dedup.is_duplicate("evt-999", "hash-999") is False
+
+
+def test_09_mib_decoder_unknown_oid(decoder):
+    """Test 9 [Production Edge Case]: Verifies MIB decoder handling unknown OIDs with default MINOR severity."""
+    rec = decoder.decode_packet("node-unknown", raw_oid="1.3.6.1.99.99")
+    assert rec.severity == AlarmSeverity.MINOR
+
+
+
+def test_10_pyspark_etl_empty_events_list():
+    """Test 10 [Production Edge Case]: Verifies PySpark feature ETL handling empty input event list cleanly."""
+    engine = PySparkFeatureETL()
+    df_res = engine.transform_and_aggregate_events([])
+    assert len(df_res) == 0
+
+
+def test_11_ttl_deduplicator_expired_window(dedup):
+    """Test 11 [Production Edge Case]: Verifies TTL deduplicator expiring entries after TTL seconds."""
+    dedup_short = TTLDeduplicator(default_ttl_seconds=0.01)
+    dedup_short.is_duplicate("key-1", "hash-1")
+    import time
+    time.sleep(0.02)
+    assert dedup_short.is_duplicate("key-1", "hash-1") is False  # Expired -> allowed again!
+
+
+def test_12_reconciler_empty_expected_files(reconciler):
+    """Test 12 [Production Edge Case]: Verifies 3-pass reconciler handling empty expected file set."""
+    res = reconciler.reconcile_file_delivery(set(), set())
+    assert res["status"] == "SUCCESS_PASS_1"
+

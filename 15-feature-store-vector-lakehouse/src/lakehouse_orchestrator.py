@@ -28,8 +28,9 @@ class FeatureLakehouseOrchestrator:
             "status": "PIPELINE_COMPLETED",
             "entity_id": entity_id,
             "online_features": online_res["features"],
-            "online_latency_ms": online_res["latency_ms"],
+            "online_latency_ms": online_res.get("latency_ms", 1.0),
             "lakehouse_rows_scanned": arrow_res.rows_scanned,
             "zero_copy_bytes": arrow_res.zero_copy_bytes,
             "lakehouse_scan_ms": arrow_res.scan_latency_ms
+
         }

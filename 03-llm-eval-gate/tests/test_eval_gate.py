@@ -101,3 +101,37 @@ def test_08_multi_model_judge_cross_verification():
     gate = StatisticalReleaseGate(significance_threshold_p=0.05)
     res = gate.evaluate_release_significance("v1", "v2", "Accuracy", baseline, candidate)
     assert res.candidate_mean > res.baseline_mean
+
+
+def test_09_eval_engine_empty_input_strings(eval_engine):
+    """Test 9 [Production Edge Case]: Verifies eval rubrics engine handling empty prompt and context strings."""
+    res = eval_engine.evaluate_groundedness(response="", retrieved_context="")
+    assert res.score == 0.0
+    assert res.passed is False
+
+
+def test_10_welch_ttest_insufficient_samples():
+    """Test 10 [Production Edge Case]: Verifies statistical gate handling single-element score arrays cleanly."""
+    gate = StatisticalReleaseGate(significance_threshold_p=0.05)
+    res = gate.evaluate_release_significance("v1", "v2", "Metric", [0.8], [0.9])
+    assert res.release_approved is False  # Cannot compute statistically significant t-test on N=1 sample!
+
+
+def test_11_eval_engine_identical_ground_truth_score(eval_engine):
+    """Test 11 [Production Edge Case]: Verifies answer faithfulness scoring 1.0 on exact matching ground truth."""
+    res = eval_engine.evaluate_answer_faithfulness(
+        response="Exact match response",
+        ground_truth="Exact match response"
+    )
+    assert res.score == 1.0
+    assert res.passed is True
+
+
+def test_12_statistical_gate_identical_baseline_and_candidate():
+    """Test 12 [Production Edge Case]: Verifies statistical gate blocking release when candidate is identical to baseline."""
+    gate = StatisticalReleaseGate(significance_threshold_p=0.05)
+    scores = [0.8, 0.82, 0.81, 0.83]
+    res = gate.evaluate_release_significance("v1", "v2-identical", "Recall", scores, scores)
+    assert res.release_approved is False
+    assert res.percentage_lift == 0.0
+
