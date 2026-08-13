@@ -1,5 +1,12 @@
 # Project 13: Direct Preference Optimization (DPO) & RLHF Alignment Pipeline
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/13-rlhf-dpo-alignment-pipeline/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 LLM alignment platform implementing **Direct Preference Optimization (DPO)** without needing separate reward model training, calculating implicit policy rewards and auditing Bradley-Terry win-rate metrics.
 
 ---

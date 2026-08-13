@@ -1,5 +1,12 @@
 # 🎛️ Project 6: Fine-Tuning, LoRA & Dataset Alignment Platform
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/06-finetuning-lora-alignment/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade **Supervised Fine-Tuning (SFT) & LoRA Parameter-Efficient Fine-Tuning (PEFT)** platform implementing instruction dataset curation, sequence outlier filtering, low-rank matrix adapter injection ($r=8, \alpha=16$), loss convergence tracking, and GGUF model weight export compilation.
 
 ---

@@ -1,5 +1,12 @@
 # Project 11: Distributed Training Engine (PyTorch FSDP & Megatron 3D Parallelism)
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/11-distributed-training-fsdp-megatron/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 High-performance multi-node multi-GPU training platform supporting **PyTorch FSDP ZeRO-3** memory sharding, **Megatron-LM 3D Parallelism Grid** ($TP \times PP \times DP$), and **NCCL Collective Communication Profiling**.
 
 ---

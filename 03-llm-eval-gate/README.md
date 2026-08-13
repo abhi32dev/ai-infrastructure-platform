@@ -1,5 +1,12 @@
 # ⚖️ Project 3: Multi-Model AI Evaluation Gate, LLM-as-a-Judge & MLflow System
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/03-llm-eval-gate/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade **AI Evaluation & Quality Governance Engine** implementing multi-model cross-verification (LLM-as-a-Judge), G-Eval / Ragas rubric scoring (Groundedness, Relevance, Faithfulness), MLflow prompt version tracking, and A/B statistical release gates using Welch's $t$-test $p$-value significance analysis.
 
 ---

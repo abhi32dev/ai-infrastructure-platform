@@ -1,5 +1,12 @@
 # Project 16: AI Safety, Red-Teaming & Policy Guardrails Engine
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/16-ai-safety-red-teaming-guardrails/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 AI safety and red-teaming platform implementing **Real-Time Prompt Injection Scanning** (DAN jailbreak & system prompt leak detection), **PII Anonymization** (SSN/Email/Phone masking), and **NeMo / Llama Guard Policy Enforcement**.
 
 ---

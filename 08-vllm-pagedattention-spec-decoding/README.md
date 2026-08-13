@@ -1,5 +1,12 @@
 # ⚡ Project 8: vLLM Inference Engine, PagedAttention & Speculative Decoding
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/08-vllm-pagedattention-spec-decoding/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A high-performance **LLM Inference Optimization Platform** implementing PagedAttention physical GPU block allocation (Kwon et al., SOSP 2023), Speculative Decoding with draft-target parallel verification pass ($k=4$), and iteration-level Continuous Batching scheduler.
 
 ---

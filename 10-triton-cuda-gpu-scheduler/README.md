@@ -1,5 +1,12 @@
 # 🟢 Project 10: NVIDIA Triton Model Server, CUDA Memory Scheduler & AWQ Quantization Engine
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/10-triton-cuda-gpu-scheduler/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A high-throughput **GPU Inference Scheduler & Quantization Platform** implementing NVIDIA Triton dynamic batching queues with CUDA power-of-2 Tensor Core alignment, AWQ FP8/INT8 weight matrix quantization, and VRAM memory bandwidth saturation profiling.
 
 ---

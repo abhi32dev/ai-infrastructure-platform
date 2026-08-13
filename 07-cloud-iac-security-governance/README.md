@@ -1,5 +1,12 @@
 # 🛡️ Project 7: Multi-Account Cloud IaC & Security Governance Engine
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/07-cloud-iac-security-governance/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade **Cloud Infrastructure & Security Governance Engine** implementing AWS CDK golden path stack synthesis across 4 environments (Dev, QA, Stage, Prod), tiered VPC subnet isolation, static IAM policy security auditing for least privilege, and EC2 endpoint security agent compliance tracking (CrowdStrike, Qualys, OPENS).
 
 ---

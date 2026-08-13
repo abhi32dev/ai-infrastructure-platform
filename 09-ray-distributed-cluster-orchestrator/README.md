@@ -1,5 +1,12 @@
 # 🛰️ Project 9: Ray Distributed Compute Cluster, Ray Serve & Multi-GPU Orchestrator
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/09-ray-distributed-cluster-orchestrator/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade **Distributed AI Computing & Cluster Orchestrator** implementing stateful Ray Actor worker pools, Plasma zero-copy shared memory object store referencing, multi-GPU node dynamic autoscaling, and fault-tolerant actor state recovery.
 
 ---

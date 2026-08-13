@@ -1,5 +1,12 @@
 # Project 12: GenAI API Gateway, Semantic Cache & Rate Limiter
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/12-genai-gateway-semantic-cache/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 Enterprise GenAI Gateway supporting **Vector Semantic Caching** (< 5ms response hits), **Token Bucket Rate Limiting** (TPM/RPM governance), and **Multi-Provider Fallback Routing** (OpenAI $\rightarrow$ Anthropic $\rightarrow$ Ollama).
 
 ---

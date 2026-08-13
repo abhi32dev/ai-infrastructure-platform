@@ -1,5 +1,12 @@
 # 📡 Project 5: Event Streaming, PySpark ETL & 3-Pass Reconciliation Engine
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/05-event-stream-pyspark-etl/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade, local-first **Real-Time Data & Feature Ingestion Engine** implementing persistent UDP socket trap listeners, vendor MIB OID decoding, DynamoDB-style TTL idempotency markers, Comcast CONDOR 3-Pass Storage Reconciliation, and PySpark distributed batch feature ETL pipelines.
 
 ---

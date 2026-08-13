@@ -1,5 +1,12 @@
 # ⚡ Project 1: Enterprise Multi-Step Agent Runtime & Durable Execution Engine
 
+> [!TIP]
+> 🔀 **[CLICK HERE TO VIEW LIVE RENDERED FLOWCHART & CONTROL FLOW BLUEPRINT](https://abhi32dev.github.io/ai-infrastructure-platform/01-agent-durable-runtime/FLOWCHART.html)**
+> 
+> 📄 **[View Architecture Reasoning & Design Trade-offs](PROD_ARCHITECTURE_REASONING.md)** | 🌐 **[Main Platform Showcase](https://abhi32dev.github.io/ai-infrastructure-platform/)**
+
+---
+
 A production-grade, local-first **Durable AI Agent Runtime** demonstrating workflow state machines, SQLite step checkpointing, deterministic replay, fan-out/fan-in parallel worker dispatching, Model Context Protocol (MCP) tool gates, and Human-in-the-Loop (HITL) approval patterns.
 
 ---
