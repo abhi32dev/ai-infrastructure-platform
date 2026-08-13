@@ -37,8 +37,14 @@ class DPOLossCalculator:
         reward_rejected = self.beta * (policy_logprob_rejected - ref_logprob_rejected)
         margin = reward_chosen - reward_rejected
 
-        # Sigmoid of logit margin: \sigma(r_w - r_l)
-        sigmoid_val = 1.0 / (1.0 + math.exp(-margin))
+        # Numerically stable sigmoid of logit margin: \sigma(r_w - r_l)
+        if margin >= 0.0:
+            z = math.exp(-margin)
+            sigmoid_val = 1.0 / (1.0 + z)
+        else:
+            z = math.exp(margin)
+            sigmoid_val = z / (1.0 + z)
+
         dpo_loss = -math.log(max(1e-7, sigmoid_val))
 
         # KL divergence proxy

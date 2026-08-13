@@ -28,14 +28,18 @@ class PromptInjectionScanner:
 
     def scan_prompt(self, prompt: str) -> PromptScanResult:
         """Scans prompt text for jailbreak phrases and prompt injection attempts."""
+        # Normalize prompt text: lowercase, remove punctuation/underscores/hyphens, collapse spaces
+        import re
         prompt_lower = prompt.lower()
+        normalized_prompt = re.sub(r'[\W_]+', ' ', prompt_lower).strip()
         violations: List[str] = []
 
         for pattern in self.JAILBREAK_PATTERNS:
-            if pattern in prompt_lower:
+            norm_pattern = re.sub(r'[\W_]+', ' ', pattern.lower()).strip()
+            if norm_pattern in normalized_prompt:
                 violations.append(f"JAILBREAK_PATTERN_DETECTED: '{pattern}'")
 
-        risk = round(min(1.0, len(violations) * 0.45), 2)
+        risk = round(min(1.0, len(violations) * 0.50), 2)
         is_safe = risk < self.threshold
 
         return PromptScanResult(
