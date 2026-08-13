@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 02: RAG Cost Router Engine | Flowchart & Control Flow Blueprint</title>
+    <title>Project 02: RAG Cost Router Engine | Interactive 2D Flowchart & Control Flow Blueprint</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
     <style>
         :root {
             --bg-primary: #0a0c10;
@@ -67,9 +69,9 @@
             border-radius: 9999px;
             font-size: 0.85rem;
             font-weight: 600;
-            background: rgba(192, 132, 252, 0.1);
-            color: var(--accent-purple);
-            border: 1px solid rgba(192, 132, 252, 0.3);
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--accent-amber);
+            border: 1px solid rgba(251, 191, 36, 0.3);
             margin-bottom: 0.75rem;
         }
 
@@ -89,145 +91,99 @@
         }
 
         .section-title {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1.25rem 0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             color: var(--accent-cyan);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
         }
 
-        /* Flowchart Visual Grid */
-        .flow-container {
+        /* Mermaid Diagram Container */
+        .mermaid-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
             display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            overflow-x: auto;
+        }
+
+        /* 2D Decisions Detailed Grid */
+        .decisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 3rem;
         }
 
-        .flow-node {
+        .decision-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-cyan);
+            border-top: 4px solid var(--accent-amber);
             border-radius: 8px;
-            padding: 1.25rem;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .flow-node:hover {
-            border-color: var(--accent-cyan);
-            transform: translateX(4px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .flow-node.decision {
-            border-left-color: var(--accent-amber);
-            background: rgba(251, 191, 36, 0.03);
-        }
-
-        .flow-node-header {
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
+        }
+
+        .decision-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-amber);
             margin-bottom: 0.5rem;
         }
 
-        .flow-node-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .code-tag {
+        .code-reference {
             font-family: var(--font-code);
             font-size: 0.8rem;
-            background: rgba(56, 189, 248, 0.1);
             color: var(--accent-cyan);
-            padding: 0.25rem 0.6rem;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 0.25rem 0.5rem;
             border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
             border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
-        .flow-node.decision .code-tag {
-            background: rgba(251, 191, 36, 0.1);
-            color: var(--accent-amber);
-            border-color: rgba(251, 191, 36, 0.2);
-        }
-
-        .flow-node-desc {
-            color: var(--text-secondary);
+        .condition-rule {
             font-size: 0.95rem;
-        }
-
-        .branches {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        .branch {
-            font-size: 0.85rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-family: var(--font-code);
-        }
-
-        .branch.yes {
-            background: rgba(52, 211, 153, 0.1);
-            color: var(--accent-emerald);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-        }
-
-        .branch.no {
-            background: rgba(244, 63, 94, 0.1);
-            color: var(--accent-rose);
-            border: 1px solid rgba(244, 63, 94, 0.2);
-        }
-
-        .flow-connector {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin: -0.5rem 0;
-        }
-
-        /* Table Tutorial */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        th, td {
-            padding: 0.85rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
-            font-weight: 600;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--text-secondary);
         }
 
-        td {
-            color: var(--text-secondary);
+        .paths-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        td.code-cell {
-            font-family: var(--font-code);
-            color: var(--accent-cyan);
-            font-size: 0.82rem;
+        .path-box {
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+
+        .path-box.yes {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--accent-emerald);
+        }
+
+        .path-box.no {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            color: var(--accent-rose);
         }
 
         footer {
@@ -249,158 +205,96 @@
 
     <header>
         <a href="../index.html" class="nav-back">&larr; Back to Main Platform Showcase</a>
-        <div><span class="badge">PROJECT 02 TUTORIAL BLUEPRINT</span></div>
-        <h1>RAG Cost Router Engine</h1>
-        <p class="subtitle">Cost-Aware Query Complexity Routing & Vector Search Engine</p>
+        <div><span class="badge">INTERACTIVE 2D CONTROL FLOW BLUEPRINT</span></div>
+        <h1>Project 02: RAG Cost Router Engine</h1>
+        <p class="subtitle">Cost-Aware Query Complexity Routing & Multi-Tier Vector Search Engine</p>
     </header>
 
     <div class="section-title">
-        <span>🔀 Visual Logic & Control Flow Blueprint</span>
+        <span>🔀 Visual 2D Branching Control Flow Diagram</span>
     </div>
 
-    <div class="flow-container">
+    <div class="mermaid-card">
+        <div class="mermaid">
+graph TD
+    A([Start: route_query]) --> B[Ingest User Query & Compute Embedding]
+    B --> C{Decision 1: Vector Semantic Cache Hit Cosine Sim >= 0.95?}
+    C -- YES: Cosine Sim >= 0.95 --> D[Return Cached Answer: $0.00 Cost, <5ms]
+    D --> E([Emit Response & Complete])
+    C -- NO: Cache Miss --> F[Calculate Query Complexity Score]
+    F --> G{Decision 2: Query Complexity Score <= 0.4?}
+    G -- YES: Low Complexity --> H[Route to Local Ollama Model: $0.00 Cost]
+    H --> E
+    G -- NO: High Complexity --> I{Decision 3: Query Complexity Score > 0.8?}
+    I -- YES: Extreme Multi-Hop --> J[Execute Hybrid RRF Vector Search + Frontier LLM: GPT-4o]
+    J --> E
+    I -- NO: Moderate Reasoning --> K[Route to Mid-Tier Model: Claude 3.5 Sonnet]
+    K --> E
 
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 1: Prompt Ingestion & Normalization</div>
-                <div class="code-tag">src/rag_pipeline.py -> RAGCostRouter.route_query()</div>
-            </div>
-            <div class="flow-node-desc">Receives user query, strips whitespace, and computes token length & embedding vector.</div>
-            
+    classDef decision fill:#2d2206,stroke:#fbbf24,stroke-width:2px,color:#fbbf24;
+    classDef startend fill:#092e20,stroke:#34d399,stroke-width:2px,color:#34d399;
+    classDef process fill:#12161f,stroke:#38bdf8,stroke-width:1px,color:#f0f6fc;
+    class C,G,I decision;
+    class A,E startend;
+    class B,D,F,H,J,K process;
         </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 2: Semantic Cache Lookup</div>
-                <div class="code-tag">src/rag_pipeline.py -> RAGCostRouter._check_semantic_cache()</div>
-            </div>
-            <div class="flow-node-desc">Queries ChromaDB for cached vector similarity > 0.95.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node decision">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Decision 1: Cache Hit Found (Similarity >= 0.95)?</div>
-                <div class="code-tag">Condition Branch</div>
-            </div>
-            <div class="flow-node-desc">Evaluates cosine distance threshold of vector store cache.</div>
-            
-            <div class="branches">
-                <div class="branch yes">✔ CONDITION TRUE: Return Cache Answer ($0.00 Cost)</div>
-                <div class="branch no">✖ CONDITION FALSE: Proceed to Complexity Classifier</div>
-            </div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 4: Calculate Query Complexity Score</div>
-                <div class="code-tag">src/rag_pipeline.py -> QueryComplexityClassifier.classify()</div>
-            </div>
-            <div class="flow-node-desc">Evaluates query length, domain keywords, and multi-hop reasoning requirements.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node decision">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Decision 2: Complexity Tier Assessment</div>
-                <div class="code-tag">Condition Branch</div>
-            </div>
-            <div class="flow-node-desc">Routes query based on computed complexity score threshold.</div>
-            
-            <div class="branches">
-                <div class="branch yes">✔ CONDITION TRUE: LOW -> Local Ollama Model</div>
-                <div class="branch no">✖ CONDITION FALSE: HIGH -> Hybrid RRF BM25 + Frontier LLM</div>
-            </div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 6: Execute Hybrid RRF Vector Retrieval</div>
-                <div class="code-tag">src/rag_pipeline.py -> RAGCostRouter.retrieve_hybrid()</div>
-            </div>
-            <div class="flow-node-desc">Fuses BM25 keyword search with ChromaDB dense vector embeddings using Reciprocal Rank Fusion.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 7: Frontier LLM Response Synthesis</div>
-                <div class="code-tag">src/rag_pipeline.py -> FrontierLLMAdapter.generate()</div>
-            </div>
-            <div class="flow-node-desc">Streams context-augmented prompt to frontier model and records token billing metrics.</div>
-            
-        </div>
-        
     </div>
 
     <div class="section-title">
-        <span>📚 Codebase Mapping & Execution Reference Table</span>
+        <span>⚡ Exhaustive Logical Conditionals & Codebase Mapping</span>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Step / Phase</th>
-                <th>Source Code Reference</th>
-                <th>Description & Logic Purpose</th>
-                <th>Type</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="decisions-grid">
 
-        <tr>
-            <td><strong>Step 1: Prompt Ingestion & Normalization</strong></td>
-            <td class="code-cell">src/rag_pipeline.py -> RAGCostRouter.route_query()</td>
-            <td>Receives user query, strips whitespace, and computes token length & embedding vector.</td>
-            <td>Execution Action</td>
-        </tr>
+        <div class="decision-card">
+            <div>
+                <div class="decision-header">Decision 1: Is Semantic Cache Similarity >= 0.95?</div>
+                <div class="code-reference">src/rag_pipeline.py -> RAGCostRouter._check_semantic_cache()</div>
+                <div class="condition-rule"><strong>Rule Evaluated:</strong> Queries ChromaDB vector collection for cached prompt embedding distance.</div>
+            </div>
+            <div class="paths-grid">
+                <div class="path-box yes">
+                    <strong>✔ LEFT BRANCH (Cache Hit):</strong>  Instantly returns pre-generated response (<5ms latency, $0.00 API cost).
+                </div>
+                <div class="path-box no">
+                    <strong>✖ RIGHT BRANCH (Cache Miss):</strong>  Forwards query to complexity scoring engine.
+                </div>
+            </div>
+        </div>
         
-        <tr>
-            <td><strong>Step 2: Semantic Cache Lookup</strong></td>
-            <td class="code-cell">src/rag_pipeline.py -> RAGCostRouter._check_semantic_cache()</td>
-            <td>Queries ChromaDB for cached vector similarity > 0.95.</td>
-            <td>Execution Action</td>
-        </tr>
+        <div class="decision-card">
+            <div>
+                <div class="decision-header">Decision 2: Is Query Complexity Score <= 0.4?</div>
+                <div class="code-reference">src/rag_pipeline.py -> QueryComplexityClassifier.classify()</div>
+                <div class="condition-rule"><strong>Rule Evaluated:</strong> Evaluates token length, domain keyword density, and multi-hop reasoning requirements.</div>
+            </div>
+            <div class="paths-grid">
+                <div class="path-box yes">
+                    <strong>✔ LEFT BRANCH (Simple Query):</strong>  Routes query to zero-cost local Ollama LLM instance.
+                </div>
+                <div class="path-box no">
+                    <strong>✖ RIGHT BRANCH (Complex Query):</strong>  Evaluates frontier tier routing rules.
+                </div>
+            </div>
+        </div>
         
-        <tr>
-            <td><strong>Decision 1: Cache Hit Found (Similarity >= 0.95)?</strong></td>
-            <td class="code-cell">Branch Rule</td>
-            <td>Evaluates cosine distance threshold of vector store cache.</td>
-            <td>Conditional Decision</td>
-        </tr>
+        <div class="decision-card">
+            <div>
+                <div class="decision-header">Decision 3: Is Query Complexity Score > 0.8?</div>
+                <div class="code-reference">src/rag_pipeline.py -> RAGCostRouter.retrieve_hybrid()</div>
+                <div class="condition-rule"><strong>Rule Evaluated:</strong> Checks if query requires multi-document fusion and deep analytical reasoning.</div>
+            </div>
+            <div class="paths-grid">
+                <div class="path-box yes">
+                    <strong>✔ TOP RIGHT BRANCH (High Complexity):</strong>  Performs Reciprocal Rank Fusion (RRF) combining BM25 keyword search with ChromaDB vectors, then streams context to Frontier LLM (GPT-4o).
+                </div>
+                <div class="path-box no">
+                    <strong>✖ DOWN BRANCH (Medium Complexity):</strong>  Routes query to mid-tier cloud LLM (Claude 3.5 Sonnet).
+                </div>
+            </div>
+        </div>
         
-        <tr>
-            <td><strong>Step 4: Calculate Query Complexity Score</strong></td>
-            <td class="code-cell">src/rag_pipeline.py -> QueryComplexityClassifier.classify()</td>
-            <td>Evaluates query length, domain keywords, and multi-hop reasoning requirements.</td>
-            <td>Execution Action</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Decision 2: Complexity Tier Assessment</strong></td>
-            <td class="code-cell">Branch Rule</td>
-            <td>Routes query based on computed complexity score threshold.</td>
-            <td>Conditional Decision</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Step 6: Execute Hybrid RRF Vector Retrieval</strong></td>
-            <td class="code-cell">src/rag_pipeline.py -> RAGCostRouter.retrieve_hybrid()</td>
-            <td>Fuses BM25 keyword search with ChromaDB dense vector embeddings using Reciprocal Rank Fusion.</td>
-            <td>Execution Action</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Step 7: Frontier LLM Response Synthesis</strong></td>
-            <td class="code-cell">src/rag_pipeline.py -> FrontierLLMAdapter.generate()</td>
-            <td>Streams context-augmented prompt to frontier model and records token billing metrics.</td>
-            <td>Execution Action</td>
-        </tr>
-        
-        </tbody>
-    </table>
+    </div>
 
     <footer>
         <p>&copy; 2026 Abhishek Singh • Staff & Principal AI Platform Architect</p>

@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 03: LLM Evaluation Gate | Flowchart & Control Flow Blueprint</title>
+    <title>Project 03: LLM Evaluation Gate | Interactive 2D Flowchart & Control Flow Blueprint</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
     <style>
         :root {
             --bg-primary: #0a0c10;
@@ -67,9 +69,9 @@
             border-radius: 9999px;
             font-size: 0.85rem;
             font-weight: 600;
-            background: rgba(192, 132, 252, 0.1);
-            color: var(--accent-purple);
-            border: 1px solid rgba(192, 132, 252, 0.3);
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--accent-amber);
+            border: 1px solid rgba(251, 191, 36, 0.3);
             margin-bottom: 0.75rem;
         }
 
@@ -89,145 +91,99 @@
         }
 
         .section-title {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1.25rem 0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             color: var(--accent-cyan);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
         }
 
-        /* Flowchart Visual Grid */
-        .flow-container {
+        /* Mermaid Diagram Container */
+        .mermaid-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
             display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            overflow-x: auto;
+        }
+
+        /* 2D Decisions Detailed Grid */
+        .decisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 3rem;
         }
 
-        .flow-node {
+        .decision-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-cyan);
+            border-top: 4px solid var(--accent-amber);
             border-radius: 8px;
-            padding: 1.25rem;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .flow-node:hover {
-            border-color: var(--accent-cyan);
-            transform: translateX(4px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .flow-node.decision {
-            border-left-color: var(--accent-amber);
-            background: rgba(251, 191, 36, 0.03);
-        }
-
-        .flow-node-header {
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
+        }
+
+        .decision-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-amber);
             margin-bottom: 0.5rem;
         }
 
-        .flow-node-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .code-tag {
+        .code-reference {
             font-family: var(--font-code);
             font-size: 0.8rem;
-            background: rgba(56, 189, 248, 0.1);
             color: var(--accent-cyan);
-            padding: 0.25rem 0.6rem;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 0.25rem 0.5rem;
             border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
             border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
-        .flow-node.decision .code-tag {
-            background: rgba(251, 191, 36, 0.1);
-            color: var(--accent-amber);
-            border-color: rgba(251, 191, 36, 0.2);
-        }
-
-        .flow-node-desc {
-            color: var(--text-secondary);
+        .condition-rule {
             font-size: 0.95rem;
-        }
-
-        .branches {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        .branch {
-            font-size: 0.85rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-family: var(--font-code);
-        }
-
-        .branch.yes {
-            background: rgba(52, 211, 153, 0.1);
-            color: var(--accent-emerald);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-        }
-
-        .branch.no {
-            background: rgba(244, 63, 94, 0.1);
-            color: var(--accent-rose);
-            border: 1px solid rgba(244, 63, 94, 0.2);
-        }
-
-        .flow-connector {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin: -0.5rem 0;
-        }
-
-        /* Table Tutorial */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        th, td {
-            padding: 0.85rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
-            font-weight: 600;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--text-secondary);
         }
 
-        td {
-            color: var(--text-secondary);
+        .paths-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        td.code-cell {
-            font-family: var(--font-code);
-            color: var(--accent-cyan);
-            font-size: 0.82rem;
+        .path-box {
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+
+        .path-box.yes {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--accent-emerald);
+        }
+
+        .path-box.no {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            color: var(--accent-rose);
         }
 
         footer {
@@ -249,142 +205,78 @@
 
     <header>
         <a href="../index.html" class="nav-back">&larr; Back to Main Platform Showcase</a>
-        <div><span class="badge">PROJECT 03 TUTORIAL BLUEPRINT</span></div>
-        <h1>LLM Evaluation Gate</h1>
+        <div><span class="badge">INTERACTIVE 2D CONTROL FLOW BLUEPRINT</span></div>
+        <h1>Project 03: LLM Evaluation Gate</h1>
         <p class="subtitle">Automated Welch's t-Test RAG Triad Quality Release Gate</p>
     </header>
 
     <div class="section-title">
-        <span>🔀 Visual Logic & Control Flow Blueprint</span>
+        <span>🔀 Visual 2D Branching Control Flow Diagram</span>
     </div>
 
-    <div class="flow-container">
+    <div class="mermaid-card">
+        <div class="mermaid">
+graph TD
+    A([Start: evaluate_build]) --> B[Load Candidate Benchmark Samples]
+    B --> C[Compute RAG Triad Metrics: Faithfulness, Groundedness, Toxicity]
+    C --> D[Execute Welch's t-Test Hypothesis Test vs Production Baseline]
+    D --> E{Decision 1: p-value < 0.05 AND Metric Delta > +0.05?}
+    E -- NO: Statistical Failure / Degradation --> F[Flag Quality Regression & Block Build]
+    F --> G([Fail Release Gate & Raise CI/CD Error])
+    E -- YES: Significant Quality Gain --> H{Decision 2: Toxicity Score <= 0.05 Threshold?}
+    H -- NO: Toxicity Safety Violation --> I[Flag Safety Offense & Alert Team]
+    I --> G
+    H -- YES: Safety Verified --> J[Register Approved Model Artifact in MLflow]
+    J --> K([Pass Release Gate & Trigger Deployment])
 
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 1: Ingest Candidate Benchmark Dataset</div>
-                <div class="code-tag">src/eval_gate.py -> LLMEvalGate.evaluate_build()</div>
-            </div>
-            <div class="flow-node-desc">Loads test set questions, candidate outputs, and ground-truth reference answers.</div>
-            
+    classDef decision fill:#2d2206,stroke:#fbbf24,stroke-width:2px,color:#fbbf24;
+    classDef startend fill:#092e20,stroke:#34d399,stroke-width:2px,color:#34d399;
+    classDef process fill:#12161f,stroke:#38bdf8,stroke-width:1px,color:#f0f6fc;
+    class E,H decision;
+    class A,G,K startend;
+    class B,C,D,F,I,J process;
         </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 2: Compute Metric Scores (Faithfulness, Groundedness, Toxicity)</div>
-                <div class="code-tag">src/eval_gate.py -> FaithfulnessEvaluator.score()</div>
-            </div>
-            <div class="flow-node-desc">Calculates LLM-as-a-Judge numerical metric scores across candidate output samples.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 3: Execute Welch's t-Test Hypothesis Testing</div>
-                <div class="code-tag">src/eval_gate.py -> WelchTTestScorer.compare()</div>
-            </div>
-            <div class="flow-node-desc">Computes Welch's unequal variances t-statistic and p-value against production baseline scores.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node decision">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Decision 1: Is p-value < 0.05 AND Mean Delta > Minimum Threshold?</div>
-                <div class="code-tag">Condition Branch</div>
-            </div>
-            <div class="flow-node-desc">Validates statistical significance of quality improvement.</div>
-            
-            <div class="branches">
-                <div class="branch yes">✔ CONDITION TRUE: Pass Metric Gate</div>
-                <div class="branch no">✖ CONDITION FALSE: Fail Release Gate</div>
-            </div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Step 5: Check Toxicity Policy Enforcement</div>
-                <div class="code-tag">src/eval_gate.py -> ToxicityEvaluator.check_safety()</div>
-            </div>
-            <div class="flow-node-desc">Ensures zero samples exceed toxicity threshold score of 0.05.</div>
-            
-        </div>
-        <div class="flow-connector">&darr;</div>
-        <div class="flow-node decision">
-            <div class="flow-node-header">
-                <div class="flow-node-title">Decision 2: All Metrics Passed Gate?</div>
-                <div class="code-tag">Condition Branch</div>
-            </div>
-            <div class="flow-node-desc">Final CI/CD gate evaluation rule.</div>
-            
-            <div class="branches">
-                <div class="branch yes">✔ CONDITION TRUE: APPROVED -> Register MLflow Model Artifact</div>
-                <div class="branch no">✖ CONDITION FALSE: REJECTED -> Trigger CI/CD Build Fail & Alert</div>
-            </div>
-            
-        </div>
-        
     </div>
 
     <div class="section-title">
-        <span>📚 Codebase Mapping & Execution Reference Table</span>
+        <span>⚡ Exhaustive Logical Conditionals & Codebase Mapping</span>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Step / Phase</th>
-                <th>Source Code Reference</th>
-                <th>Description & Logic Purpose</th>
-                <th>Type</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="decisions-grid">
 
-        <tr>
-            <td><strong>Step 1: Ingest Candidate Benchmark Dataset</strong></td>
-            <td class="code-cell">src/eval_gate.py -> LLMEvalGate.evaluate_build()</td>
-            <td>Loads test set questions, candidate outputs, and ground-truth reference answers.</td>
-            <td>Execution Action</td>
-        </tr>
+        <div class="decision-card">
+            <div>
+                <div class="decision-header">Decision 1: Is Welch t-Test p-value < 0.05 AND Mean Delta > +0.05?</div>
+                <div class="code-reference">src/eval_gate.py -> WelchTTestScorer.compare()</div>
+                <div class="condition-rule"><strong>Rule Evaluated:</strong> Calculates Welch's unequal variances t-statistic to determine if quality improvement over baseline is statistically significant.</div>
+            </div>
+            <div class="paths-grid">
+                <div class="path-box yes">
+                    <strong>✔ RIGHT BRANCH (Passed Stat Gate):</strong>  Candidate model shows statistically significant performance improvement. Proceeds to toxicity check.
+                </div>
+                <div class="path-box no">
+                    <strong>✖ LEFT BRANCH (Regression / Inconclusive):</strong>  Model shows performance degradation or statistically insignificant variance. Fails CI/CD build.
+                </div>
+            </div>
+        </div>
         
-        <tr>
-            <td><strong>Step 2: Compute Metric Scores (Faithfulness, Groundedness, Toxicity)</strong></td>
-            <td class="code-cell">src/eval_gate.py -> FaithfulnessEvaluator.score()</td>
-            <td>Calculates LLM-as-a-Judge numerical metric scores across candidate output samples.</td>
-            <td>Execution Action</td>
-        </tr>
+        <div class="decision-card">
+            <div>
+                <div class="decision-header">Decision 2: Is Toxicity Score <= 0.05 Safety Threshold?</div>
+                <div class="code-reference">src/eval_gate.py -> ToxicityEvaluator.check_safety()</div>
+                <div class="condition-rule"><strong>Rule Evaluated:</strong> Scans 100% of candidate evaluation samples for toxic, biased, or dangerous generation content.</div>
+            </div>
+            <div class="paths-grid">
+                <div class="path-box yes">
+                    <strong>✔ DOWN RIGHT BRANCH (Safety Passed):</strong>  Approves candidate model and registers model artifact in MLflow registry.
+                </div>
+                <div class="path-box no">
+                    <strong>✖ LEFT BRANCH (Safety Violation):</strong>  Blocks deployment immediately and dispatches PagerDuty security alert.
+                </div>
+            </div>
+        </div>
         
-        <tr>
-            <td><strong>Step 3: Execute Welch's t-Test Hypothesis Testing</strong></td>
-            <td class="code-cell">src/eval_gate.py -> WelchTTestScorer.compare()</td>
-            <td>Computes Welch's unequal variances t-statistic and p-value against production baseline scores.</td>
-            <td>Execution Action</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Decision 1: Is p-value < 0.05 AND Mean Delta > Minimum Threshold?</strong></td>
-            <td class="code-cell">Branch Rule</td>
-            <td>Validates statistical significance of quality improvement.</td>
-            <td>Conditional Decision</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Step 5: Check Toxicity Policy Enforcement</strong></td>
-            <td class="code-cell">src/eval_gate.py -> ToxicityEvaluator.check_safety()</td>
-            <td>Ensures zero samples exceed toxicity threshold score of 0.05.</td>
-            <td>Execution Action</td>
-        </tr>
-        
-        <tr>
-            <td><strong>Decision 2: All Metrics Passed Gate?</strong></td>
-            <td class="code-cell">Branch Rule</td>
-            <td>Final CI/CD gate evaluation rule.</td>
-            <td>Conditional Decision</td>
-        </tr>
-        
-        </tbody>
-    </table>
+    </div>
 
     <footer>
         <p>&copy; 2026 Abhishek Singh • Staff & Principal AI Platform Architect</p>
