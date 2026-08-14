@@ -1,53 +1,22 @@
-# 🎤 Staff / Principal AI Infrastructure Interview Guide: AI Evaluation & LLMOps Governance
+# 🎤 Staff AI Platform Interview Guide: LLM Evaluation Gate & Statistical CI/CD
 
-This guide bridges the code in **Project 3 (`03-llm-eval-gate`)** directly to Staff/Principal-level questions asked by FAANG, Tier-1 AI startups, and top product companies.
+This guide bridges **Project 3 (`03-llm-eval-gate`)** to Staff/Principal-level questions on continuous model evaluation and statistical validation.
 
 ---
 
 ## 💡 Key Architectural Concepts & Interview Answers
 
-### Q1: "How do you systematically detect hallucinations and verify LLM outputs before releasing prompt or model updates?"
+### Q1: "Why is mean accuracy insufficient for model deployment gates, and why is Welch's t-test mandatory?"
 > **Staff Engineer Answer**:
-> "We do not rely on subjective output inspection. In `03-llm-eval-gate`, we implement a **Multi-Model LLM-as-a-Judge Evaluation Gate** ([`src/llm_as_judge.py`](src/llm_as_judge.py)).
-> 
-> We evaluate candidate outputs against a second independent judge model using standardized G-Eval rubrics across 4 release dimensions:
-> 1. **Groundedness**: Verifies what percentage of claims in the generated answer are directly supported by the retrieved source context ([`src/eval_rubrics.py`](src/eval_rubrics.py)).
-> 2. **Context Relevance**: Verifies that retrieved context chunks match the user query intent.
-> 3. **Answer Faithfulness**: Checks alignment with reference ground truth.
-> 4. **Toxicity & Safety**: Programmatic safety gates.
-> 
-> If groundedness drops below our release threshold (e.g. 80%), the automated CI gate blocks the prompt or model release."
+> "LLM generations are non-deterministic. A candidate model scoring $84\%$ vs baseline $82\%$ over small sample sets may reflect random noise. In `src/statistical_gate.py`, we compute Welch's two-sample t-test ($p < 0.05$) to prove statistical significance before promoting candidate weights in MLflow."
 
----
-
-### Q2: "How do you track prompt templates and hyperparameter regressions across team releases?"
+### Q2: "How do you measure Faithfulness, Answer Relevance, and Groundedness (RAG Triad)?"
 > **Staff Engineer Answer**:
-> "We treat prompts and model configurations as versioned software artifacts managed through MLflow ([`src/mlflow_tracker.py`](src/mlflow_tracker.py)).
-> 
-> For every evaluation run, we log:
-> - `prompt_version` (e.g. `v2.0-enhanced-context-prompt`)
-> - Hyperparameters (`temperature`, `chunk_size`, `top_k`, retriever strategy)
-> - Quantitative metric distributions (Groundedness score, Relevance score, Faithfulness score, Pass rate)
-> - Detailed evaluation result JSON artifacts.
-> 
-> This provides complete historical auditability in MLflow, allowing us to catch quality regressions immediately when a team member modifies a prompt template or model version."
+> "In `src/eval_rubrics.py`, we evaluate:
+> 1. **Faithfulness**: Proportion of generated claims supported by retrieved context.
+> 2. **Answer Relevance**: Semantic cosine alignment between query and response.
+> 3. **Groundedness**: Ratio of hallucinated tokens to verified reference citations."
 
----
-
-### Q3: "How do you prove that a candidate prompt or model improvement is real rather than random noise?"
+### Q3: "How do automated toxicity classifiers prevent harmful model releases in CI/CD?"
 > **Staff Engineer Answer**:
-> "In high-scale production systems, measuring an average score increase of +5% without statistical validation can be misleading due to sample variance. We enforce a **Statistical Release Gate** using hypothesis testing ([`src/statistical_gate.py`](src/statistical_gate.py)).
-> 
-> We execute **Welch's t-test** (two-sample unequal variance) comparing Baseline score distribution $A$ against Candidate score distribution $B$:
-> - **Null Hypothesis ($H_0$)**: Baseline and Candidate have identical mean performance.
-> - **Release Criterion**: Candidate must demonstrate a statistically significant improvement ($p < 0.05$).
-> 
-> If $p \ge 0.05$, the system flags the release as 'Statistically Insignificant' and holds promotion, requesting additional test samples. This prevents rolling out placebo changes or hidden regressions to production."
-
----
-
-## 🧪 Quick Test Checklist for Candidates
-Run these commands in your workspace to test and demonstrate:
-- `python3 demo_runner.py`: Executes all 4 evaluation and statistical release gate scenarios live.
-- `pytest tests/`: Verifies unit and integration test suite.
-- `python3 app.py`: Opens Evaluation Dashboard at `http://127.0.0.1:8002` to visually run dataset evaluations and test $p$-value release gates.
+> "In `src/llm_as_judge.py`, candidate responses are evaluated across toxicity rubrics. If the toxicity score exceeds $0.05$, the deployment pipeline halts and alerts the ML platform team."
