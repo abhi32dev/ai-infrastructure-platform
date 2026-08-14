@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Project 22: Disaggregated Prefill vs. Decode — Interactive 2D Architecture Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-card: #12161f;
+            --bg-card-hover: #171d29;
+            --border-color: #21262d;
+            --border-highlight: #30363d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-cyan: #38bdf8;
+            --accent-green: #34d399;
+            --accent-gold: #fbbf24;
+            --accent-rose: #f43f5e;
+            --accent-purple: #a78bfa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem 1.5rem;
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1.25rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .diagram-container {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* Pure HTML5/CSS3 2D Flowchart Layout */
+        .flow-layout-2d {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1rem 0;
+        }
+
+        .flow-pill {
+            padding: 0.6rem 1.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        .flow-pill.green {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .flow-arrow-v {
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .flow-arrow-v.cyan { color: var(--accent-cyan); }
+        .flow-arrow-v.green { color: var(--accent-green); }
+
+        .flow-proc-box {
+            background: #161b22;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            min-width: 380px;
+            text-align: center;
+        }
+
+        .flow-proc-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .flow-proc-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-top: 0.25rem;
+        }
+
+        .flow-diamond-node {
+            background: #1f1906;
+            border: 2.5px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 1.25rem 2.5rem;
+            min-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+        }
+
+        .diamond-badge-text {
+            color: var(--accent-gold);
+            font-weight: 800;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .diamond-title-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-top: 0.2rem;
+        }
+
+        .diamond-sub-text {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .flow-branches-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 0.5rem;
+        }
+
+        .branch-col-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .exec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .exec-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .exec-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-badge {
+            display: inline-block;
+            background: #161b22;
+            color: var(--accent-cyan);
+            border: 1px solid #30363d;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .rule-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--accent-gold);
+            padding: 0.75rem 1rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+        }
+
+        .routes-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .route-card {
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+        }
+
+        .route-card.green {
+            background: rgba(52, 211, 153, 0.06);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .route-card.cyan {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .route-card.rose {
+            background: rgba(244, 63, 94, 0.06);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .route-card.amber {
+            background: rgba(251, 191, 36, 0.06);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .route-header {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .route-card.green .route-header { color: var(--accent-green); }
+        .route-card.cyan .route-header { color: var(--accent-cyan); }
+        .route-card.rose .route-header { color: var(--accent-rose); }
+        .route-card.amber .route-header { color: var(--accent-gold); }
+
+        .route-desc {
+            color: var(--text-primary);
+            line-height: 1.45;
+        }
+
+        footer {
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html" class="nav-back">&larr; Back to Main Platform Showcase</a>
+        <div><span class="badge">INTERACTIVE 2D CONTROL FLOW BLUEPRINT</span></div>
+        <h1>Project 22: Disaggregated Prefill vs. Decode</h1>
+        <p class="subtitle">Splitwise / Mooncake Architecture, Chunked Prefill & RDMA KV Cache Transfer</p>
+    </header>
+
+    <div class="section-title">
+        <span>🔀 Visual 2D Branching Control Flow Architecture Diagram</span>
+    </div>
+
+    <!-- 100% Native Inline Grid-Free Vector SVG Diagram -->
+    <div class="diagram-container">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 750" width="1000" height="750" version="1.1">
+  <defs>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e"/>
+    </marker>
+  </defs>
+
+  <!-- Clean, Solid Dark Background -->
+  <rect width="1000" height="750" fill="#0d1117" rx="12"/>
+
+  <!-- Header Text -->
+  <text x="500" y="32" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="20">Project 22: Disaggregated Prefill vs. Decode</text>
+  <text x="500" y="54" text-anchor="middle" fill="#8b949e" font-family="sans-serif" font-size="13">2D Control Flow Architecture Blueprint</text>
+
+  <!-- 1. Start Node -->
+  <g transform="translate(340, 75)">
+    <rect width="320" height="42" rx="21" fill="#092e20" stroke="#34d399" stroke-width="2"/>
+    <text x="160" y="26" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-weight="bold" font-size="13">Start: DisaggregatedRouter.route_request()</text>
+  </g>
+
+  <path d="M 500 117 L 500 150" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+
+  <!-- Step 1 Process Node -->
+  <g transform="translate(320, 150)">
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="13">Classify Request Phase &amp; Split Chunk</text>
+    <text x="180" y="38" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="11">src/disaggregated_engine.py:L40</text>
+  </g>
+
+  <path d="M 500 200 L 500 235" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+
+  <!-- DECISION 1 DIAMOND -->
+  <g transform="translate(500, 275)">
+    <polygon points="0,-40 180,0 0,40 -180,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2.5"/>
+    <text x="0" y="-10" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-weight="bold" font-size="11">DECISION 1</text>
+    <text x="0" y="8" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="11">Request Phase == PREFILL?</text>
+    <text x="0" y="24" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">(Compute vs Memory Classification)</text>
+  </g>
+
+  <!-- LEFT BRANCH: Fast Path / Cache Hit -->
+  <path d="M 320 275 L 170 275 L 170 345" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <rect x="200" y="255" width="100" height="20" rx="4" fill="#092e20" stroke="#34d399" stroke-width="1"/>
+  <text x="250" y="269" text-anchor="middle" fill="#34d399" font-family="monospace" font-weight="bold" font-size="10">NO (Decode Phase)</text>
+
+  <!-- Left Action Box -->
+  <g transform="translate(30, 350)">
+    <rect width="280" height="50" rx="8" fill="#161b22" stroke="#34d399" stroke-width="1.5"/>
+    <text x="140" y="22" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="12">Route to Decode Worker GPU Pool</text>
+    <text x="140" y="38" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10">Memory Bandwidth Optimized Pool</text>
+  </g>
+
+  <path d="M 170 400 L 170 445" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <g transform="translate(40, 445)">
+    <rect width="260" height="40" rx="20" fill="#092e20" stroke="#34d399" stroke-width="2"/>
+    <text x="130" y="25" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-weight="bold" font-size="12">[Decode Stream Active]</text>
+  </g>
+
+  <!-- DOWN BRANCH: Proceed Execution -->
+  <path d="M 500 315 L 500 350" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+  <rect x="510" y="320" width="100" height="20" rx="4" fill="#161b22" stroke="#38bdf8" stroke-width="1"/>
+  <text x="560" y="334" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-weight="bold" font-size="10">YES (Prefill Phase)</text>
+
+  <!-- Step 2 Box -->
+  <g transform="translate(320, 350)">
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="13">Execute Chunked Prefill &amp; Build KV Cache</text>
+    <text x="180" y="38" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="11">PrefillWorkerPool.compute_kv()</text>
+  </g>
+
+  <path d="M 500 400 L 500 445" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+
+  <!-- DECISION 2 DIAMOND -->
+  <g transform="translate(500, 485)">
+    <polygon points="0,-40 180,0 0,40 -180,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2.5"/>
+    <text x="0" y="-10" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-weight="bold" font-size="11">DECISION 2</text>
+    <text x="0" y="8" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="11">RDMA KV Transfer &lt; 3ms?</text>
+    <text x="0" y="24" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">(GPUDirect RDMA Network Pass)</text>
+  </g>
+
+  <!-- DOWN BRANCH: Success -->
+  <path d="M 500 525 L 500 565" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <rect x="510" y="530" width="100" height="20" rx="4" fill="#092e20" stroke="#34d399" stroke-width="1"/>
+  <text x="560" y="544" text-anchor="middle" fill="#34d399" font-family="monospace" font-weight="bold" font-size="10">YES (Transfer OK)</text>
+
+  <!-- Success Box -->
+  <g transform="translate(320, 565)">
+    <rect width="360" height="50" rx="8" fill="#161b22" stroke="#34d399" stroke-width="1.5"/>
+    <text x="180" y="22" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="13">Handoff to Decode Pool (Zero Interference)</text>
+    <text x="180" y="38" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="11">TTFT SLA Met / Zero Jitter</text>
+  </g>
+
+  <path d="M 500 615 L 500 655" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <g transform="translate(340, 655)">
+    <rect width="320" height="42" rx="21" fill="#092e20" stroke="#34d399" stroke-width="2"/>
+    <text x="160" y="26" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-weight="bold" font-size="13">[Disaggregated Handoff Complete]</text>
+  </g>
+
+  <!-- RIGHT BRANCH: Error / Retry Branch -->
+  <path d="M 680 485 L 840 485" fill="none" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+  <rect x="695" y="465" width="80" height="20" rx="4" fill="#3b1219" stroke="#f43f5e" stroke-width="1"/>
+  <text x="735" y="479" text-anchor="middle" fill="#f43f5e" font-family="monospace" font-weight="bold" font-size="10">NO (Network Delay)</text>
+
+  <!-- Decision 3 Diamond (Right Side) -->
+  <g transform="translate(840, 565)">
+    <polygon points="0,-35 110,0 0,35 -110,0" fill="#1f1906" stroke="#fbbf24" stroke-width="2"/>
+    <text x="0" y="-6" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-weight="bold" font-size="10">DECISION 3</text>
+    <text x="0" y="10" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="10">Fallback TCP?</text>
+  </g>
+
+  <!-- UPWARD RETRY LOOP ARROW -->
+  <path d="M 840 530 L 840 375 L 695 375" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-amber)"/>
+  <rect x="710" y="355" width="120" height="20" rx="4" fill="#2d2206" stroke="#fbbf24" stroke-width="1"/>
+  <text x="770" y="369" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-weight="bold" font-size="9">YES: Fallback TCP Transfer</text>
+
+  <!-- DOWN BRANCH: Fallback Action -->
+  <path d="M 840 600 L 840 645" fill="none" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+  <rect x="850" y="610" width="80" height="20" rx="4" fill="#3b1219" stroke="#f43f5e" stroke-width="1"/>
+  <text x="890" y="624" text-anchor="middle" fill="#f43f5e" font-family="monospace" font-weight="bold" font-size="10">NO (Fatal Drop)</text>
+
+  <g transform="translate(710, 645)">
+    <rect width="260" height="50" rx="8" fill="#161b22" stroke="#f43f5e" stroke-width="1.5"/>
+    <text x="130" y="22" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="12">Fallback to TCP Socket KV Transfer</text>
+    <text x="130" y="38" text-anchor="middle" fill="#f43f5e" font-family="monospace" font-size="10">Log Network Telemetry Warning</text>
+  </g>
+</svg>
+    </div>
+
+    <!-- 100% Native HTML5/CSS3 Interactive 2D Flowchart (Zero Image Dependency) -->
+    <div class="diagram-container">
+        <div class="flow-layout-2d">
+            <div class="flow-pill green">▶ Start: DisaggregatedRouter.route_request()</div>
+            <div class="flow-arrow-v cyan">↓</div>
+
+            <div class="flow-proc-box">
+                <div class="flow-proc-title">Classify Request Phase & Split Chunk</div>
+                <div class="flow-proc-code">src/disaggregated_engine.py:L40</div>
+            </div>
+            <div class="flow-arrow-v cyan">↓</div>
+
+            <div class="flow-diamond-node">
+                <div class="diamond-badge-text">◆ DECISION 1</div>
+                <div class="diamond-title-text">Request Phase == PREFILL?</div>
+                <div class="diamond-sub-text">(Compute vs Memory Classification)</div>
+            </div>
+
+            <div class="flow-branches-grid">
+                <div class="branch-col-card" style="border-color: var(--accent-green);">
+                    <div class="route-header" style="color: var(--accent-green);">↙ NO (Decode Phase)</div>
+                    <div class="flow-proc-box" style="border-color: var(--accent-green); min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Route to Decode Worker GPU Pool</div>
+                        <div class="flow-proc-code" style="color: var(--accent-green);">Memory Bandwidth Optimized Pool</div>
+                    </div>
+                    <div class="flow-pill green" style="width: 100%; text-align: center;">[Decode Stream Active]</div>
+                </div>
+
+                <div class="branch-col-card" style="border-color: var(--accent-cyan);">
+                    <div class="route-header" style="color: var(--accent-cyan);">↓ YES (Prefill Phase)</div>
+                    <div class="flow-proc-box" style="min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Execute Chunked Prefill & Build KV Cache</div>
+                        <div class="flow-proc-code">PrefillWorkerPool.compute_kv()</div>
+                    </div>
+
+                    <div class="flow-diamond-node" style="min-width: auto; width: 100%; padding: 0.75rem;">
+                        <div class="diamond-badge-text">◆ DECISION 2</div>
+                        <div class="diamond-title-text" style="font-size: 0.95rem;">RDMA KV Transfer < 3ms?</div>
+                    </div>
+
+                    <div class="flow-proc-box" style="border-color: var(--accent-green); min-width: auto; width: 100%;">
+                        <div class="flow-proc-title">Handoff to Decode Pool (Zero Interference)</div>
+                        <div class="flow-proc-code" style="color: var(--accent-green);">TTFT SLA Met / Zero Jitter</div>
+                    </div>
+                    <div class="flow-pill green" style="width: 100%; text-align: center;">[Disaggregated Handoff Complete]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">
+        <span>⚡ Exhaustive Logical Conditionals & Codebase Mapping</span>
+    </div>
+
+    <div class="exec-grid">
+
+        <!-- Decision 1 Card -->
+        <div class="exec-card">
+            <div class="card-header">
+                <div class="card-title">◆ Decision 1: Is Incoming Request in Prefill Phase (Prompt Ingestion)?</div>
+                <div class="code-badge"><code>src/disaggregated_engine.py -> DisaggregatedRouter.classify_phase()</code></div>
+            </div>
+            <div class="rule-box">
+                <strong>Condition Evaluated:</strong> Separates compute-bound prompt ingestion (prefill) from memory-bandwidth-bound token generation (decode).
+            </div>
+            <div class="routes-container">
+                <div class="route-card green">
+                    <div class="route-header">↙ LEFT FAST-PATH: NO (Decode Phase)</div>
+                    <div class="route-desc">Dispatches active token generation directly to memory-bandwidth-optimized GPU decode worker pool.</div>
+                </div>
+                <div class="route-card cyan">
+                    <div class="route-header">↓ DOWN EXECUTION: YES (Prefill Phase)</div>
+                    <div class="route-desc">Proceeds to step 2 execution: Execute Chunked Prefill & Build KV Cache.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision 2 Card -->
+        <div class="exec-card">
+            <div class="card-header">
+                <div class="card-title">◆ Decision 2: Did RDMA KV Cache Transfer to Decode Pool Succeed (< 3.0ms)?</div>
+                <div class="code-badge"><code>src/disaggregated_engine.py -> KVCacheTransferClient.send_rdma()</code></div>
+            </div>
+            <div class="rule-box">
+                <strong>Condition Evaluated:</strong> Transfers computed KV cache memory tensors from prefill GPU pool to decode GPU pool using GPUDirect RDMA.
+            </div>
+            <div class="routes-container">
+                <div class="route-card green">
+                    <div class="route-header">↓ DOWN SUCCESS: YES (Transfer OK)</div>
+                    <div class="route-desc">Hands off generation to decode worker pool, completely eliminating head-of-line interference between prompts and token generation.</div>
+                </div>
+                <div class="route-card rose">
+                    <div class="route-header">↘ RIGHT BRANCH: NO (Network Delay)</div>
+                    <div class="route-desc">Triggers exception evaluation to check retry boundary limits.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision 3 Card -->
+        <div class="exec-card" style="grid-column: 1 / -1;">
+            <div class="card-header">
+                <div class="card-title">◆ Decision 3: Is Direct TCP Network Fallback Available?</div>
+                <div class="code-badge"><code>src/disaggregated_engine.py -> NetworkFallback.has_tcp()</code></div>
+            </div>
+            <div class="rule-box">
+                <strong>Condition Evaluated:</strong> Checks fallback TCP network link if RDMA transfer encounters network queue timeout.
+            </div>
+            <div class="routes-container">
+                <div class="route-card amber">
+                    <div class="route-header">↺ UPWARD RETRY LOOP: YES: Fallback TCP Transfer</div>
+                    <div class="route-desc">Transfers KV cache via high-speed TCP socket stream to safeguard request continuity.</div>
+                </div>
+                <div class="route-card rose">
+                    <div class="route-header">↓ EXHAUSTED FALLBACK: NO (Fatal Drop)</div>
+                    <div class="route-desc">Transfers KV cache via TCP socket stream and logs GPUDirect RDMA latency alarm to Datadog.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Abhishek Singh • Staff & Principal AI Platform Architect</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="PROD_ARCHITECTURE_REASONING.md" target="_blank">Architecture Reasoning</a> • 
+            <a href="src/disaggregated_engine.py" target="_blank">Source Code (src/disaggregated_engine.py)</a> • 
+            <a href="../index.html">Main Platform Showcase</a>
+        </p>
+    </footer>
+
+</body>
+</html>

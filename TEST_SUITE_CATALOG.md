@@ -1,15 +1,15 @@
-# Master Production Test Suite Catalog (250 / 250 PASSED)
+# Master Production Test Suite Catalog (310 / 310 PASSED)
 
-This catalog details the **240 unit tests** and **10 production stress scenarios** spanning all 20 Staff/Principal-level AI Platform infrastructure projects.
+This catalog details the **300 unit tests** and **10 production stress scenarios** spanning all 25 Staff/Principal-level AI Platform & Infrastructure projects.
 
 ---
 
 ## Master Verification Summary
-- **Total Projects**: 20
-- **Total Unit Tests**: 240 (12 per project)
+- **Total Projects**: 25
+- **Total Unit Tests**: 300 (12 per project)
 - **Production Stress Scenarios**: 10
-- **Test Pass Rate**: **100% (250 / 250 PASSED)**
-- **Architecture Blueprints**: `PROD_ARCHITECTURE_REASONING.md` present in all 20 project repositories.
+- **Test Pass Rate**: **100% (310 / 310 PASSED)**
+- **Architecture Blueprints**: `PROD_ARCHITECTURE_REASONING.md`, `FLOWCHART.svg`, and `FLOWCHART.html` present in all 25 project repositories.
 
 ---
 
@@ -37,6 +37,11 @@ This catalog details the **240 unit tests** and **10 production stress scenarios
 | **18** | `18-tensorrt-llm-onnx-execution` | **12** | `test_tensorrt_engine.py` | 32k context sequence export, max batch size=512, unknown precision FP16 fallback, custom model paths | **PASSED** |
 | **19** | `19-multi-agent-swarm-orchestrator` | **12** | `test_swarm_orchestrator.py` | 50/50 tied vote split, empty context dict execution, multi-parent DAG convergence, long multi-sentence goal | **PASSED** |
 | **20** | `20-data-governance-openlineage-catalog` | **12** | `test_data_governance.py` | FAIL status event emission, explicit None/null value rejection, empty Marquez graph, multi-input lineage | **PASSED** |
+| **21** | `21-vllm-multi-lora-dynamic-serving` | **12** | `test_multi_lora.py` | Dynamic VRAM LRU eviction, multi-tenant Segmented GEMM batching, unregistered adapter fallback, zero-token handling | **PASSED** |
+| **22** | `22-disaggregated-prefill-decode-engine` | **12** | `test_disaggregated.py` | GPUDirect RDMA KV cache transfer, TCP network timeout fallback, heavy 4096-token prefill scaling, TTFT calculation | **PASSED** |
+| **23** | `23-fp8-mixed-precision-gemm-engine` | **12** | `test_fp8_gemm.py` | Hopper FP8 E4M3/E5M2 formats, dynamic delayed scaling calibration, sub-microsecond GEMM execution, 1.86x speedup | **PASSED** |
+| **24** | `24-nccl-distributed-collective-profiler` | **12** | `test_nccl_profiler.py` | Bus bandwidth formula, 8-GPU All-Reduce, straggler rank thermal throttling detection, zero latency protection | **PASSED** |
+| **25** | `25-speculative-medusa-multi-head-verifier` | **12** | `test_medusa_verifier.py` | 4-head attached MLP candidate prediction, 2D Tree Attention causal mask verification, 2.85x speedup verification | **PASSED** |
 
 ---
 

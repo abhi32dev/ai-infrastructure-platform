@@ -1,6 +1,6 @@
 # Enterprise AI Infrastructure & Agentic Systems Platform
 
-[![Build & Test Status](https://img.shields.io/badge/Pytest-250%2F250%20PASSED-brightgreen)](TEST_SUITE_CATALOG.md)
+[![Build & Test Status](https://img.shields.io/badge/Pytest-310%2F310%20PASSED-brightgreen)](TEST_SUITE_CATALOG.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/Web%20Showcase-Live%20Demo-purple)](https://abhi32dev.github.io/ai-infrastructure-platform/)
 
@@ -10,11 +10,12 @@ Comprehensive **Staff & Principal-Level AI Platform, Multi-GPU Distributed Train
 
 ## 🚀 Live Interactive Showcase & Portfolio
 - **Main Web Showcase App**: **[https://abhi32dev.github.io/ai-infrastructure-platform/](https://abhi32dev.github.io/ai-infrastructure-platform/)**
-- **Master Test Catalog (250/250 PASSED)**: **[`TEST_SUITE_CATALOG.md`](TEST_SUITE_CATALOG.md)**
+- **Master Test Catalog (310/310 PASSED)**: **[`TEST_SUITE_CATALOG.md`](TEST_SUITE_CATALOG.md)**
+- **Master Technical Interview Preparation Guide**: **[`INTERVIEW_PREP.md`](INTERVIEW_PREP.md)**
 
 ---
 
-## 🔀 Master Flowcharts & Architecture Blueprints (20 / 20 Projects)
+## 🔀 Master Flowcharts & Architecture Blueprints (25 / 25 Projects)
 
 To view the **live interactive rendered HTML flowchart** for any project directly from GitHub without opening raw code, click the **`Live Rendered Flowchart`** links in the table below:
 
@@ -40,6 +41,11 @@ To view the **live interactive rendered HTML flowchart** for any project directl
 | **18** | **TensorRT-LLM Engine & ONNX** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/18-tensorrt-llm-onnx-execution/FLOWCHART.html)** | 📄 [Blueprint](18-tensorrt-llm-onnx-execution/PROD_ARCHITECTURE_REASONING.md) | 📁 [`18-tensorrt-llm-onnx-execution`](18-tensorrt-llm-onnx-execution/) |
 | **19** | **Multi-Agent Swarm Orchestrator** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/19-multi-agent-swarm-orchestrator/FLOWCHART.html)** | 📄 [Blueprint](19-multi-agent-swarm-orchestrator/PROD_ARCHITECTURE_REASONING.md) | 📁 [`19-multi-agent-swarm-orchestrator`](19-multi-agent-swarm-orchestrator/) |
 | **20** | **Data Governance & OpenLineage** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/20-data-governance-openlineage-catalog/FLOWCHART.html)** | 📄 [Blueprint](20-data-governance-openlineage-catalog/PROD_ARCHITECTURE_REASONING.md) | 📁 [`20-data-governance-openlineage-catalog`](20-data-governance-openlineage-catalog/) |
+| **21** | **vLLM Multi-LoRA Dynamic Serving** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/21-vllm-multi-lora-dynamic-serving/FLOWCHART.html)** | 📄 [Blueprint](21-vllm-multi-lora-dynamic-serving/PROD_ARCHITECTURE_REASONING.md) | 📁 [`21-vllm-multi-lora-dynamic-serving`](21-vllm-multi-lora-dynamic-serving/) |
+| **22** | **Disaggregated Prefill vs. Decode** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/22-disaggregated-prefill-decode-engine/FLOWCHART.html)** | 📄 [Blueprint](22-disaggregated-prefill-decode-engine/PROD_ARCHITECTURE_REASONING.md) | 📁 [`22-disaggregated-prefill-decode-engine`](22-disaggregated-prefill-decode-engine/) |
+| **23** | **Native FP8 Mixed-Precision GEMM** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/23-fp8-mixed-precision-gemm-engine/FLOWCHART.html)** | 📄 [Blueprint](23-fp8-mixed-precision-gemm-engine/PROD_ARCHITECTURE_REASONING.md) | 📁 [`23-fp8-mixed-precision-gemm-engine`](23-fp8-mixed-precision-gemm-engine/) |
+| **24** | **NCCL Collective Profiler & Topology** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/24-nccl-distributed-collective-profiler/FLOWCHART.html)** | 📄 [Blueprint](24-nccl-distributed-collective-profiler/PROD_ARCHITECTURE_REASONING.md) | 📁 [`24-nccl-distributed-collective-profiler`](24-nccl-distributed-collective-profiler/) |
+| **25** | **Medusa Multi-Head Speculation** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/25-speculative-medusa-multi-head-verifier/FLOWCHART.html)** | 📄 [Blueprint](25-speculative-medusa-multi-head-verifier/PROD_ARCHITECTURE_REASONING.md) | 📁 [`25-speculative-medusa-multi-head-verifier`](25-speculative-medusa-multi-head-verifier/) |
 
 ---
 
