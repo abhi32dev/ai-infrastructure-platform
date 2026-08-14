@@ -40,3 +40,66 @@ This system implements a **Triton Inference Server Dynamic Batching Scheduler wi
 | **Request Surge Queue Overflow** | Dropped client requests | Dynamic queue depth limits + immediate batch flush on capacity cap. |
 | **Quantization Precision Drift** | Model accuracy drop | AWQ salient channel preservation protects top 1% critical weights. |
 | **CUDA Stream Deadlock** | Inference pipeline freeze | Timeout-bounded CUDA stream synchronizations. |
+---
+
+## 5. End-to-End Operational Manual & Execution Guide
+
+### A. Plain English Summary (What This Project Does)
+Maximizes GPU Tensor Core compute utilization by grouping individual inference requests into dynamic batches (size 32 / 10ms timeout) and executing custom AWQ INT4 GEMM kernels on CUDA streams.
+
+---
+
+### B. Input Data Contract & Initiation Payload
+To execute or trigger this component, pass the following structured JSON input payload:
+
+```json
+{
+  "request_id": "req_88190",
+  "input_tensor_shape": [1, 4096],
+  "max_batch_size": 32,
+  "max_queue_delay_ms": 10.0
+}
+```
+**Input Parameter Specification**:
+Individual incoming inference requests with 1D input tensors and caller response Futures.
+
+---
+
+### C. Step-by-Step Execution Walkthrough (Mapped to 2D Flowchart)
+- **1. Enqueue Request in Batch Buffer**: Pushes incoming request to high-throughput asyncio dynamic batch queue.
+- **2. Decision 1 (Batch Ready Trigger)**: Checks if batch size == 32 OR if queue delay timeout >= 10ms. If neither, holds request in buffer.
+- **3. Launch Triton AWQ INT4 Kernel**: Stacks input tensors into unified 2D matrix batch and executes fused AWQ INT4 GEMM kernel across GPU Tensor Cores.
+- **4. Decision 2 (Kernel Launch Verification)**: If kernel succeeds, unpacks output tensor batch and scatters results back to individual caller Futures.
+- **5. Decision 3 (Unbatched Fallback Pass)**: If batched kernel launch experiences memory fault, falls back to unbatched single-pass PyTorch CUDA execution to safeguard SLAs.
+
+---
+
+### D. Expected Output & Return Values
+Upon successful execution, the component returns the following structured result payload:
+
+```json
+{
+  "batch_size_executed": 32,
+  "kernel_type": "triton_awq_int4_gemm",
+  "batch_latency_ms": 6.8,
+  "individual_latency_ms": 7.1,
+  "tflops_achieved": 242.5
+}
+```
+**Output Specification**:
+Batch execution throughput, individual latency per request, and Tensor Core utilization metric.
+
+---
+
+### E. How to Run & Verify Locally
+Execute the automated test suite and benchmarks using the following command:
+
+```bash
+python3 -m pytest 10-triton-cuda-gpu-scheduler/tests/test_triton_engine.py -v
+```
+
+---
+
+### F. Interactive Architecture Diagrams & Blueprints
+- **Interactive 2D HTML Blueprint**: [Open `FLOWCHART.html`](file:///Users/abhi/Documents/Antigravity/10-triton-cuda-gpu-scheduler/FLOWCHART.html)
+- **Standalone Vector SVG Diagram**: [Open `FLOWCHART.svg`](file:///Users/abhi/Documents/Antigravity/10-triton-cuda-gpu-scheduler/FLOWCHART.svg)

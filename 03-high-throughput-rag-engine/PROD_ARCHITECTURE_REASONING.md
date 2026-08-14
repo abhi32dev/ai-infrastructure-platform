@@ -1,45 +1,97 @@
-# Production Architecture & Design Trade-offs: High-Throughput RAG Engine
+# Production Architecture & Design Trade-offs: LLM Evaluation Gate Engine
 
 ## 1. Executive Context & Business Motivation
-Standard RAG systems relying solely on dense vector search fail to capture exact keyword matches (e.g. error codes, product serial numbers, technical jargon), while keyword-only search (BM25) fails on semantic meaning. Furthermore, multi-tenant enterprise search requires sub-50ms retrieval SLAs and strict tenant metadata isolation.
+Deploying new fine-tuned or aligned LLM checkpoints into production requires automated evaluation quality gates. Manual human evaluation takes days and does not scale; un-evaluated model deployments risk regressions in hallucination rates, toxicity, or domain accuracy.
 
-This engine implements a **High-Throughput Hybrid BM25 + Vector Search Engine with Reciprocal Rank Fusion (RRF)**.
+This component provides an **Automated LLM Evaluation Quality Gate Engine** executing multi-metric scoring (Faithfulness, Answer Relevance, Hallucination Index, Toxicity).
 
 ---
 
 ## 2. Technical Decisions & Architectural Trade-Offs
 
-### A. Hybrid Search (Dense + Sparse RRF) vs Dense Vector Only
-- **Chosen Option**: **Hybrid BM25 Keyword + Vector Search combined via Reciprocal Rank Fusion (RRF)**.
-- **Alternative Evaluated**: Vector-only search (Cosine similarity).
+### A. Automated LLM-as-a-Judge Evaluation vs Manual Human Sampling
+- **Chosen Option**: **Automated Multi-Metric LLM-as-a-Judge Gate**.
+- **Alternative Evaluated**: Manual spot-checking by domain annotators.
 - **Trade-Off Rationale**:
-  - *Vector-Only*: Fails on exact code queries like `ERR_NEXUS_9012`.
-  - *Hybrid RRF*: Combines top-K dense embeddings with top-K BM25 lexical results using formula $RRF\_Score(d) = \sum \frac{1}{k + r_i(d)}$.
-  - *Trade-off*: Performs two query passes (dense + sparse), increasing latency slightly (~10ms). Mitigated by parallel async execution.
-
-### B. Embedded ChromaDB vs Remote Managed Vector DB (Pinecone/Milvus)
-- **Chosen Option**: **ChromaDB Vector Store with Metadata Filtering**.
-- **Trade-Off Rationale**:
-  - *Remote SaaS Vector DB*: Adds network latency (~30-80ms) and per-query API costs.
-  - *Embedded ChromaDB*: Sub-10ms query performance, zero network overhead, native metadata filtering by `tenant_id`.
+  - *Manual Spot-Checking*: Slow, non-deterministic, and cannot block CI/CD pipelines automatically.
+  - *Automated Eval Gate*: Computes exact metric scores across benchmark evaluation datasets in <30 seconds, returning automated PASS/FAIL status for CI/CD pipeline promotion.
 
 ---
 
 ## 3. Best Practices & Production Design Principles
-
-1. **Reciprocal Rank Fusion (RRF) Re-ranking**:
-   - Merges disparate ranking metrics without needing score normalization across different vector spaces.
-2. **Metadata-Based Multi-Tenant Isolation**:
-   - Enforces strict tenant filtering (`{"tenant_id": "$TENANT"}`) at the vector index query level to prevent cross-tenant data leakage.
-3. **Empty Collection Handling**:
-   - Safe fallbacks when querying un-indexed collections or zero-match search inputs.
+1. **Threshold-Based Deployment Blocking**: Blocks model promotion if faithfulness score falls below 0.85 or toxicity exceeds 0.01.
+2. **Deterministic Evaluation Seeding**: Uses fixed temperature (0.0) for reproducible judge scoring.
+3. **Multi-Aspect Scoring Breakdown**: Separates retrieval relevance from generation correctness.
 
 ---
 
 ## 4. Production Failure Modes & Mitigations
-
 | Failure Mode | Impact | Mitigation Strategy |
 | :--- | :--- | :--- |
-| **Empty / Zero Match Query** | Index error or empty list crash | Graceful empty list return with zero score flags. |
-| **Cross-Tenant Data Exposure** | Critical security/compliance violation | Index-level mandatory `tenant_id` metadata filter scoping. |
-| **High Latency Re-Ranking** | SLA breach (>50ms) | Top-K candidate capping ($K=20$) before RRF scoring. |
+| **Judge Model Hallucination** | Inaccurate eval score | Ensemble judge consensus across multiple evaluation prompts. |
+| **Evaluation Dataset Bias** | Overfitting to test set | Dynamic evaluation set rotation across CI runs. |
+---
+
+## 5. End-to-End Operational Manual & Execution Guide
+
+### A. Plain English Summary (What This Project Does)
+Prevents degraded or toxic model variants from reaching production. Evaluates candidate LLMs against golden benchmark datasets using Welch's t-test for statistical significance, RAG triad quality scores, and automated toxicity classifiers.
+
+---
+
+### B. Input Data Contract & Initiation Payload
+To execute or trigger this component, pass the following structured JSON input payload:
+
+```json
+{
+  "candidate_model": "mistral-7b-finetuned-v2",
+  "baseline_model": "mistral-7b-prod-v1",
+  "sample_size": 500,
+  "p_value_threshold": 0.05,
+  "min_accuracy_delta": 0.05
+}
+```
+**Input Parameter Specification**:
+Candidate model ID, baseline model ID, and evaluation dataset containing 500 prompt-response pairs.
+
+---
+
+### C. Step-by-Step Execution Walkthrough (Mapped to 2D Flowchart)
+- **1. Compute Evaluation Metrics**: Runs candidate and baseline models over golden dataset, calculating Faithfulness, Answer Relevance, and Groundedness.
+- **2. Decision 1 (Welch t-Test Statistical Gate)**: Computes two-sample Welch t-test. If p-value < 0.05 and accuracy delta > +5%, marks quality gain. If not statistically significant, blocks build.
+- **3. Toxicity & PII Audit**: Passes candidate responses through toxicity evaluation classifier.
+- **4. Decision 2 (Toxicity Threshold Check)**: If toxicity score <= 0.05, approves release gate and registers model in MLflow Production stage. If toxic (> 0.05), blocks deployment.
+- **5. Decision 3 (Sample Size & Re-eval)**: If sample size is insufficient, triggers re-sampling from golden dataset.
+
+---
+
+### D. Expected Output & Return Values
+Upon successful execution, the component returns the following structured result payload:
+
+```json
+{
+  "gate_status": "APPROVED",
+  "p_value": 0.0142,
+  "accuracy_delta": "+0.078",
+  "toxicity_score": 0.002,
+  "promoted_to_mlflow": true,
+  "registry_stage": "Production"
+}
+```
+**Output Specification**:
+A statistical release gate report with p-values, confidence intervals, toxicity score, and promotion status.
+
+---
+
+### E. How to Run & Verify Locally
+Execute the automated test suite and benchmarks using the following command:
+
+```bash
+python3 -m pytest 03-llm-eval-gate/tests/test_eval_gate.py -v
+```
+
+---
+
+### F. Interactive Architecture Diagrams & Blueprints
+- **Interactive 2D HTML Blueprint**: [Open `FLOWCHART.html`](file:///Users/abhi/Documents/Antigravity/03-llm-eval-gate/FLOWCHART.html)
+- **Standalone Vector SVG Diagram**: [Open `FLOWCHART.svg`](file:///Users/abhi/Documents/Antigravity/03-llm-eval-gate/FLOWCHART.svg)

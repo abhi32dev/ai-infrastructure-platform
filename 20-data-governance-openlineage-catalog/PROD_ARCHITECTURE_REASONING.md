@@ -40,3 +40,65 @@ This framework provides an **OpenLineage Event Telemetry Emitter, Marquez Lineag
 | **Corrupted / Schema-Violating Data** | Downstream ML model failure | Pre-commit Data Contract Validator halts pipeline execution. |
 | **Un-trackable Data Lineage** | Compliance & audit failure | OpenLineage telemetry emitter logs input/output dataset URIs on job completion. |
 | **Missing Required Contract Fields** | Null pointer errors in feature code | Contract validator detects missing keys and emits detailed violation logs. |
+---
+
+## 5. End-to-End Operational Manual & Execution Guide
+
+### A. Plain English Summary (What This Project Does)
+Enforces strict data quality contracts with Great Expectations, traces end-to-end dataset lineage in Marquez, and emits OpenLineage ABORT / COMPLETE telemetry events to halt pipelines before corrupt data spreads.
+
+---
+
+### B. Input Data Contract & Initiation Payload
+To execute or trigger this component, pass the following structured JSON input payload:
+
+```json
+{
+  "job_name": "gold_user_aggregate_daily",
+  "dataset_urn": "lakehouse://gold/user_features",
+  "expectation_suite": "no_null_customer_ids"
+}
+```
+**Input Parameter Specification**:
+Dataset identifier, input PySpark DataFrame or SQL table, and Great Expectations expectation suite.
+
+---
+
+### C. Step-by-Step Execution Walkthrough (Mapped to 2D Flowchart)
+- **1. Pre-Job Data Contract Validation**: Evaluates incoming dataset against Great Expectations schema rules (non-null IDs, valid ranges).
+- **2. Decision 1 (Contract Check Gate)**: If pre-job check passes, emits OpenLineage START event and proceeds. If violations exist, immediately emits OpenLineage ABORT event to Marquez and quarantines corrupt dataset.
+- **3. Execute Transformation Job**: Runs data transformation pipeline and computes output table row count metrics.
+- **4. Decision 2 (Transformation Success Verification)**: If transformation completes without unhandled errors, emits OpenLineage COMPLETE event with row count metadata and updates Marquez lineage graph.
+- **5. Decision 3 (Marquez Health & Queue)**: If Marquez API server is temporarily unreachable, buffers lineage telemetry events in local disk queue for automated retry.
+
+---
+
+### D. Expected Output & Return Values
+Upon successful execution, the component returns the following structured result payload:
+
+```json
+{
+  "contract_status": "PASSED",
+  "violations_count": 0,
+  "openlineage_event": "COMPLETE",
+  "rows_processed": 150000,
+  "marquez_lineage_updated": true
+}
+```
+**Output Specification**:
+Data contract validation report, OpenLineage run state event, and Marquez lineage graph update status.
+
+---
+
+### E. How to Run & Verify Locally
+Execute the automated test suite and benchmarks using the following command:
+
+```bash
+python3 -m pytest 20-data-governance-openlineage-catalog/tests/test_data_governance.py -v
+```
+
+---
+
+### F. Interactive Architecture Diagrams & Blueprints
+- **Interactive 2D HTML Blueprint**: [Open `FLOWCHART.html`](file:///Users/abhi/Documents/Antigravity/20-data-governance-openlineage-catalog/FLOWCHART.html)
+- **Standalone Vector SVG Diagram**: [Open `FLOWCHART.svg`](file:///Users/abhi/Documents/Antigravity/20-data-governance-openlineage-catalog/FLOWCHART.svg)

@@ -1,42 +1,95 @@
-# Production Architecture & Design Trade-offs: ML Observability Monitoring Stack
+# Production Architecture & Design Trade-offs: Event Stream PySpark ETL Pipeline
 
 ## 1. Executive Context & Business Motivation
-Machine learning models deployed in production silently degrade over time due to data drift (distribution shifts in input features) and concept drift (shifts in relationship between features and target labels). Without statistical observability, silent model degradation causes bad automated decisions without raising traditional software exceptions.
+Ingesting high-volume event streams (2.4M SNMP telemetry events/day from 12,000 edge nodes) requires fault-tolerant stream processing, schema enforcement, sliding window aggregations, and dead-letter queue routing.
 
-This stack implements **Real-time Feature Drift Detection (Evidently AI) with Prometheus Metrics & Grafana Alerting**.
+This pipeline provides a **PySpark Streaming ETL & Edge Telemetry Processing Engine**.
 
 ---
 
 ## 2. Technical Decisions & Architectural Trade-Offs
 
-### A. Non-Parametric Kolmogorov-Smirnov (KS) Test vs PSI / Wasserstein Distance
-- **Chosen Option**: **Kolmogorov-Smirnov (KS) Statistical Drift Test**.
-- **Alternative Evaluated**: Population Stability Index (PSI).
+### A. PySpark Structured Streaming vs Batch Processing
+- **Chosen Option**: **PySpark Structured Streaming with Watermarking**.
+- **Alternative Evaluated**: Overnight Batch Cron ETL.
 - **Trade-Off Rationale**:
-  - *PSI*: Requires continuous feature binning choices, sensitive to zero-count bins.
-  - *KS-Test*: Non-parametric test operating on cumulative empirical distributions. Computes exact p-values ($p < 0.05$ indicates statistically significant drift) without requiring manual histogram binning.
-
-### B. Prometheus Metric Exporter vs External Logging APIs
-- **Chosen Option**: **Prometheus Counter / Gauge Metrics Exporter**.
-- **Trade-Off Rationale**: Enables real-time scrape-based monitoring integrated directly into existing DevOps Grafana dashboards and Alertmanager notification channels.
+  - *Batch Cron*: Delays anomaly detection features by up to 24 hours, making real-time edge node fault mitigation impossible.
+  - *Structured Streaming*: Computes continuous 5-minute sliding metrics with sub-second processing latency.
 
 ---
 
 ## 3. Best Practices & Production Design Principles
-
-1. **Alert Deduplication & Cooldown Windows**:
-   - Suppresses repeated drift alerts within a 1-hour cooldown window to prevent alert fatigue.
-2. **Zero-Variance & Constant Feature Guard**:
-   - Handles constant numerical features (e.g. all values = 0.0) without throwing divide-by-zero or numerical precision warnings.
-3. **P95 / P99 Latency Histogram Metrics**:
-   - Measures inference latency distributions alongside data quality metrics.
+1. **Dead-Letter Queue (DLQ)**: Routes corrupt JSON events to isolated DLQ storage.
+2. **Event-Time Watermarking**: Drops events arriving older than 10 minutes to prevent state accumulation.
+3. **Partitioned Parquet / Delta Writes**: Writes output metrics partitioned by date and node region.
 
 ---
 
 ## 4. Production Failure Modes & Mitigations
-
 | Failure Mode | Impact | Mitigation Strategy |
 | :--- | :--- | :--- |
-| **Alert Fatigue from Noise** | Engineers ignore real drift | Kolmogorov-Smirnov $p < 0.05$ threshold + 1-hour alert cooldown. |
-| **Zero-Variance Feature Inputs** | Math domain error in stats | Guard check returns $p=1.0$ (no drift) for constant arrays. |
-| **Missing Reference Baseline** | Drift check cannot run | Default fallback baseline populated during model deployment initialization. |
+| **Malformed Telemetry Schema** | Parser crash | Schema validation DLQ routing. |
+| **Unbounded State Store Growth** | Executor OOM | Event-time watermarks bound state retention window. |
+---
+
+## 5. End-to-End Operational Manual & Execution Guide
+
+### A. Plain English Summary (What This Project Does)
+Processes streaming Kafka event logs with 10-minute watermark deduplication and atomically commits validated data to Delta Lake Gold ACID tables with OpenLineage lineage tracking.
+
+---
+
+### B. Input Data Contract & Initiation Payload
+To execute or trigger this component, pass the following structured JSON input payload:
+
+```json
+{
+  "event_id": "evt_773190",
+  "device_id": "edge-node-1044",
+  "event_timestamp": "2026-08-14T12:30:00Z",
+  "metrics": {"gpu_util": 0.88, "vram_used_mb": 18400}
+}
+```
+**Input Parameter Specification**:
+Continuous JSON streaming event logs containing event timestamps, device IDs, and telemetry metrics.
+
+---
+
+### C. Step-by-Step Execution Walkthrough (Mapped to 2D Flowchart)
+- **1. Watermark Ingestion**: Applies a 10-minute Structured Streaming event watermark boundary.
+- **2. Decision 1 (Late Event Filter)**: Compares event timestamp against watermark. If late (> 10 mins old), drops record to prevent state store memory bloat.
+- **3. Deduplication & Schema Validation**: Executes 3-pass deduplication and verifies schema against Delta Lake Gold contract.
+- **4. Decision 2 (Data Quality Contract Check)**: If record passes schema rules, performs atomic ACID append to Delta Lake Gold table. If corrupted, routes record to Dead-Letter Queue (DLQ).
+- **5. Decision 3 (DLQ S3 Quarantine)**: Writes malformed records to S3 DLQ bucket and emits an OpenLineage telemetry run event.
+
+---
+
+### D. Expected Output & Return Values
+Upon successful execution, the component returns the following structured result payload:
+
+```json
+{
+  "delta_table": "gold.edge_telemetry_v1",
+  "commit_version": 1042,
+  "records_committed": 50000,
+  "dlq_records": 3,
+  "openlineage_event_emitted": true
+}
+```
+**Output Specification**:
+Delta Lake Gold table commit metadata, records ingested count, and OpenLineage job execution event.
+
+---
+
+### E. How to Run & Verify Locally
+Execute the automated test suite and benchmarks using the following command:
+
+```bash
+python3 -m pytest 05-event-stream-pyspark-etl/tests/test_event_pipeline.py -v
+```
+
+---
+
+### F. Interactive Architecture Diagrams & Blueprints
+- **Interactive 2D HTML Blueprint**: [Open `FLOWCHART.html`](file:///Users/abhi/Documents/Antigravity/05-event-stream-pyspark-etl/FLOWCHART.html)
+- **Standalone Vector SVG Diagram**: [Open `FLOWCHART.svg`](file:///Users/abhi/Documents/Antigravity/05-event-stream-pyspark-etl/FLOWCHART.svg)
