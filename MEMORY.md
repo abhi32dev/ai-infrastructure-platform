@@ -13,7 +13,7 @@
 Before completing any user request or delivering final output, ALWAYS perform the following pre-flight checks:
 
 1. **Mandatory Visual Self-Evaluation & Screenshot UAT**:
-   - Whatever UI, HTML page, or diagram is designed, ALWAYS render/inspect the output visual image first before pushing.
+   - Whatever UI, HTML page, or diagram is designed, ALWAYS inspect the output visual and XML validity first before pushing.
    - Act as your own self-evaluator. Verify that text contrast, multi-directional arrows, decision diamonds, process boxes, and code signatures are 100% visible, non-broken, and crisp.
    - Only when it passes visual UAT and looks exceptional, proceed to push to Git!
 
@@ -23,11 +23,11 @@ Before completing any user request or delivering final output, ALWAYS perform th
    - Test that clicking anywhere on the tile card cleanly opens the project directory.
 
 3. **Execute Full Test Suite Verification**:
-   - Run `python3 tests/run_all_20_project_tests.py` unsandboxed.
-   - Enforce **100% Pass Rate** across all 240 unit tests and 10 heavy production stress scenarios (250 total tests).
+   - Run `python3 tests/run_all_20_project_tests.py` or `tests/run_all_25_project_tests.py` unsandboxed.
+   - Enforce **100% Pass Rate** across all 300 unit tests and 10 heavy production stress scenarios (310 total tests).
 
 4. **Verify Documentation & Catalog Integrity**:
-   - Confirm `TEST_SUITE_CATALOG.md`, `README.md`, `index.html`, and `PROD_ARCHITECTURE_REASONING.md` in all 20 projects are synchronized.
+   - Confirm `TEST_SUITE_CATALOG.md`, `README.md`, `index.html`, `INTERVIEW_PREP.md`, and `PROD_ARCHITECTURE_REASONING.md` across all 25 projects are synchronized.
 
 5. **Git Sync & Deployment**:
    - Stage, commit, and push all changes to GitHub (`main` branch).
@@ -35,12 +35,13 @@ Before completing any user request or delivering final output, ALWAYS perform th
 
 ---
 
-## 3. Architecture Blueprint Standards (20 / 20 Projects)
+## 3. Architecture Blueprint Standards (25 / 25 Projects)
 Every project folder must contain a `PROD_ARCHITECTURE_REASONING.md` file documenting:
 - Business context & real-world necessity.
-- Technical decisions & architectural trade-offs (e.g. FSDP ZeRO-3 vs DeepSpeed vs DDP, PagedAttention vs static KV allocation, Triton vs CUDA C++).
+- Technical decisions & architectural trade-offs (e.g. FSDP ZeRO-3 vs DeepSpeed vs DDP, PagedAttention vs static KV allocation, Triton vs CUDA C++, Multi-LoRA vs single-tenant, Disaggregated Prefill/Decode vs colocated, FP8 vs FP16, NCCL Ring vs Tree).
 - Defensive design principles (null safety, zero-copy PyArrow IPC, rate limits).
 - Failure modes & automated mitigations.
+- **Section 5: End-to-End Operational Manual & Step-by-Step Execution Guide**.
 
 ---
 
@@ -54,5 +55,5 @@ Every project folder must contain a `PROD_ARCHITECTURE_REASONING.md` file docume
 
 ## 5. Strict Self-Evaluation & Zero Broken Image Guarantee
 - **NEVER assume a design passed UAT without inspecting the rendered output**.
-- **NEVER use external `<img src="...">` tags inside `FLOWCHART.html`**. If an image fails to load or CDN cache is delayed, it renders a broken icon box (`[2D Control Flow Architecture Diagram]`).
+- **NEVER use external `<img src="...">` tags inside `FLOWCHART.html`**. If an image fails to load or CDN cache is delayed, it renders a broken icon box.
 - **ALWAYS use 100% self-contained native HTML5 + CSS3 elements + inline SVG** inside `FLOWCHART.html`. PURE HTML/CSS layout CANNOT produce broken image icons and will ALWAYS render cleanly in every browser under all network conditions.
