@@ -1,6 +1,6 @@
 # Enterprise AI Infrastructure & Agentic Systems Platform
 
-[![Build & Test Status](https://img.shields.io/badge/Pytest-310%2F310%20PASSED-brightgreen)](TEST_SUITE_CATALOG.md)
+[![Build & Test Status](https://img.shields.io/badge/Pytest-388%2F388%20PASSED-brightgreen)](TEST_SUITE_CATALOG.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/Web%20Showcase-Live%20Demo-purple)](https://abhi32dev.github.io/ai-infrastructure-platform/)
 
@@ -10,12 +10,13 @@ Comprehensive **Staff & Principal-Level AI Platform, Multi-GPU Distributed Train
 
 ## 🚀 Live Interactive Showcase & Portfolio
 - **Main Web Showcase App**: **[https://abhi32dev.github.io/ai-infrastructure-platform/](https://abhi32dev.github.io/ai-infrastructure-platform/)**
-- **Master Test Catalog (310/310 PASSED)**: **[`TEST_SUITE_CATALOG.md`](TEST_SUITE_CATALOG.md)**
+- **Master Test Catalog (388/388 verified project tests)**: **[`TEST_SUITE_CATALOG.md`](TEST_SUITE_CATALOG.md)**
 - **Master Technical Interview Preparation Guide**: **[`INTERVIEW_PREP.md`](INTERVIEW_PREP.md)**
+- **Realtime Voice Interview Simulator**: **[`31-realtime-voice-interview-simulator`](31-realtime-voice-interview-simulator/README.md)** — browser speech, optional OpenAI Realtime WebRTC, adaptive interviews, guardrails, eight-dimension evals, SQLite audit journal, Prometheus metrics, and 78 isolated tests.
 
 ---
 
-## 🔀 Master Flowcharts & Architecture Blueprints (25 / 25 Projects)
+## 🔀 Master Flowcharts & Architecture Blueprints (26 documented projects)
 
 To view the **live interactive rendered HTML flowchart** for any project directly from GitHub without opening raw code, click the **`Live Rendered Flowchart`** links in the table below:
 
@@ -46,6 +47,7 @@ To view the **live interactive rendered HTML flowchart** for any project directl
 | **23** | **Native FP8 Mixed-Precision GEMM** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/23-fp8-mixed-precision-gemm-engine/FLOWCHART.html)** | 📄 [Blueprint](23-fp8-mixed-precision-gemm-engine/PROD_ARCHITECTURE_REASONING.md) | 📁 [`23-fp8-mixed-precision-gemm-engine`](23-fp8-mixed-precision-gemm-engine/) |
 | **24** | **NCCL Collective Profiler & Topology** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/24-nccl-distributed-collective-profiler/FLOWCHART.html)** | 📄 [Blueprint](24-nccl-distributed-collective-profiler/PROD_ARCHITECTURE_REASONING.md) | 📁 [`24-nccl-distributed-collective-profiler`](24-nccl-distributed-collective-profiler/) |
 | **25** | **Medusa Multi-Head Speculation** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/25-speculative-medusa-multi-head-verifier/FLOWCHART.html)** | 📄 [Blueprint](25-speculative-medusa-multi-head-verifier/PROD_ARCHITECTURE_REASONING.md) | 📁 [`25-speculative-medusa-multi-head-verifier`](25-speculative-medusa-multi-head-verifier/) |
+| **31** | **Realtime Voice Interview Simulator** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/31-realtime-voice-interview-simulator/FLOWCHART.html)** | 📄 [Blueprint](31-realtime-voice-interview-simulator/PROD_ARCHITECTURE_REASONING.md) | 📁 [`31-realtime-voice-interview-simulator`](31-realtime-voice-interview-simulator/) |
 
 ---
 

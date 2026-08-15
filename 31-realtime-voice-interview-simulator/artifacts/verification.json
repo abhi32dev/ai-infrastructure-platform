@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-15T16:09:46.567551+00:00",
+  "status": "passed",
+  "checks": {
+    "required_files": true,
+    "unique_required_files": true,
+    "svg_is_valid_xml": true,
+    "html_links_svg": true,
+    "question_bank_has_answers": true,
+    "no_absolute_user_paths": true,
+    "no_committed_secret": true,
+    "browser_has_no_standard_credential": true,
+    "offline_and_realtime_paths": true,
+    "tests_pass": true
+  },
+  "test_count": 78,
+  "test_output": "........................................................................ [ 92%]\n......                                                                   [100%]\n78 passed in 0.32s"
+}

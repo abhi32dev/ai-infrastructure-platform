@@ -1,6 +1,8 @@
-# Master Production Test Suite Catalog (310 / 310 PASSED)
+# Master Production Test Suite Catalog (388 / 388 PASSED)
 
 This catalog details the **300 unit tests** and **10 production stress scenarios** spanning all 25 Staff/Principal-level AI Platform & Infrastructure projects.
+
+Project 31 adds **78 isolated tests** for the realtime voice interview simulator, bringing the verified repository total to **388 / 388**. Projects 26–30 are intentionally excluded from this count until their normalization/build work is complete.
 
 ---
 
@@ -42,6 +44,7 @@ This catalog details the **300 unit tests** and **10 production stress scenarios
 | **23** | `23-fp8-mixed-precision-gemm-engine` | **12** | `test_fp8_gemm.py` | Hopper FP8 E4M3/E5M2 formats, dynamic delayed scaling calibration, sub-microsecond GEMM execution, 1.86x speedup | **PASSED** |
 | **24** | `24-nccl-distributed-collective-profiler` | **12** | `test_nccl_profiler.py` | Bus bandwidth formula, 8-GPU All-Reduce, straggler rank thermal throttling detection, zero latency protection | **PASSED** |
 | **25** | `25-speculative-medusa-multi-head-verifier` | **12** | `test_medusa_verifier.py` | 4-head attached MLP candidate prediction, 2D Tree Attention causal mask verification, 2.85x speedup verification | **PASSED** |
+| **31** | `31-realtime-voice-interview-simulator` | **78** | `tests/test_*.py` | State transitions, null/boundary validation, redaction, injection detection, adaptive ordering, SQLite retention, API errors, rate limits, WebRTC relay, scoring synonyms, static UI, metrics, and deletion | **PASSED** |
 
 ---
 

@@ -1,0 +1,17 @@
+services:
+  voice-interviewer:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      INTERVIEW_DB: "/app/data/interviews.db"
+      INTERVIEW_RATE_LIMIT: "60"
+    volumes:
+      - interview-data:/app/data
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    restart: unless-stopped
+volumes:
+  interview-data: {}

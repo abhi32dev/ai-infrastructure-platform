@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1780" viewBox="0 0 1400 1780" role="img" aria-labelledby="title desc">
+  <title id="title">Realtime voice interview conditional execution flow</title>
+  <desc id="desc">Flowchart from configuration through question selection, offline or realtime voice, validation, redaction, scoring, adaptation and completion, including failure fallbacks.</desc>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#08121d"/><stop offset="1" stop-color="#0d1d2c"/></linearGradient>
+    <linearGradient id="node" x2="1" y2="1"><stop stop-color="#13283a"/><stop offset="1" stop-color="#0f2030"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L9 3L0 6Z" fill="#57c9d4"/></marker>
+    <style>
+      .t{font-family:Inter,Arial,sans-serif;fill:#eaf3f8}.h{font-size:24px;font-weight:700}.s{font-size:15px;fill:#9db2c2}.c{font-size:13px;fill:#5fe0d3;font-family:ui-monospace,monospace}.box{fill:url(#node);stroke:#35506a;stroke-width:2}.decision{fill:#16283a;stroke:#f2b75c;stroke-width:2}.error{fill:#301b27;stroke:#ff7084;stroke-width:2}.success{fill:#123127;stroke:#4addaa;stroke-width:2}.flow{fill:none;stroke:#57c9d4;stroke-width:3;marker-end:url(#arrow)}.back{fill:none;stroke:#f2b75c;stroke-width:3;stroke-dasharray:8 7;marker-end:url(#arrow)}.label{font-size:13px;font-weight:700;fill:#f2b75c}
+    </style>
+  </defs>
+  <rect width="1400" height="1780" rx="24" fill="url(#bg)"/>
+  <text x="700" y="52" text-anchor="middle" class="t h">Project 31 · Conditional Voice Interview Execution</text>
+  <text x="700" y="80" text-anchor="middle" class="t s">Every arrow maps to an executable state, function or fail-safe boundary</text>
+
+  <rect x="430" y="110" width="540" height="92" rx="18" class="box"/>
+  <text x="700" y="145" text-anchor="middle" class="t h">Configure interview</text><text x="700" y="174" text-anchor="middle" class="t c">api.create_session → InterviewEngine.create</text>
+  <path d="M700 202V245" class="flow"/>
+
+  <polygon points="700,245 910,325 700,405 490,325" class="decision"/>
+  <text x="700" y="313" text-anchor="middle" class="t h">Questions match filters?</text><text x="700" y="341" text-anchor="middle" class="t c">QuestionBank.filter</text>
+  <path d="M490 325H285V390" class="flow"/><text x="390" y="312" class="label">NO</text>
+  <rect x="90" y="390" width="390" height="92" rx="18" class="error"/><text x="285" y="425" text-anchor="middle" class="t h">Reject configuration</text><text x="285" y="454" text-anchor="middle" class="t c">ValueError → HTTP 422</text>
+  <path d="M700 405V450" class="flow"/><text x="714" y="432" class="label">YES</text>
+
+  <rect x="430" y="450" width="540" height="92" rx="18" class="box"/><text x="700" y="485" text-anchor="middle" class="t h">Persist and start session</text><text x="700" y="514" text-anchor="middle" class="t c">store.save · _add_next_turn · state=ACTIVE</text>
+  <path d="M700 542V585" class="flow"/>
+
+  <polygon points="700,585 910,665 700,745 490,665" class="decision"/>
+  <text x="700" y="653" text-anchor="middle" class="t h">Voice path?</text><text x="700" y="681" text-anchor="middle" class="t c">static/app.js</text>
+  <path d="M490 665H280V740" class="flow"/><text x="335" y="651" class="label">OFFLINE</text>
+  <rect x="70" y="740" width="420" height="100" rx="18" class="box"/><text x="280" y="777" text-anchor="middle" class="t h">Browser speech / typed answer</text><text x="280" y="807" text-anchor="middle" class="t c">speak · dictate · textarea</text>
+  <path d="M910 665H1120V740" class="flow"/><text x="1000" y="651" class="label">REALTIME</text>
+  <rect x="910" y="740" width="420" height="100" rx="18" class="box"/><text x="1120" y="777" text-anchor="middle" class="t h">Open WebRTC session</text><text x="1120" y="807" text-anchor="middle" class="t c">realtime_call → RealtimeGateway.create_call</text>
+  <path d="M1120 840V875" class="flow"/>
+  <polygon points="1120,875 1280,935 1120,995 960,935" class="decision"/>
+  <text x="1120" y="928" text-anchor="middle" class="t h">Connected?</text><text x="1120" y="954" text-anchor="middle" class="t c">SDP answer starts v=0</text>
+  <path d="M1280 935H1350V790H1330" class="back"/><text x="1290" y="920" class="label">NO · FALL BACK</text>
+  <path d="M1120 995V1040H700" class="flow"/><text x="1134" y="1020" class="label">YES</text>
+  <path d="M280 840V1040H700" class="flow"/>
+
+  <rect x="430" y="1040" width="540" height="104" rx="18" class="box"/><text x="700" y="1076" text-anchor="middle" class="t h">Finalize candidate answer</text><text x="700" y="1106" text-anchor="middle" class="t c">validate_text → redact_sensitive → detect_prompt_injection</text>
+  <path d="M700 1144V1185" class="flow"/>
+  <polygon points="700,1185 905,1260 700,1335 495,1260" class="decision"/>
+  <text x="700" y="1248" text-anchor="middle" class="t h">Valid non-empty input?</text><text x="700" y="1276" text-anchor="middle" class="t c">GuardrailViolation boundary</text>
+  <path d="M495 1260H290V1175H430" class="back"/><text x="330" y="1245" class="label">NO · RETRY SAME TURN</text>
+  <path d="M700 1335V1375" class="flow"/><text x="714" y="1358" class="label">YES</text>
+
+  <rect x="430" y="1375" width="540" height="104" rx="18" class="box"/><text x="700" y="1412" text-anchor="middle" class="t h">Score, journal and persist</text><text x="700" y="1442" text-anchor="middle" class="t c">DeterministicScorer.evaluate → store.save → append_event</text>
+  <path d="M700 1479V1518" class="flow"/>
+  <polygon points="700,1518 920,1593 700,1668 480,1593" class="decision"/>
+  <text x="700" y="1581" text-anchor="middle" class="t h">More questions?</text><text x="700" y="1609" text-anchor="middle" class="t c">question_limit · pending_question_ids</text>
+  <path d="M480 1593H330V520H430" class="back"/><text x="344" y="1577" class="label">YES · ADAPT / LOOP</text>
+  <path d="M920 1593H1100V1690" class="flow"/><text x="950" y="1577" class="label">NO</text>
+  <rect x="900" y="1690" width="400" height="70" rx="18" class="success"/><text x="1100" y="1721" text-anchor="middle" class="t h">Complete + readiness report</text><text x="1100" y="1747" text-anchor="middle" class="t c">complete → summary → save_summary</text>
+</svg>

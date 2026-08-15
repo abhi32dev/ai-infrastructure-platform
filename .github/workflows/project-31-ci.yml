@@ -1,0 +1,35 @@
+name: Project 31 voice interviewer CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "31-realtime-voice-interview-simulator/**"
+      - ".github/workflows/project-31-ci.yml"
+  pull_request:
+    paths:
+      - "31-realtime-voice-interview-simulator/**"
+      - ".github/workflows/project-31-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 31-realtime-voice-interview-simulator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 31-realtime-voice-interview-simulator/requirements-dev.txt
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install --upgrade pip
+      - run: .venv/bin/python -m pip install -r requirements-dev.txt
+      - run: .venv/bin/python -m pytest -q --cov=src/voice_interviewer --cov-branch --cov-fail-under=95
+      - run: .venv/bin/python scripts/verify_project.py

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Realtime Staff and Principal AI infrastructure voice interview simulator">
+  <title>Principal Voice Interview Lab</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div><span class="eyebrow">PROJECT 31 · AI INFRASTRUCTURE</span><h1>Principal Voice Interview Lab</h1></div>
+    <div class="health"><span id="healthDot"></span><strong id="healthText">Connecting</strong></div>
+  </header>
+
+  <main>
+    <section class="hero panel">
+      <div>
+        <p class="eyebrow">REALTIME · ADAPTIVE · EVIDENCE-BASED</p>
+        <h2>Practice the interview you cannot memorize.</h2>
+        <p>The interviewer challenges architecture claims, injects failures, demands code evidence, and scores production reasoning across your portfolio.</p>
+      </div>
+      <div class="metric-grid">
+        <article><strong id="questionCount">—</strong><span>Indexed questions</span></article>
+        <article><strong>8</strong><span>Scoring dimensions</span></article>
+        <article><strong>2</strong><span>Voice paths</span></article>
+        <article><strong>100%</strong><span>Offline-testable core</span></article>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel controls">
+        <h3>Interview configuration</h3>
+        <label>Mode<select id="mode"><option value="mixed">Mixed panel</option><option value="system_design">System design</option><option value="incident">Production incident</option><option value="code_review">Code review</option><option value="screening">Rapid screening</option><option value="behavioral">Leadership</option></select></label>
+        <label>Level<select id="difficulty"><option value="staff">Staff</option><option value="principal">Principal</option><option value="senior">Senior</option></select></label>
+        <label>Project filter<input id="projectFilter" placeholder="e.g. vllm, rag, kubernetes"></label>
+        <label>Technology tag<input id="tagFilter" placeholder="e.g. gpu, reliability"></label>
+        <label>Questions<input id="questionLimit" type="number" min="1" max="50" value="8"></label>
+        <label class="check"><input id="adaptive" type="checkbox" checked> Adaptive difficulty</label>
+        <label class="check"><input id="retain" type="checkbox" checked> Retain redacted transcript</label>
+        <button id="startButton" class="primary">Start interview</button>
+        <div class="divider"></div>
+        <h3>Voice transport</h3>
+        <label>Voice<select id="voice"><option>marin</option><option>coral</option><option>verse</option><option>shimmer</option><option>alloy</option></select></label>
+        <button id="offlineVoice" disabled>Speak question locally</button>
+        <button id="realtimeVoice" disabled>Connect realtime interviewer</button>
+        <button id="stopVoice" disabled>Disconnect voice</button>
+        <p class="help" id="voiceHelp">Offline mode uses browser speech APIs. Realtime mode requires OPENAI_API_KEY on the server.</p>
+      </aside>
+
+      <section class="panel interview">
+        <div class="interview-header">
+          <div><span class="status" id="sessionState">NOT STARTED</span><span id="progress">0 / 0</span></div>
+          <div><button id="pauseButton" disabled>Pause</button><button id="cancelButton" disabled>End</button></div>
+        </div>
+        <article class="question-card">
+          <span class="eyebrow" id="questionMeta">WAITING FOR SESSION</span>
+          <h2 id="questionText">Configure an interview to begin.</h2>
+        </article>
+        <div class="transcript-header"><h3>Your answer</h3><div><button id="listenButton" disabled>Start dictation</button><button id="clearButton">Clear</button></div></div>
+        <textarea id="answer" rows="10" maxlength="30000" placeholder="Speak or type your answer. Include the invariant, mechanism, trade-offs, failure modes, observability, security, cost, scale, and code evidence."></textarea>
+        <div class="answer-footer"><span id="wordCount">0 words</span><button id="submitButton" class="primary" disabled>Submit and score</button></div>
+        <audio id="remoteAudio" autoplay></audio>
+      </section>
+
+      <aside class="panel feedback">
+        <h3>Evaluation</h3>
+        <div class="score-ring"><strong id="score">—</strong><span>/ 100</span></div>
+        <p class="level" id="level">Complete an answer to receive evidence-based feedback.</p>
+        <div id="dimensions" class="dimensions"></div>
+        <h4>Strengths</h4><ul id="strengths"><li>No evaluation yet.</li></ul>
+        <h4>Gaps</h4><ul id="gaps"><li>No evaluation yet.</li></ul>
+        <details><summary>Improved Staff/Principal answer</summary><p id="improved"></p></details>
+        <details><summary>Recommended follow-up</summary><p id="followup"></p></details>
+      </aside>
+    </section>
+
+    <section class="panel session-report">
+      <div><p class="eyebrow">SESSION ARTIFACT</p><h2>Readiness report</h2></div>
+      <div id="summary" class="summary-grid"><article><strong>—</strong><span>Average score</span></article><article><strong>—</strong><span>Answered</span></article><article><strong>—</strong><span>Strongest</span></article><article><strong>—</strong><span>Next focus</span></article></div>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

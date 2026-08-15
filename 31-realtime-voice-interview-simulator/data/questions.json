@@ -1,0 +1,123 @@
+[
+  {
+    "id": "voice-architecture-001",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "Where are the trust boundaries in a browser-to-Realtime-API voice interview, and why must the standard API key never reach the browser?",
+    "reference_answer": "The browser, application backend, OpenAI Realtime service, persistence layer, and repository question source are separate trust zones. The browser supplies untrusted SDP, audio and text. The backend authenticates the user, applies rate and budget policy, builds server-owned instructions, and sends the standard API key only on its outbound request. The browser receives an SDP answer or short-lived credential, never the standard key. Session identifiers must be unguessable and authorization must be rechecked on every transcript, artifact and deletion request. Persist redacted transcripts only when consent and retention policy allow it.",
+    "tags": ["security", "realtime", "agents"],
+    "difficulty": "staff",
+    "code_references": ["src/voice_interviewer/realtime.py", "src/voice_interviewer/api.py"],
+    "required_concepts": ["trust boundary", "standard API key", "server-side", "authorization", "redaction", "retention"],
+    "follow_ups": ["How would you bind a Realtime connection to an authenticated tenant and a maximum audio budget?"]
+  },
+  {
+    "id": "voice-failure-002",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How should the interview continue when WebRTC, transcription, or the realtime provider fails halfway through an answer?",
+    "reference_answer": "Audio transport must not own interview state. Persist the question and state transition before opening WebRTC, buffer only bounded transcript deltas, and checkpoint a finalized answer separately. When media fails, close tracks, retain the active question, offer browser dictation or typed input, and avoid advancing until the answer commit succeeds. Retries need an end-to-end deadline and a new media connection while preserving the same interview turn identity. Ambiguous transcript fragments are marked partial rather than silently scored as complete. Metrics distinguish media, provider, transcription and persistence failures.",
+    "tags": ["reliability", "realtime", "observability"],
+    "difficulty": "staff",
+    "code_references": ["src/voice_interviewer/engine.py", "static/app.js"],
+    "required_concepts": ["state", "checkpoint", "fallback", "deadline", "partial", "metrics"]
+  },
+  {
+    "id": "eval-judge-003",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "Why is an LLM judge insufficient as the only interview scoring control, and how would you calibrate it?",
+    "reference_answer": "An LLM judge is nondeterministic and can exhibit verbosity, style, position and self-preference bias. It may reward confident falsehoods or penalize concise correct answers. Keep deterministic checks for required concepts, forbidden claims, code references and release thresholds; use the judge for semantic nuance. Pin the judge model, prompt and rubric, evaluate repeated runs, compare against blinded expert labels by role and demographic slices, measure agreement and false-positive/negative rates, and require human review for consequential decisions. Version all components and do not expose private reference answers to the candidate.",
+    "tags": ["evals", "guardrails"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/scoring.py"],
+    "required_concepts": ["nondeterministic", "bias", "deterministic", "calibration", "expert labels", "version"]
+  },
+  {
+    "id": "privacy-retention-004",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "Design the privacy, consent, retention, deletion and audit policy for interview audio and transcripts.",
+    "reference_answer": "Audio recording is opt-in and independent from transcript retention. Show purpose, retention and sharing before capture; minimize collection; redact secrets and PII before durable storage; encrypt in transit and at rest; isolate tenants; and log access without copying sensitive content into audit events. Apply bounded retention with automatic deletion, immediate subject deletion, legal-hold separation, regional residency and backup expiry. Raw audio should default to no retention. Audit policy version, actor, resource hash and deletion result. Test deletion across primary data, derived reports, caches and backups.",
+    "tags": ["security", "privacy", "governance"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/guardrails.py", "src/voice_interviewer/storage.py"],
+    "required_concepts": ["consent", "minimize", "redact", "encryption", "tenant", "retention", "deletion", "audit"]
+  },
+  {
+    "id": "adaptive-policy-005",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How do you make adaptive question selection useful without creating an unfair or irreproducible interview?",
+    "reference_answer": "Separate selection policy from scoring. Start from a versioned question pool and seeded ordering, constrain adaptation to declared difficulty and competency rules, and preserve every candidate set and selection reason. Never adapt using protected attributes. Compare candidates on common anchor questions and report uncertainty when paths diverge. Offline replay must reconstruct the same path from events. Evaluate coverage, difficulty drift and outcome parity across slices, and allow a nonadaptive standardized mode for formal assessment.",
+    "tags": ["evals", "governance", "agents"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/engine.py", "src/voice_interviewer/question_bank.py"],
+    "required_concepts": ["selection policy", "seed", "version", "protected attributes", "anchor", "replay", "parity"]
+  },
+  {
+    "id": "cost-budget-006",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How would you enforce realtime audio cost and concurrency budgets atomically across multiple application replicas?",
+    "reference_answer": "Admission uses a strongly consistent tenant quota service. Atomically reserve a concurrent-session lease and estimated audio/token budget, with expiry for crashed clients and a fencing token for reconciliation. Stream usage telemetry and stop new generation before the hard ceiling; reconcile reserved versus actual usage on close. Per-process counters are only local protection. Redis Lua or a transactional database can implement the reservation, but fairness, regional consistency, clock behavior, provider reconciliation and fail-closed policy must be explicit. Alert on reservation leakage and cost per completed interview.",
+    "tags": ["cost", "reliability", "scale"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/guardrails.py", "src/voice_interviewer/observability.py"],
+    "required_concepts": ["atomic", "lease", "reserve", "fencing", "reconcile", "hard ceiling", "fairness"]
+  },
+  {
+    "id": "observability-007",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "Which metrics and traces detect correctness loss in a voice interviewer before users report it?",
+    "reference_answer": "Trace session creation, media negotiation, VAD turns, transcript finalization, question selection, scoring and artifact commit under one correlation ID. Measure connection success, time to first audio, turn latency, interruption success, transcription word error on canaries, silence/overlap rate, unanswered-turn rate, score distribution drift, question coverage, deterministic-versus-judge disagreement, redaction events, completion rate and cost per completed interview. SLOs should focus on completed useful turns, not HTTP availability alone. Control label cardinality and never record raw audio or sensitive transcript in telemetry.",
+    "tags": ["observability", "realtime", "evals"],
+    "difficulty": "staff",
+    "code_references": ["src/voice_interviewer/observability.py"],
+    "required_concepts": ["trace", "time to first audio", "word error", "drift", "disagreement", "completion", "cardinality"]
+  },
+  {
+    "id": "prompt-security-008",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How do you stop a spoken prompt-injection attempt from changing interviewer privileges or exposing reference answers?",
+    "reference_answer": "Treat transcript and audio-derived text as untrusted candidate content. The candidate cannot change system instructions, question-bank authorization, tools, model credentials, retention or scoring policy. Construct instructions server-side, place reference answers in a non-exported control boundary, and expose only narrow tools with schema validation and tenant-scoped authorization. Detect injection as telemetry rather than relying on detection alone. The decisive controls are capability isolation, least privilege, output filtering and independent policy enforcement. Red-team indirect injection embedded in project documents as well as spoken input.",
+    "tags": ["security", "guardrails", "agents"],
+    "difficulty": "staff",
+    "code_references": ["src/voice_interviewer/guardrails.py", "src/voice_interviewer/realtime.py"],
+    "required_concepts": ["untrusted", "server-side", "capability", "least privilege", "authorization", "output filtering", "indirect injection"]
+  },
+  {
+    "id": "question-lineage-009",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How should question-bank ingestion preserve lineage and avoid stale or fabricated code evidence?",
+    "reference_answer": "Each question stores source path, content digest, project identity, repository commit and code references. Ingestion parses only approved files, rejects duplicate IDs and empty answers, normalizes prompts for semantic duplicate checks, and validates every code path and symbol against the same commit. A generated answer never overwrites authored evidence. CI fails on unresolved references, missing required documents or question-count regression. At session creation, pin a bank version so later repository changes cannot alter an active interview. Surface whether evidence is executable locally, a production substitution, or conceptual.",
+    "tags": ["governance", "evals", "reliability"],
+    "difficulty": "staff",
+    "code_references": ["src/voice_interviewer/question_bank.py"],
+    "required_concepts": ["lineage", "digest", "commit", "duplicate", "validate", "pin", "conceptual"]
+  },
+  {
+    "id": "scale-010",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "What changes when this voice interview service grows from one local user to ten thousand concurrent global sessions?",
+    "reference_answer": "Keep browser media connected directly to regional realtime edges while stateless application APIs handle policy and session initiation. Move SQLite state to a partitioned transactional store, events to a durable log, artifacts to object storage and quotas to a consistent service. Introduce regional admission, tenant fairness, backpressure, load shedding, bounded media duration, data residency, multi-region failover and asynchronous report generation. Capacity planning uses concurrent audio minutes, connection establishment rate, transcript throughput and scoring latency. The local state machine and idempotency contracts remain, but coordination, leases and reconciliation become distributed.",
+    "tags": ["scale", "realtime", "reliability"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/storage.py", "src/voice_interviewer/api.py"],
+    "required_concepts": ["regional", "stateless", "partition", "durable log", "quota", "backpressure", "residency", "reconciliation"]
+  },
+  {
+    "id": "testing-011",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "How do you test a realtime voice system deterministically when microphones, networks and model outputs are nondeterministic?",
+    "reference_answer": "Separate deterministic business logic from media and provider adapters. Unit-test parsing, selection, state transitions, redaction, scoring, retention and quotas with a fixed clock and seed. Contract-test the Realtime HTTP boundary using recorded schema-valid SDP fixtures and mock transports. Browser tests use synthetic audio and assert controls, events and accessibility. Add property tests for malformed Unicode and state sequences, chaos tests for disconnect and partial transcript, load tests for admission, and a small opt-in live canary. Never require a paid network call for CI; live tests report separately and do not hide offline failures.",
+    "tags": ["testing", "realtime", "reliability"],
+    "difficulty": "staff",
+    "code_references": ["tests/", "src/voice_interviewer/realtime.py"],
+    "required_concepts": ["adapter", "fixed seed", "contract", "synthetic audio", "property", "chaos", "canary", "CI"]
+  },
+  {
+    "id": "linearization-012",
+    "project": "31-realtime-voice-interview-simulator",
+    "prompt": "Where is the linearization point for submitting and scoring an interview answer, and what happens if the process crashes around it?",
+    "reference_answer": "The authoritative mutation is the transactional commit that records the finalized redacted answer, evaluation, turn state and idempotency identity. Provider speech completion is not the commit. If the process crashes before commit, the turn remains unanswered and the same submission key can be retried. If it crashes after commit but before response delivery, the retry returns the existing evaluation rather than scoring twice. The current local lab serializes session updates in SQLite; production adds an answer-submission idempotency key, optimistic version, transactional event/outbox and reconciliation for external judge usage.",
+    "tags": ["reliability", "architecture"],
+    "difficulty": "principal",
+    "code_references": ["src/voice_interviewer/engine.py", "src/voice_interviewer/storage.py"],
+    "required_concepts": ["linearization", "transaction", "idempotency", "retry", "version", "outbox", "reconciliation"]
+  }
+]
