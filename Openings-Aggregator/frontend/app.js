@@ -6,12 +6,12 @@ let currentSortCol = 'date';
 let currentSortDir = 'desc';
 
 async function init() {
-  loadPreferences();
+  await loadPreferences();
   renderRecentChips();
-  await triggerHarvest();
+  await fetchJobs();
 }
 
-function savePreferences() {
+async function savePreferences() {
   const prefs = {
     query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
     company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
@@ -20,51 +20,82 @@ function savePreferences() {
     salary: document.getElementById('salarySelect') ? document.getElementById('salarySelect').value : '0',
     ats: document.getElementById('atsSelect') ? document.getElementById('atsSelect').value : '',
     viewMode: viewMode,
+    currentPage: currentPage,
     sortCol: currentSortCol,
     sortDir: currentSortDir
   };
+
+  // 1. Save to client localStorage
   localStorage.setItem('oa_user_preferences', JSON.stringify(prefs));
+
+  // 2. Save to persistent server disk file resume_vault/ui_state.json
+  try {
+    await fetch('/api/ui_state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(prefs)
+    });
+  } catch(e) {}
 }
 
-function loadPreferences() {
-  const saved = localStorage.getItem('oa_user_preferences');
-  if (!saved) return;
+async function loadPreferences() {
+  let prefs = null;
+
+  // Try fetching from server disk file first
   try {
-    const prefs = JSON.parse(saved);
-    if (prefs.query !== undefined && document.getElementById('inputQuery')) {
-      document.getElementById('inputQuery').value = prefs.query;
+    const res = await fetch('/api/ui_state');
+    const data = await res.json();
+    if (data.status === 'success' && data.ui_state && Object.keys(data.ui_state).length > 0) {
+      prefs = data.ui_state;
     }
-    if (prefs.company !== undefined && document.getElementById('inputCompanyFilter')) {
-      document.getElementById('inputCompanyFilter').value = prefs.company;
-    }
-    if (prefs.location !== undefined && document.getElementById('inputLocation')) {
-      document.getElementById('inputLocation').value = prefs.location;
-    }
-    if (prefs.sort !== undefined && document.getElementById('sortSelect')) {
-      document.getElementById('sortSelect').value = prefs.sort;
-    }
-    if (prefs.salary !== undefined && document.getElementById('salarySelect')) {
-      document.getElementById('salarySelect').value = prefs.salary;
-    }
-    if (prefs.ats !== undefined && document.getElementById('atsSelect')) {
-      document.getElementById('atsSelect').value = prefs.ats;
-    }
-    if (prefs.viewMode) {
-      viewMode = prefs.viewMode;
-      document.getElementById('tabBatch50').className = viewMode === 'batch50' 
-        ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
-        : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
-
-      document.getElementById('tabAll').className = viewMode === 'all'
-        ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
-        : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
-
-      document.getElementById('paginationControls').style.display = viewMode === 'batch50' ? 'flex' : 'none';
-    }
-    if (prefs.sortCol) currentSortCol = prefs.sortCol;
-    if (prefs.sortDir) currentSortDir = prefs.sortDir;
-    updateSortIndicators();
   } catch(e) {}
+
+  // Fallback to client localStorage
+  if (!prefs) {
+    const saved = localStorage.getItem('oa_user_preferences');
+    if (saved) {
+      try { prefs = JSON.parse(saved); } catch(e) {}
+    }
+  }
+
+  if (!prefs) return;
+
+  if (prefs.query !== undefined && document.getElementById('inputQuery')) {
+    document.getElementById('inputQuery').value = prefs.query;
+  }
+  if (prefs.company !== undefined && document.getElementById('inputCompanyFilter')) {
+    document.getElementById('inputCompanyFilter').value = prefs.company;
+  }
+  if (prefs.location !== undefined && document.getElementById('inputLocation')) {
+    document.getElementById('inputLocation').value = prefs.location;
+  }
+  if (prefs.sort !== undefined && document.getElementById('sortSelect')) {
+    document.getElementById('sortSelect').value = prefs.sort;
+  }
+  if (prefs.salary !== undefined && document.getElementById('salarySelect')) {
+    document.getElementById('salarySelect').value = prefs.salary;
+  }
+  if (prefs.ats !== undefined && document.getElementById('atsSelect')) {
+    document.getElementById('atsSelect').value = prefs.ats;
+  }
+  if (prefs.currentPage) {
+    currentPage = prefs.currentPage;
+  }
+  if (prefs.viewMode) {
+    viewMode = prefs.viewMode;
+    document.getElementById('tabBatch50').className = viewMode === 'batch50' 
+      ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+      : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+
+    document.getElementById('tabAll').className = viewMode === 'all'
+      ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+      : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+
+    document.getElementById('paginationControls').style.display = viewMode === 'batch50' ? 'flex' : 'none';
+  }
+  if (prefs.sortCol) currentSortCol = prefs.sortCol;
+  if (prefs.sortDir) currentSortDir = prefs.sortDir;
+  updateSortIndicators();
 }
 
 function saveRecentFilter(queryStr) {
@@ -138,7 +169,6 @@ async function triggerHarvest() {
     banner.innerText = `✅ ${data.message || 'Live API Harvest Complete!'}`;
     
     currentJobs = data.jobs || [];
-    currentPage = 1;
     renderJobs();
   } catch (e) {
     banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-rose-950/40 border-rose-500/30 text-rose-300 block';
@@ -166,7 +196,6 @@ async function fetchJobs() {
     const data = await res.json();
     if (data.status === 'success') {
       currentJobs = data.jobs || [];
-      currentPage = 1;
       renderJobs();
     }
   } catch(e) {}
@@ -183,7 +212,6 @@ function setViewMode(mode) {
     : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
 
   document.getElementById('paginationControls').style.display = mode === 'batch50' ? 'flex' : 'none';
-  currentPage = 1;
   savePreferences();
   renderJobs();
 }
@@ -193,6 +221,7 @@ function changePage(delta) {
   currentPage += delta;
   if (currentPage < 1) currentPage = 1;
   if (currentPage > totalPages) currentPage = totalPages;
+  savePreferences();
   renderJobs();
 }
 
@@ -268,6 +297,8 @@ function renderJobs() {
   let displayJobs = filteredJobs;
   if (viewMode === 'batch50') {
     const totalPages = Math.ceil(totalCount / BATCH_SIZE) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
     const start = (currentPage - 1) * BATCH_SIZE;
     displayJobs = filteredJobs.slice(start, start + BATCH_SIZE);
 

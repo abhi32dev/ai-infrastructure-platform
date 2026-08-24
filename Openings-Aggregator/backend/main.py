@@ -181,6 +181,15 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       )
       return
 
+    if parsed.path == "/api/ui_state":
+      state_file = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "ui_state.json")
+      state = {}
+      if os.path.exists(state_file):
+        with open(state_file, "r", encoding="utf-8") as f:
+          state = json.load(f)
+      self._send_json({"status": "success", "ui_state": state})
+      return
+
     if parsed.path == "/api/telemetry":
       log_file = os.path.join(os.path.dirname(__file__), "..", "telemetry.log")
       logs = []
@@ -219,6 +228,13 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       req_json = json.loads(post_data)
     except Exception:
       req_json = {}
+
+    if parsed.path == "/api/ui_state":
+      state_file = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "ui_state.json")
+      with open(state_file, "w", encoding="utf-8") as f:
+        json.dump(req_json, f, indent=2)
+      self._send_json({"status": "success", "message": "UI state saved to disk"})
+      return
 
     if parsed.path == "/api/telemetry":
       # Solve stuck form field in real-time
