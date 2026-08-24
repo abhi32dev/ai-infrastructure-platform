@@ -1,0 +1,31 @@
+{
+  "personal": {
+    "fullName": "Abhishek Singh",
+    "firstName": "Abhishek",
+    "lastName": "Singh",
+    "email": "asingh32us@gmail.com",
+    "phone": "(669) 203-9217",
+    "currentLocation": "Fremont, CA, USA",
+    "linkedin": "https://linkedin.com/in/abhishek32",
+    "github": "https://github.com/abhi32dev",
+    "website": "https://github.com/abhi32dev"
+  },
+  "work_authorization": {
+    "legallyAuthorizedUS": "Yes",
+    "requireSponsorship": "No",
+    "futureSponsorship": "No",
+    "visaStatus": "U.S. Citizen / Permanent Resident"
+  },
+  "eeo": {
+    "gender": "Male",
+    "race": "Asian (Not Hispanic or Latino)",
+    "veteran": "I am not a veteran",
+    "disability": "No, I do not have a disability"
+  },
+  "preferences": {
+    "hybridOfficeAttendance": "Yes, willing to work in office 3+ days/week",
+    "stateOfResidence": "California",
+    "schoolLocation": "California, USA",
+    "noticePeriod": "Immediate / 2 weeks"
+  }
+}

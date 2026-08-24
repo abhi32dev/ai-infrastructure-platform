@@ -1,6 +1,6 @@
 import sqlite3
 import os
-import json
+import re
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "openings.db")
 
@@ -17,11 +17,38 @@ def init_db():
             description TEXT,
             ats_provider TEXT,
             posted_date TEXT,
+            salary_min INTEGER DEFAULT 0,
+            salary_max INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    # Migrate columns if existing DB
+    try:
+        cursor.execute("ALTER TABLE jobs ADD COLUMN salary_min INTEGER DEFAULT 0")
+    except Exception:
+        pass
+    try:
+        cursor.execute("ALTER TABLE jobs ADD COLUMN salary_max INTEGER DEFAULT 0")
+    except Exception:
+        pass
+
     conn.commit()
     conn.close()
+
+def parse_salary_bounds(text):
+    if not text:
+        return 0, 0
+    matches = re.findall(r'\$([0-9]{2,3})(?:,([0-9]{3}))?|([0-9]{2,3})k', text.lower())
+    vals = []
+    for m in matches:
+        if m[0]:
+            val = int(m[0]) * 1000 + (int(m[1]) if m[1] else 0)
+            vals.append(val)
+        elif m[2]:
+            vals.append(int(m[2]) * 1000)
+    if not vals:
+        return 0, 0
+    return min(vals), max(vals)
 
 def save_jobs(jobs):
     init_db()
@@ -31,12 +58,14 @@ def save_jobs(jobs):
     saved_count = 0
     for j in jobs:
         try:
+            s_min, s_max = parse_salary_bounds(f"{j.get('title', '')} {j.get('description', '')} {j.get('location', '')}")
             cursor.execute('''
-                INSERT OR REPLACE INTO jobs (id, company, title, location, apply_url, description, ats_provider, posted_date)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO jobs (id, company, title, location, apply_url, description, ats_provider, posted_date, salary_min, salary_max)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 j["id"], j["company"], j["title"], j["location"],
-                j["apply_url"], j["description"], j["ats_provider"], j["posted_date"]
+                j["apply_url"], j["description"], j["ats_provider"], j["posted_date"],
+                s_min, s_max
             ))
             saved_count += 1
         except Exception as e:
@@ -46,7 +75,7 @@ def save_jobs(jobs):
     conn.close()
     return saved_count
 
-def query_jobs(search_query="", location_query="", ats_filter="", limit=100):
+def query_jobs(search_query="", location_query="", ats_filter="", company_filter="", min_salary=0, sort_by="date", limit=300):
     init_db()
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -56,7 +85,6 @@ def query_jobs(search_query="", location_query="", ats_filter="", limit=100):
     params = []
     
     if search_query:
-        # Split search tokens (e.g. "python, aws" or "backend")
         tokens = [t.strip() for t in search_query.replace(",", " ").split() if t.strip()]
         for t in tokens:
             sql += " AND (title LIKE ? OR description LIKE ? OR company LIKE ?)"
@@ -69,8 +97,27 @@ def query_jobs(search_query="", location_query="", ats_filter="", limit=100):
     if ats_filter:
         sql += " AND ats_provider LIKE ?"
         params.append(f"%{ats_filter}%")
+
+    if company_filter:
+        c_list = [c.strip() for c in company_filter.split(",") if c.strip()]
+        placeholders = ",".join(["?"] * len(c_list))
+        sql += f" AND company IN ({placeholders})"
+        params.extend(c_list)
+
+    if min_salary > 0:
+        sql += " AND (salary_max >= ? OR salary_max = 0)"
+        params.append(min_salary)
         
-    sql += " ORDER BY created_at DESC LIMIT ?"
+    if sort_by == "salary_desc":
+        sql += " ORDER BY salary_max DESC, created_at DESC"
+    elif sort_by == "company":
+        sql += " ORDER BY company ASC, created_at DESC"
+    elif sort_by == "title":
+        sql += " ORDER BY title ASC, created_at DESC"
+    else:
+        sql += " ORDER BY created_at DESC"
+        
+    sql += " LIMIT ?"
     params.append(limit)
     
     cursor.execute(sql, params)

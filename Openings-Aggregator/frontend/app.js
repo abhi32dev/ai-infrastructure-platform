@@ -1,24 +1,90 @@
 let currentJobs = [];
+let allCompanies = [];
+let selectedCompanyNames = new Set();
+
+async function init() {
+  await loadCompanies();
+  await fetchJobs();
+}
+
+async function loadCompanies() {
+  try {
+    const res = await fetch('/api/companies');
+    const data = await res.json();
+    if (data.status === 'success') {
+      allCompanies = data.companies || [];
+      // Default to selecting all companies initially
+      if (selectedCompanyNames.size === 0) {
+        allCompanies.forEach(c => selectedCompanyNames.add(c.name));
+      }
+      renderCompanyGrid();
+      document.getElementById('companyCount').innerText = allCompanies.length;
+    }
+  } catch(e) {}
+}
+
+function renderCompanyGrid() {
+  const grid = document.getElementById('companyCheckboxGrid');
+  grid.innerHTML = allCompanies.map(c => `
+    <label class="flex items-center space-x-2 bg-slate-950 border border-slate-800/80 p-2.5 rounded-lg cursor-pointer hover:border-slate-700 transition text-xs">
+      <input type="checkbox" value="${escapeHtml(c.name)}" ${selectedCompanyNames.has(c.name) ? 'checked' : ''} onchange="toggleCompanySelection('${escapeHtml(c.name)}', this.checked)" class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500">
+      <span class="font-semibold text-slate-200">${escapeHtml(c.name)}</span>
+      <span class="text-[10px] text-slate-500 uppercase">(${escapeHtml(c.ats)})</span>
+    </label>
+  `).join('');
+  updateSelectedCount();
+}
+
+function toggleCompanySelection(name, isChecked) {
+  if (isChecked) selectedCompanyNames.add(name);
+  else selectedCompanyNames.delete(name);
+  updateSelectedCount();
+  fetchJobs();
+}
+
+function selectAllCompanies(shouldSelect) {
+  if (shouldSelect) {
+    allCompanies.forEach(c => selectedCompanyNames.add(c.name));
+  } else {
+    selectedCompanyNames.clear();
+  }
+  renderCompanyGrid();
+  fetchJobs();
+}
+
+function updateSelectedCount() {
+  document.getElementById('selectedCompanyCount').innerText = `${selectedCompanyNames.size} of ${allCompanies.length} selected`;
+}
 
 async function fetchJobs() {
   const q = document.getElementById('inputQuery').value.trim();
-  const res = await fetch(`/api/jobs?q=${encodeURIComponent(q)}&limit=200`);
-  const data = await res.json();
-  if (data.status === 'success') {
-    currentJobs = data.jobs || [];
-    renderJobs(currentJobs);
-  }
+  const loc = document.getElementById('inputLocation').value.trim();
+  const ats = document.getElementById('atsSelect').value;
+  const sort = document.getElementById('sortSelect').value;
+  const minSal = document.getElementById('salarySelect').value;
+
+  const compList = Array.from(selectedCompanyNames).join(',');
+  const url = `/api/jobs?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&ats=${encodeURIComponent(ats)}&companies=${encodeURIComponent(compList)}&min_salary=${minSal}&sort_by=${sort}&limit=300`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === 'success') {
+      currentJobs = data.jobs || [];
+      renderJobs(currentJobs);
+    }
+  } catch(e) {}
 }
 
 function renderJobs(jobs) {
   const list = document.getElementById('jobList');
-  document.getElementById('txtCount').innerText = `Showing ${jobs.length} jobs`;
-  
+  document.getElementById('txtCount').innerText = `Showing ${jobs.length} target openings`;
+
   if (jobs.length === 0) {
     list.innerHTML = `
       <tr>
         <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-          No jobs found. Click "Fetch Live Openings" to aggregate fresh postings from Greenhouse, Ashby, and Lever!
+          No openings match your current search criteria. Click "Fetch Selected Openings" to update target feeds!
         </td>
       </tr>`;
     return;
@@ -54,12 +120,17 @@ async function triggerHarvest() {
   const banner = document.getElementById('statusBanner');
   btn.disabled = true;
   btn.classList.add('opacity-50');
-  
+
   banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/40 border-emerald-500/30 text-emerald-300 block';
-  banner.innerText = '⚡ Aggregating live openings across Greenhouse, Ashby, and Lever APIs...';
+  banner.innerText = '⚡ Aggregating target company APIs...';
 
   try {
-    const res = await fetch('/api/harvest', { method: 'POST' });
+    const compList = Array.from(selectedCompanyNames);
+    const res = await fetch('/api/harvest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ companies: compList })
+    });
     const data = await res.json();
     banner.innerText = `✅ ${data.message || 'Harvest completed!'}`;
     await fetchJobs();
@@ -71,6 +142,51 @@ async function triggerHarvest() {
     btn.classList.remove('opacity-50');
   }
 }
+
+async function addCustomCompany() {
+  const name = document.getElementById('addCompName').value.trim();
+  const ats = document.getElementById('addCompAts').value;
+  const token = document.getElementById('addCompToken').value.trim();
+  if (!name || !token) return alert('Please enter company name and board token!');
+
+  const res = await fetch('/api/companies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'add', name, ats, token })
+  });
+  const data = await res.json();
+  if (data.status === 'success') {
+    selectedCompanyNames.add(name);
+    await loadCompanies();
+    document.getElementById('addCompName').value = '';
+    document.getElementById('addCompToken').value = '';
+    alert(`Added ${name} to target list!`);
+  }
+}
+
+async function openProfileModal() {
+  const res = await fetch('/api/profile');
+  const data = await res.json();
+  const p = data.profile || {};
+  const pers = p.personal || {};
+  const auth = p.work_authorization || {};
+
+  document.getElementById('profileBody').innerHTML = `
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
+      <div class="font-bold text-slate-100 text-sm mb-1">${escapeHtml(pers.fullName || 'Abhishek Singh')}</div>
+      <div><strong>Email:</strong> ${escapeHtml(pers.email)}</div>
+      <div><strong>Phone:</strong> ${escapeHtml(pers.phone)}</div>
+      <div><strong>Location:</strong> ${escapeHtml(pers.currentLocation)}</div>
+      <div><strong>US Authorization:</strong> ${escapeHtml(auth.legallyAuthorizedUS)} (Sponsorship: ${escapeHtml(auth.requireSponsorship)})</div>
+      <div><strong>Resume File:</strong> <span class="text-emerald-400 font-mono">Abhishek_Singh_Resume.html</span></div>
+    </div>
+  `;
+  document.getElementById('profileModal').classList.remove('hidden');
+}
+
+function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+function openCompanyModal() { document.getElementById('companyModal').classList.remove('hidden'); }
+function closeCompanyModal() { document.getElementById('companyModal').classList.add('hidden'); }
 
 function setQuery(q) {
   document.getElementById('inputQuery').value = q;
@@ -87,9 +203,7 @@ function openModal(idx) {
   document.getElementById('descModal').classList.remove('hidden');
 }
 
-function closeModal() {
-  document.getElementById('descModal').classList.add('hidden');
-}
+function closeModal() { document.getElementById('descModal').classList.add('hidden'); }
 
 function getAtsBadgeClass(ats) {
   if (ats === 'Greenhouse') return 'bg-emerald-950 text-emerald-400 border border-emerald-800';
@@ -114,4 +228,4 @@ function escapeHtml(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-document.addEventListener('DOMContentLoaded', fetchJobs);
+document.addEventListener('DOMContentLoaded', init);
