@@ -375,17 +375,92 @@ function renderJobs() {
           </div>
         </td>
 
-        <!-- 7. Direct ⚡ Auto-Apply Action -->
-        <td class="px-5 py-5 text-right align-top whitespace-nowrap">
-          <button onclick="triggerAutoApply(${idx})" 
-                  class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1.5 cursor-pointer">
-            <span>⚡ Auto-Apply</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </button>
+        <!-- 7. Three Vertically Stacked Action Buttons (Apply, Autofill, Auto-Apply) -->
+        <td class="px-4 py-4 text-right align-top whitespace-nowrap">
+          <div class="flex flex-col items-end space-y-1.5">
+            <!-- 1. Top: Manual Apply (Amber) -->
+            <button onclick="triggerManualApply(${idx})" 
+                    title="Manual Apply — Opens direct link for manual entry"
+                    class="w-32 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs shadow-md transition inline-flex items-center justify-center space-x-1 cursor-pointer">
+              <span>✋ Apply</span>
+              <span class="text-[10px] opacity-75">↗</span>
+            </button>
+
+            <!-- 2. Middle: Autofill Only (Indigo) -->
+            <button onclick="triggerAutofillOnly(${idx})" 
+                    title="Autofill Only — Fills form inputs but stops before final submission"
+                    class="w-32 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow-md transition inline-flex items-center justify-center space-x-1 cursor-pointer">
+              <span>✍️ Autofill</span>
+              <span class="text-[10px] opacity-75">↗</span>
+            </button>
+
+            <!-- 3. Bottom: Full Autopilot Auto-Apply (Emerald) -->
+            <button onclick="triggerAutoApply(${idx})" 
+                    title="Full Autopilot Auto-Apply — Fills form & auto-submits automatically"
+                    class="w-32 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center justify-center space-x-1 cursor-pointer">
+              <span>⚡ Auto-Apply</span>
+              <span class="text-[10px] opacity-75">↗</span>
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+async function triggerManualApply(idx) {
+  const j = currentJobs[idx];
+  if (!j) return;
+
+  try {
+    await fetch('/api/tracker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'record',
+        id: j.id,
+        company: j.company,
+        title: j.title,
+        location: j.location,
+        apply_url: j.apply_url,
+        applied_date: new Date().toISOString().split('T')[0],
+        status: 'Manual Applied',
+        email_updates: 'Manual Entry'
+      })
+    });
+  } catch(e) {}
+
+  window.open(j.apply_url, '_blank');
+}
+
+async function triggerAutofillOnly(idx) {
+  const j = currentJobs[idx];
+  if (!j) return;
+
+  try {
+    await fetch('/api/tracker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'record',
+        id: j.id,
+        company: j.company,
+        title: j.title,
+        location: j.location,
+        apply_url: j.apply_url,
+        applied_date: new Date().toISOString().split('T')[0],
+        status: 'Autofilled (Pending Submit)',
+        email_updates: 'Form Filled'
+      })
+    });
+  } catch(e) {}
+
+  // Open with mode=autofill_only parameter
+  const targetUrl = j.apply_url.includes('#') 
+    ? j.apply_url.replace('#', '?mode=autofill_only#') 
+    : (j.apply_url.includes('?') ? `${j.apply_url}&mode=autofill_only` : `${j.apply_url}?mode=autofill_only`);
+
+  window.open(targetUrl, '_blank');
 }
 
 async function triggerAutoApply(idx) {
