@@ -1,5 +1,5 @@
 let currentJobs = [];
-let viewMode = 'batch50'; // 'batch50' or 'all'
+let viewMode = 'batch50';
 let currentPage = 1;
 const BATCH_SIZE = 50;
 
@@ -113,36 +113,87 @@ function renderJobs() {
   if (displayJobs.length === 0) {
     list.innerHTML = `
       <tr>
-        <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+        <td colspan="7" class="px-6 py-12 text-center text-slate-500">
           No live US openings matched your search parameters. Click "Fetch All US Openings" to update target feeds!
         </td>
       </tr>`;
     return;
   }
 
-  list.innerHTML = displayJobs.map((j, idx) => `
-    <tr class="hover:bg-slate-800/40 transition">
-      <td class="px-6 py-4 font-bold text-slate-200">${escapeHtml(j.company)}</td>
-      <td class="px-6 py-4">
-        <div class="font-semibold text-slate-100">${escapeHtml(j.title)}</div>
-        <div class="text-xs text-slate-400 mt-0.5">${escapeHtml(j.location)}</div>
-      </td>
-      <td class="px-6 py-4 text-xs text-slate-400">${escapeHtml(j.location)}</td>
-      <td class="px-6 py-4 text-xs">
-        <span class="px-2.5 py-1 rounded-full font-medium ${getAtsBadgeClass(j.ats_provider)}">
-          ${escapeHtml(j.ats_provider)}
-        </span>
-      </td>
-      <td class="px-6 py-4 text-right space-x-2">
-        <button onclick="openModal(${idx})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
-          View Desc
-        </button>
-        <a href="${escapeHtml(j.apply_url)}" target="_blank" class="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-semibold px-3 py-1.5 rounded-lg border border-emerald-500/30 transition inline-block">
-          ⚡ Auto-Apply ↗
-        </a>
-      </td>
-    </tr>
-  `).join('');
+  list.innerHTML = displayJobs.map((j, idx) => {
+    const salaryStr = formatSalary(j);
+    const workTypePill = formatWorkType(j.location);
+    const dateStr = j.posted_date || 'Recent';
+
+    return `
+      <tr class="hover:bg-slate-800/50 transition">
+        <!-- 1. Company & ATS Badge -->
+        <td class="px-5 py-4 font-bold text-slate-200">
+          <div>${escapeHtml(j.company)}</div>
+          <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] uppercase font-mono ${getAtsBadgeClass(j.ats_provider)}">
+            ${escapeHtml(j.ats_provider)}
+          </span>
+        </td>
+
+        <!-- 2. Job Title -->
+        <td class="px-5 py-4 font-semibold text-slate-100">
+          ${escapeHtml(j.title)}
+        </td>
+
+        <!-- 3. Date Posted -->
+        <td class="px-5 py-4 text-xs text-slate-400 font-mono">
+          ${escapeHtml(dateStr)}
+        </td>
+
+        <!-- 4. Salary Band -->
+        <td class="px-5 py-4 text-xs font-semibold text-emerald-400">
+          ${escapeHtml(salaryStr)}
+        </td>
+
+        <!-- 5. Location & Work Type -->
+        <td class="px-5 py-4 text-xs">
+          <div class="text-slate-300 font-medium">${escapeHtml(j.location)}</div>
+          <div class="mt-1">${workTypePill}</div>
+        </td>
+
+        <!-- 6. Hover & Click Description Popover -->
+        <td class="px-5 py-4 text-xs text-slate-400 max-w-md cursor-pointer hover:text-slate-200 transition"
+            title="${escapeAttr(j.description)}"
+            onclick="openModal(${idx})">
+          <div class="line-clamp-2 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80 hover:border-emerald-500/40 transition">
+            ${escapeHtml(j.description)}
+          </div>
+          <span class="text-[10px] text-emerald-400 mt-1 inline-block font-semibold">🔍 Click to inspect full window</span>
+        </td>
+
+        <!-- 7. Direct ⚡ Auto-Apply Action -->
+        <td class="px-5 py-4 text-right">
+          <a href="${escapeHtml(j.apply_url)}" target="_blank" 
+             class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3.5 py-2 rounded-lg text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1">
+            <span>⚡ Auto-Apply</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </a>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function formatSalary(j) {
+  if (j.salary_max > 0) {
+    const minK = Math.round(j.salary_min / 1000);
+    const maxK = Math.round(j.salary_max / 1000);
+    if (minK > 0 && minK !== maxK) return `$${minK}k - $${maxK}k / yr`;
+    return `$${maxK}k / yr`;
+  }
+  return 'Competitive Pay';
+}
+
+function formatWorkType(locStr) {
+  const loc = (locStr || '').toLowerCase();
+  if (loc.includes('remote')) return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">Remote</span>';
+  if (loc.includes('hybrid')) return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-950 text-indigo-400 border border-indigo-800">Hybrid</span>';
+  return '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300">On-Site / Office</span>';
 }
 
 async function openProfileModal() {
@@ -204,7 +255,7 @@ function openModal(idx) {
   const j = currentJobs[idx];
   if (!j) return;
   document.getElementById('modalTitle').innerText = j.title;
-  document.getElementById('modalSub').innerText = `${j.company} • ${j.location} (${j.ats_provider})`;
+  document.getElementById('modalSub').innerText = `${j.company} • ${j.location} (${j.ats_provider}) • ${j.posted_date || 'Recent'}`;
   document.getElementById('modalBody').innerText = j.description || 'No description provided.';
   document.getElementById('modalApplyBtn').href = j.apply_url;
   document.getElementById('descModal').classList.remove('hidden');
@@ -221,9 +272,9 @@ function getAtsBadgeClass(ats) {
 
 function exportCSV() {
   if (currentJobs.length === 0) return alert('No jobs to export!');
-  let csv = 'data:text/csv;charset=utf-8,Company,Job Title,Location,ATS Engine,Apply URL,Description\n';
+  let csv = 'data:text/csv;charset=utf-8,Company,Job Title,Date Posted,Salary,Location,ATS Engine,Apply URL,Description\n';
   currentJobs.forEach(j => {
-    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(j.description||'').replace(/"/g, '""')}"\n`;
+    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${j.posted_date||'Recent'}","${formatSalary(j)}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(j.description||'').replace(/"/g, '""')}"\n`;
   });
   const a = document.createElement('a');
   a.href = encodeURI(csv);
@@ -233,6 +284,10 @@ function exportCSV() {
 
 function escapeHtml(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escapeAttr(str) {
+  return String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 document.addEventListener('DOMContentLoaded', init);
