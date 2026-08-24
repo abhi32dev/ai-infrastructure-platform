@@ -15,7 +15,7 @@ async function savePreferences() {
   const prefs = {
     query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
     company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
-    location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : '',
+    location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : 'Bay Area',
     workMode: document.getElementById('workModeSelect') ? document.getElementById('workModeSelect').value : '',
     type: document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '',
     sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'date',
@@ -65,7 +65,7 @@ async function loadPreferences() {
     document.getElementById('inputCompanyFilter').value = prefs.company;
   }
   if (prefs.location !== undefined && document.getElementById('inputLocation')) {
-    document.getElementById('inputLocation').value = prefs.location;
+    document.getElementById('inputLocation').value = prefs.location || 'Bay Area';
   }
   if (prefs.workMode !== undefined && document.getElementById('workModeSelect')) {
     document.getElementById('workModeSelect').value = prefs.workMode;
@@ -293,24 +293,17 @@ function renderJobs() {
     filteredJobs = filteredJobs.filter(j => (j.employment_type || 'Full-Time') === typeFilter);
   }
 
-  // Work Location Mode Filter (Remote vs Hybrid vs On-Site)
-  if (modeFilter === 'Remote') {
-    filteredJobs = filteredJobs.filter(j => {
-      const loc = (j.location || '').toLowerCase();
-      return loc.includes('remote') || loc.includes('us') || loc.includes('united states');
-    });
-  } else if (modeFilter === 'Hybrid' || modeFilter === 'On-Site') {
-    filteredJobs = filteredJobs.filter(j => {
-      const loc = (j.location || '').toLowerCase();
-      const matchesMode = modeFilter === 'Hybrid' ? loc.includes('hybrid') : (!loc.includes('remote') && !loc.includes('hybrid'));
-      
-      // Default to SF Bay Area if no custom location typed
-      if (!locInput || locInput.includes('bay area') || locInput.includes('san francisco')) {
-        const isBayArea = BAY_AREA_CITIES.some(city => loc.includes(city));
-        return matchesMode || isBayArea;
-      }
-      return matchesMode;
-    });
+  // Location Filter (Default: "Bay Area" umbrella, or specific city if typed)
+  if (locInput) {
+    if (locInput === 'bay area' || locInput === 'bayarea' || locInput === 'sf bay area') {
+      filteredJobs = filteredJobs.filter(j => {
+        const loc = (j.location || '').toLowerCase();
+        return BAY_AREA_CITIES.some(city => loc.includes(city));
+      });
+    } else {
+      // Specific city filtering (e.g. "San Francisco", "San Jose", "Menlo Park", "Fremont")
+      filteredJobs = filteredJobs.filter(j => (j.location || '').toLowerCase().includes(locInput));
+    }
   }
 
   filteredJobs.sort((a, b) => {
