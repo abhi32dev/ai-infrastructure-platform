@@ -295,15 +295,46 @@ function renderJobs() {
     filteredJobs = filteredJobs.filter(j => (j.employment_type || 'Full-Time') === typeFilter);
   }
 
-  // Multi-Zone Location Token Matching (Matches any specified Bay Area city or custom typed location)
-  if (locInput) {
-    const targetCities = locInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
-    
-    if (targetCities.length > 0) {
-      filteredJobs = filteredJobs.filter(j => {
-        const loc = (j.location || '').toLowerCase();
-        return targetCities.some(city => loc.includes(city) || (city === 'bay area' && BAY_AREA_CITIES.some(b => loc.includes(b))));
-      });
+  // Work Location Mode Filter (Remote vs Hybrid vs On-Site vs All)
+  if (modeFilter === 'Remote') {
+    // REMOTE MODE: Entire US — Bay Area restriction NEVER applies!
+    filteredJobs = filteredJobs.filter(j => {
+      const loc = (j.location || '').toLowerCase();
+      return loc.includes('remote') || loc.includes('us') || loc.includes('united states') || !loc;
+    });
+
+    // Dim the location input UI box to visually indicate Bay Area is disabled for Remote
+    const locBox = document.getElementById('inputLocation');
+    const badge = document.getElementById('locStatusBadge');
+    if (locBox) {
+      locBox.disabled = true;
+      locBox.classList.add('opacity-40', 'bg-slate-900', 'cursor-not-allowed');
+    }
+    if (badge) {
+      badge.innerText = 'Ignored for Remote (Entire US)';
+      badge.className = 'text-[10px] text-amber-400 font-bold';
+    }
+  } else {
+    // HYBRID / ON-SITE / ALL MODES: Apply Location Filter if location input is enabled
+    const locBox = document.getElementById('inputLocation');
+    const badge = document.getElementById('locStatusBadge');
+    if (locBox) {
+      locBox.disabled = false;
+      locBox.classList.remove('opacity-40', 'bg-slate-900', 'cursor-not-allowed');
+    }
+    if (badge) {
+      badge.innerText = 'Active for Hybrid/On-Site';
+      badge.className = 'text-[10px] text-emerald-400 font-normal';
+    }
+
+    if (locInput) {
+      const targetCities = locInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+      if (targetCities.length > 0) {
+        filteredJobs = filteredJobs.filter(j => {
+          const loc = (j.location || '').toLowerCase();
+          return targetCities.some(city => loc.includes(city) || (city === 'bay area' && BAY_AREA_CITIES.some(b => loc.includes(b))));
+        });
+      }
     }
   }
 
