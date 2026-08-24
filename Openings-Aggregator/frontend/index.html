@@ -18,7 +18,7 @@
         <div>
           <h1 class="text-2xl font-black tracking-tight text-white flex items-center space-x-2">
             <span>Openings Aggregator</span>
-            <span class="text-xs bg-emerald-500/20 text-emerald-300 font-semibold px-2 py-0.5 rounded border border-emerald-500/40">US REALTIME</span>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded border border-emerald-500/40">US REALTIME</span>
           </h1>
           <p class="text-xs text-slate-300 font-medium">Ultra-Wide Full-Screen Dashboard • Strict US ATS Engine</p>
         </div>
@@ -46,28 +46,34 @@
   <main class="w-full px-6 py-6">
     <!-- Ad-hoc Instruction Prompt & Filter Controls -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6 shadow-xl">
-      <label class="block text-sm font-semibold text-emerald-400 mb-2">⚡ Ad-Hoc Combinational Search Prompt (Empty = All US Jobs Across All Companies)</label>
-      <div class="flex space-x-3 mb-4">
-        <input type="text" id="inputQuery" placeholder="e.g. Python, AWS, Distributed Systems (or leave empty for All US Jobs)" 
+      <label class="block text-sm font-semibold text-emerald-400 mb-2">⚡ Ad-Hoc Combinational Search Prompt (Press Enter to Search)</label>
+      <div class="flex space-x-3 mb-3">
+        <!-- Default value = Python & Enter Keypress Trigger -->
+        <input type="text" id="inputQuery" value="Python" placeholder="Type Python, AWS, Distributed Systems... Press ENTER to search!" 
+               onkeydown="if(event.key === 'Enter') triggerHarvest()"
                class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition text-sm">
         <button onclick="triggerHarvest()" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-6 py-3 rounded-xl border border-slate-700 transition text-sm">
-          Search / Fetch
+          Search / Fetch ↵
         </button>
       </div>
 
       <!-- Recent Skill Set Filter Memory Chips -->
-      <div id="recentFiltersContainer" class="flex flex-wrap items-center gap-2 mt-3 text-xs">
+      <div id="recentFiltersContainer" class="flex flex-wrap items-center gap-2 mb-4 text-xs">
         <span class="text-slate-400 font-semibold flex items-center space-x-1">
           <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span>Recent Skill Memories:</span>
         </span>
         <div id="recentChips" class="flex flex-wrap gap-2">
           <!-- Dynamically populated from localStorage -->
-        </div>      <!-- Advanced Combination Filters & Controls -->
+        </div>
+      </div>
+
+      <!-- Advanced Combination Filters & Controls -->
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-4 border-t border-slate-800/80 text-xs">
         <div>
-          <label class="block text-slate-400 font-medium mb-1">Company Filter (All 34+ Companies)</label>
+          <label class="block text-slate-400 font-medium mb-1">Company Filter (All 37+ Companies)</label>
           <input type="text" id="inputCompanyFilter" oninput="fetchJobs()" placeholder="Empty = All, or Notion, Stripe..." 
+                 onkeydown="if(event.key === 'Enter') fetchJobs()"
                  class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
 
@@ -106,6 +112,7 @@
         <div>
           <label class="block text-slate-400 font-medium mb-1">US Location (State / City / Remote)</label>
           <input type="text" id="inputLocation" oninput="fetchJobs()" placeholder="Empty = All US, or CA, SF..." 
+                 onkeydown="if(event.key === 'Enter') fetchJobs()"
                  class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
       </div>
@@ -114,15 +121,14 @@
     <!-- Status Banner -->
     <div id="statusBanner" class="hidden mb-6 p-4 rounded-xl text-sm border"></div>
 
-    <!-- Ultra-Wide Full Screen Job Table Card with Draggable Resizable Columns -->
+    <!-- Ultra-Wide Full Screen Job Table Card with Draggable Resizable Columns & Sort Arrows -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-100">Strict US Openings — Draggable Resizable Columns View</h2>
+          <h2 class="text-lg font-bold text-slate-100">Strict US Openings — Draggable & Sortable View</h2>
           <p id="txtCount" class="text-xs text-slate-400 mt-0.5">Showing 0 jobs</p>
         </div>
 
-        <!-- 2 View Tabs & Pagination Controls -->
         <div class="flex items-center space-x-4">
           <div class="bg-slate-950 border border-slate-800 p-1 rounded-xl flex text-xs font-semibold">
             <button id="tabBatch50" onclick="setViewMode('batch50')" class="px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition">
@@ -147,14 +153,42 @@
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-slate-200 border-collapse">
-          <thead class="bg-slate-950 text-slate-300 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
+          <thead class="bg-slate-950 text-slate-300 text-xs font-bold uppercase tracking-wider border-b border-slate-800 select-none">
             <tr>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[160px] border-r border-slate-800/60">Company ↔</th>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[240px] border-r border-slate-800/60">Job Title ↔</th>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[130px] border-r border-slate-800/60">Date Posted ↔</th>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[180px] border-r border-slate-800/60">Salary Band ↔</th>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[220px] border-r border-slate-800/60">Location & Work Type ↔</th>
-              <th class="px-5 py-4 resize-x overflow-auto min-w-[320px] border-r border-slate-800/60">Description Preview (Hover / Click) ↔</th>
+              <!-- Interactive Up/Down Column Sort Controls -->
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[160px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('company')">
+                <div class="flex items-center justify-between">
+                  <span>Company</span>
+                  <span id="sort_company" class="text-slate-500 text-[10px]">▲▼</span>
+                </div>
+              </th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[240px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('title')">
+                <div class="flex items-center justify-between">
+                  <span>Job Title</span>
+                  <span id="sort_title" class="text-slate-500 text-[10px]">▲▼</span>
+                </div>
+              </th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[130px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('posted_date')">
+                <div class="flex items-center justify-between">
+                  <span>Date Posted</span>
+                  <span id="sort_posted_date" class="text-slate-500 text-[10px]">▲▼</span>
+                </div>
+              </th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[180px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('salary')">
+                <div class="flex items-center justify-between">
+                  <span>Salary Band ($)</span>
+                  <span id="sort_salary" class="text-slate-500 text-[10px]">▲▼</span>
+                </div>
+              </th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[220px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('location')">
+                <div class="flex items-center justify-between">
+                  <span>Location</span>
+                  <span id="sort_location" class="text-slate-500 text-[10px]">▲▼</span>
+                </div>
+              </th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[320px] border-r border-slate-800/60">
+                <span>Description Preview (Hover / Click)</span>
+              </th>
               <th class="px-5 py-4 text-right w-36">Action</th>
             </tr>
           </thead>
@@ -163,7 +197,6 @@
           </tbody>
         </table>
       </div>
-    </div> </div>
     </div>
   </main>
 
@@ -195,26 +228,6 @@
             Save & Update Vault
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Job Description Clickable Inspection Pop-up Modal -->
-  <div id="descModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
-        <div>
-          <h3 id="modalTitle" class="text-xl font-bold text-slate-100">Job Title</h3>
-          <p id="modalSub" class="text-xs text-emerald-400 mt-1">Company • Location</p>
-        </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2">&times;</button>
-      </div>
-      <div id="modalBody" class="p-6 overflow-y-auto text-sm text-slate-300 space-y-4 leading-relaxed font-sans">
-        <!-- Description text -->
-      </div>
-      <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-end space-x-3">
-        <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-slate-400 hover:text-white text-sm">Close</button>
-        <a id="modalApplyBtn" href="#" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2 rounded-lg text-sm transition">⚡ Auto-Apply Direct Posting ↗</a>
       </div>
     </div>
   </div>
@@ -279,6 +292,26 @@
         <button onclick="closeTrackerModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition">
           Close Tracker
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Description Clickable Inspection Pop-up Modal -->
+  <div id="descModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 id="modalTitle" class="text-xl font-bold text-slate-100">Job Title</h3>
+          <p id="modalSub" class="text-xs text-emerald-400 mt-1">Company • Location</p>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2">&times;</button>
+      </div>
+      <div id="modalBody" class="p-6 overflow-y-auto text-sm text-slate-300 space-y-4 leading-relaxed font-sans">
+        <!-- Description text -->
+      </div>
+      <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-end space-x-3">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-slate-400 hover:text-white text-sm">Close</button>
+        <a id="modalApplyBtn" href="#" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2 rounded-lg text-sm transition">⚡ Auto-Apply Direct Posting ↗</a>
       </div>
     </div>
   </div>
