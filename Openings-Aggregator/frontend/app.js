@@ -275,6 +275,23 @@ const BAY_AREA_CITIES = [
   'san bruno', 'bay area', 'sf'
 ];
 
+function resetFilter(filterType) {
+  if (filterType === 'type') {
+    document.getElementById('typeSelect').value = '';
+  } else if (filterType === 'ats') {
+    document.getElementById('atsSelect').value = '';
+  } else if (filterType === 'workMode') {
+    document.getElementById('workModeSelect').value = '';
+  } else if (filterType === 'all') {
+    document.getElementById('typeSelect').value = '';
+    document.getElementById('atsSelect').value = '';
+    document.getElementById('workModeSelect').value = '';
+    document.getElementById('inputCompanyFilter').value = '';
+  }
+  savePreferences();
+  renderJobs();
+}
+
 function renderJobs() {
   const list = document.getElementById('jobList');
   const atsFilter = document.getElementById('atsSelect').value;
@@ -297,13 +314,11 @@ function renderJobs() {
 
   // Work Location Mode Filter (Remote vs Hybrid vs On-Site vs All)
   if (modeFilter === 'Remote') {
-    // REMOTE MODE: Entire US — Bay Area restriction NEVER applies!
     filteredJobs = filteredJobs.filter(j => {
       const loc = (j.location || '').toLowerCase();
       return loc.includes('remote') || loc.includes('us') || loc.includes('united states') || !loc;
     });
 
-    // Dim the location input UI box to visually indicate Bay Area is disabled for Remote
     const locBox = document.getElementById('inputLocation');
     const badge = document.getElementById('locStatusBadge');
     if (locBox) {
@@ -315,7 +330,6 @@ function renderJobs() {
       badge.className = 'text-[10px] text-amber-400 font-bold';
     }
   } else {
-    // HYBRID / ON-SITE / ALL MODES: Apply Location Filter if location input is enabled
     const locBox = document.getElementById('inputLocation');
     const badge = document.getElementById('locStatusBadge');
     if (locBox) {
@@ -365,19 +379,32 @@ function renderJobs() {
     const start = (currentPage - 1) * BATCH_SIZE;
     displayJobs = filteredJobs.slice(start, start + BATCH_SIZE);
 
-    document.getElementById('txtCount').innerText = `Showing ${displayJobs.length} jobs (Batch ${currentPage} of ${totalPages} | Total US: ${totalCount})`;
+    document.getElementById('txtCount').innerText = `Showing ${displayJobs.length} jobs (Batch ${currentPage} of ${totalPages} | Total Matching US: ${totalCount})`;
     document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
     document.getElementById('btnPrev').disabled = (currentPage === 1);
     document.getElementById('btnNext').disabled = (currentPage === totalPages);
   } else {
-    document.getElementById('txtCount').innerText = `Showing all ${totalCount} US jobs`;
+    document.getElementById('txtCount').innerText = `Showing all ${totalCount} matching US jobs`;
   }
 
   if (displayJobs.length === 0) {
     list.innerHTML = `
       <tr>
-        <td colspan="7" class="px-6 py-12 text-center text-slate-500">
-          No live US openings matched your search parameters. Click "Fetch All US Openings" to update target feeds!
+        <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+          <div class="max-w-md mx-auto space-y-3">
+            <div class="text-3xl">🔍</div>
+            <div class="text-base font-bold text-slate-200">No jobs matched all narrow active filters combined</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              You currently have <span class="text-emerald-400 font-bold">${modeFilter || 'All Work Modes'}</span> + 
+              <span class="text-indigo-400 font-bold">${typeFilter || 'All Employment Types'}</span> + 
+              <span class="text-purple-400 font-bold">${atsFilter || 'All ATS Engines'}</span> active.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 pt-2 text-xs">
+              ${typeFilter ? `<button onclick="resetFilter('type')" class="bg-indigo-950 text-indigo-300 border border-indigo-700 px-3 py-1 rounded-lg font-semibold hover:bg-indigo-900 transition">Clear "${typeFilter}"</button>` : ''}
+              ${atsFilter ? `<button onclick="resetFilter('ats')" class="bg-purple-950 text-purple-300 border border-purple-700 px-3 py-1 rounded-lg font-semibold hover:bg-purple-900 transition">Clear "${atsFilter}"</button>` : ''}
+              <button onclick="resetFilter('all')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg shadow-md transition">Reset All Filters</button>
+            </div>
+          </div>
         </td>
       </tr>`;
     return;
@@ -514,7 +541,6 @@ async function triggerAutofillOnly(idx) {
     });
   } catch(e) {}
 
-  // Open with mode=autofill_only parameter
   const targetUrl = j.apply_url.includes('#') 
     ? j.apply_url.replace('#', '?mode=autofill_only#') 
     : (j.apply_url.includes('?') ? `${j.apply_url}&mode=autofill_only` : `${j.apply_url}?mode=autofill_only`);
