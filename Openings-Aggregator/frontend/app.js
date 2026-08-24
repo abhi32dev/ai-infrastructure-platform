@@ -16,6 +16,7 @@ async function savePreferences() {
     query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
     company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
     location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : '',
+    type: document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '',
     sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'date',
     salary: document.getElementById('salarySelect') ? document.getElementById('salarySelect').value : '0',
     ats: document.getElementById('atsSelect') ? document.getElementById('atsSelect').value : '',
@@ -25,12 +26,10 @@ async function savePreferences() {
     sortDir: currentSortDir
   };
 
-  // 1. Save to client localStorage
   localStorage.setItem('oa_user_preferences', JSON.stringify(prefs));
 
-  // 2. Save to persistent server disk file resume_vault/ui_state.json
   try {
-    await fetch('/api/ui_state', {
+    fetch('/api/ui_state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(prefs)
@@ -41,7 +40,6 @@ async function savePreferences() {
 async function loadPreferences() {
   let prefs = null;
 
-  // Try fetching from server disk file first
   try {
     const res = await fetch('/api/ui_state');
     const data = await res.json();
@@ -50,7 +48,6 @@ async function loadPreferences() {
     }
   } catch(e) {}
 
-  // Fallback to client localStorage
   if (!prefs) {
     const saved = localStorage.getItem('oa_user_preferences');
     if (saved) {
@@ -68,6 +65,9 @@ async function loadPreferences() {
   }
   if (prefs.location !== undefined && document.getElementById('inputLocation')) {
     document.getElementById('inputLocation').value = prefs.location;
+  }
+  if (prefs.type !== undefined && document.getElementById('typeSelect')) {
+    document.getElementById('typeSelect').value = prefs.type;
   }
   if (prefs.sort !== undefined && document.getElementById('sortSelect')) {
     document.getElementById('sortSelect').value = prefs.sort;
@@ -266,6 +266,7 @@ function renderJobs() {
   const list = document.getElementById('jobList');
   const atsFilter = document.getElementById('atsSelect').value;
   const compFilter = document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value.trim().toLowerCase() : '';
+  const typeFilter = document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '';
 
   let filteredJobs = currentJobs;
   if (atsFilter) {
@@ -273,6 +274,9 @@ function renderJobs() {
   }
   if (compFilter) {
     filteredJobs = filteredJobs.filter(j => (j.company || '').toLowerCase().includes(compFilter));
+  }
+  if (typeFilter) {
+    filteredJobs = filteredJobs.filter(j => (j.employment_type || 'Full-Time') === typeFilter);
   }
 
   filteredJobs.sort((a, b) => {

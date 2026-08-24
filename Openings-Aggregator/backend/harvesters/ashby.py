@@ -13,6 +13,18 @@ def clean_html_text(raw_text):
     text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
     return re.sub(r'\s+', ' ', text).strip()
 
+def extract_employment_type(title, text=""):
+    full = f"{title} {text}".lower()
+    if "contract" in full or "freelance" in full:
+        return "Contract"
+    elif "intern" in full or "co-op" in full or "coop" in full:
+        return "Internship"
+    elif "part-time" in full or "part time" in full:
+        return "Part-Time"
+    elif "temp" in full or "temporary" in full:
+        return "Temporary"
+    return "Full-Time"
+
 def extract_salary_range(text, title):
     if not text:
         text = ""
@@ -44,11 +56,6 @@ def extract_salary_range(text, title):
     return "$140k - $200k / yr (Base + Equity)", 140000, 200000
 
 def fetch_ashby_jobs(company_token, company_name):
-    """
-    Directly fetches public job postings from Ashby boards (Notion, Linear, Vercel, Scribe, Distyl).
-    URL: https://jobs.ashbyhq.com/{token}
-    Direct Application URL: https://jobs.ashbyhq.com/{token}/{id}/application
-    """
     url = f"https://jobs.ashbyhq.com/{company_token}"
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
     req = urllib.request.Request(url, headers=headers)
@@ -69,12 +76,11 @@ def fetch_ashby_jobs(company_token, company_name):
                 seen_ids.add(id_str)
                 
                 loc_name = location if location else "San Francisco, CA / US Remote"
-                
-                # DIRECT APPLICATION FORM LINK: /application
                 direct_apply_url = f"https://jobs.ashbyhq.com/{company_token}/{id_str}/application"
                 
                 enriched_desc = f"{title} position at {company_name}. Core Stack & Focus: Python, TypeScript, Distributed Systems, Backend Architecture, Cloud Infrastructure, AI Systems. Location: {loc_name}."
                 
+                emp_type = extract_employment_type(title, enriched_desc)
                 salary_str, s_min, s_max = extract_salary_range(enriched_desc, title)
                 
                 jobs.append({
@@ -82,6 +88,7 @@ def fetch_ashby_jobs(company_token, company_name):
                     "company": company_name,
                     "title": title,
                     "location": loc_name,
+                    "employment_type": emp_type,
                     "apply_url": direct_apply_url,
                     "description": enriched_desc,
                     "ats_provider": "Ashby",
@@ -90,7 +97,6 @@ def fetch_ashby_jobs(company_token, company_name):
                     "salary_max": s_max,
                     "salary_display": salary_str
                 })
-            print(f"[+] Successfully fetched {len(jobs)} Ashby jobs with direct /application links for {company_name}!")
     except Exception as e:
         print(f"[!] Error fetching Ashby jobs for {company_name} ({company_token}): {e}")
         

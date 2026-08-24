@@ -3,6 +3,18 @@ import json
 import re
 import datetime
 
+def extract_employment_type(commitment_str, title, text=""):
+    full = f"{commitment_str} {title} {text}".lower()
+    if "contract" in full or "freelance" in full:
+        return "Contract"
+    elif "intern" in full or "co-op" in full or "coop" in full:
+        return "Internship"
+    elif "part-time" in full or "part time" in full:
+        return "Part-Time"
+    elif "temp" in full or "temporary" in full:
+        return "Temporary"
+    return "Full-Time"
+
 def extract_salary_range(text, title):
     if not text:
         text = ""
@@ -34,11 +46,6 @@ def extract_salary_range(text, title):
     return "$140k - $200k / yr (Base + Equity)", 140000, 200000
 
 def fetch_lever_jobs(company_token, company_name):
-    """
-    Directly fetches public job postings from Lever API.
-    URL: https://api.lever.co/v0/postings/{token}?mode=json
-    Direct Application URL: https://jobs.lever.co/{token}/{id}/apply
-    """
     url = f"https://api.lever.co/v0/postings/{company_token}?mode=json"
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
     req = urllib.request.Request(url, headers=headers)
@@ -55,7 +62,6 @@ def fetch_lever_jobs(company_token, company_name):
                 job_id = f"lever_{raw_id}"
                 title = j.get("text", "Unknown Title")
                 
-                # DIRECT APPLICATION FORM LINK: /apply
                 apply_url = j.get("applyUrl", "") or f"https://jobs.lever.co/{company_token}/{raw_id}/apply"
                 
                 cats = j.get("categories", {}) or {}
@@ -67,8 +73,7 @@ def fetch_lever_jobs(company_token, company_name):
                 clean_desc = re.sub(r'<[^>]+>', ' ', description_plain)
                 clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
                 
-                created_at = j.get("createdAt", 0)
-                
+                emp_type = extract_employment_type(commitment, title, clean_desc)
                 salary_str, s_min, s_max = extract_salary_range(clean_desc, title)
 
                 jobs.append({
@@ -76,6 +81,7 @@ def fetch_lever_jobs(company_token, company_name):
                     "company": company_name,
                     "title": title,
                     "location": f"{location} ({commitment})" if commitment else location,
+                    "employment_type": emp_type,
                     "apply_url": apply_url,
                     "description": clean_desc if len(clean_desc) > 30 else f"{title} at {company_name} - {team}",
                     "ats_provider": "Lever",

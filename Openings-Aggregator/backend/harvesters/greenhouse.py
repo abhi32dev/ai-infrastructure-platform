@@ -13,6 +13,18 @@ def clean_html_text(raw_text):
     text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
     return re.sub(r'\s+', ' ', text).strip()
 
+def extract_employment_type(title, text=""):
+    full = f"{title} {text}".lower()
+    if "contract" in full or "freelance" in full:
+        return "Contract"
+    elif "intern" in full or "co-op" in full or "coop" in full:
+        return "Internship"
+    elif "part-time" in full or "part time" in full:
+        return "Part-Time"
+    elif "temp" in full or "temporary" in full:
+        return "Temporary"
+    return "Full-Time"
+
 def extract_salary_range(text, title):
     if not text:
         text = ""
@@ -61,9 +73,7 @@ def fetch_greenhouse_jobs(company_token, company_name):
                 title = j.get("title", "Unknown Title")
                 raw_url = j.get("absolute_url", "")
                 
-                # DIRECT APPLICATION FORM LINK: append #app to scroll & focus on application inputs
                 direct_apply_url = f"{raw_url}#app" if raw_url and not raw_url.endswith("#app") else raw_url
-                
                 location = (j.get("location", {}) or {}).get("name", "Remote / Unspecified")
                 
                 content = j.get("content", "")
@@ -72,6 +82,7 @@ def fetch_greenhouse_jobs(company_token, company_name):
                 updated_at = j.get("updated_at", "")
                 exact_date = updated_at[:10] if (updated_at and len(updated_at) >= 10) else today_date
                 
+                emp_type = extract_employment_type(title, clean_desc)
                 salary_str, s_min, s_max = extract_salary_range(clean_desc, title)
 
                 jobs.append({
@@ -79,6 +90,7 @@ def fetch_greenhouse_jobs(company_token, company_name):
                     "company": company_name,
                     "title": title,
                     "location": location,
+                    "employment_type": emp_type,
                     "apply_url": direct_apply_url,
                     "description": clean_desc if len(clean_desc) > 30 else f"{title} at {company_name}",
                     "ats_provider": "Greenhouse",

@@ -1,6 +1,12 @@
 {
-  "ats": "Ashby",
   "query": "Python",
   "company": "Notion",
-  "salary": "180000"
+  "location": "",
+  "sort": "date",
+  "salary": "180000",
+  "ats": "Ashby",
+  "viewMode": "batch50",
+  "currentPage": 1,
+  "sortCol": "title",
+  "sortDir": "asc"
 }
