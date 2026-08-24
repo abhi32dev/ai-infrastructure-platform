@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Openings Aggregator — Full Control Portal</title>
+  <title>Openings Aggregator — Native US Tech Job Control</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,21 +19,17 @@
           <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">
             Openings Aggregator
           </h1>
-          <p class="text-xs text-slate-400">Native ATS Engine • Direct Target Selector</p>
+          <p class="text-xs text-slate-400">Strict US Native ATS Engine • Direct Auto-Apply</p>
         </div>
       </div>
 
       <div class="flex items-center space-x-3">
-        <button onclick="openCompanyModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg text-sm border border-slate-700 transition flex items-center space-x-2">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-          <span>Target Companies (<span id="companyCount">0</span>)</span>
-        </button>
         <button onclick="openProfileModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg text-sm border border-slate-700 transition flex items-center space-x-2">
           <span>👤 Profile Vault</span>
         </button>
         <button id="btnHarvest" onclick="triggerHarvest()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          <span>Fetch Selected Openings</span>
+          <span>Fetch All US Openings</span>
         </button>
         <button onclick="exportCSV()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg text-sm border border-slate-700 transition">
           Export CSV
@@ -46,12 +42,12 @@
   <main class="max-w-7xl mx-auto px-6 py-8">
     <!-- Ad-hoc Instruction Prompt & Filter Controls -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 shadow-xl">
-      <label class="block text-sm font-semibold text-emerald-400 mb-2">⚡ Ad-Hoc Instruction Prompt & Combinational Query</label>
+      <label class="block text-sm font-semibold text-emerald-400 mb-2">⚡ Ad-Hoc Search Prompt (Empty = All US Jobs Across All Companies)</label>
       <div class="flex space-x-3 mb-4">
-        <input type="text" id="inputQuery" placeholder="e.g. Senior Python, AWS, Distributed Systems in San Francisco or Remote" 
+        <input type="text" id="inputQuery" placeholder="e.g. Python, AWS, Distributed Systems (or leave empty for All US Jobs)" 
                class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition text-sm">
-        <button onclick="fetchJobs()" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-6 py-3 rounded-xl border border-slate-700 transition text-sm">
-          Search Jobs
+        <button onclick="triggerHarvest()" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-6 py-3 rounded-xl border border-slate-700 transition text-sm">
+          Search / Fetch
         </button>
       </div>
 
@@ -100,12 +96,34 @@
     <!-- Status Banner -->
     <div id="statusBanner" class="hidden mb-6 p-4 rounded-xl text-sm border"></div>
 
-    <!-- Job Table Card -->
+    <!-- Job Table Card with View Tabs (Batches of 50 vs All Jobs) -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+      <div class="p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-100">Direct Target Openings</h2>
+          <h2 class="text-lg font-bold text-slate-100">Strict US Tech Openings</h2>
           <p id="txtCount" class="text-xs text-slate-400 mt-0.5">Showing 0 jobs</p>
+        </div>
+
+        <!-- 2 View Tabs & Pagination Controls -->
+        <div class="flex items-center space-x-4">
+          <div class="bg-slate-950 border border-slate-800 p-1 rounded-xl flex text-xs font-semibold">
+            <button id="tabBatch50" onclick="setViewMode('batch50')" class="px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition">
+              Batches of 50
+            </button>
+            <button id="tabAll" onclick="setViewMode('all')" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition">
+              All Jobs
+            </button>
+          </div>
+
+          <div id="paginationControls" class="flex items-center space-x-2 text-xs">
+            <button id="btnPrev" onclick="changePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition disabled:opacity-40">
+              ← Prev
+            </button>
+            <span id="pageIndicator" class="text-slate-300 font-mono">Page 1</span>
+            <button id="btnNext" onclick="changePage(1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition disabled:opacity-40">
+              Next →
+            </button>
+          </div>
         </div>
       </div>
 
@@ -115,7 +133,7 @@
             <tr>
               <th class="px-6 py-4">Company</th>
               <th class="px-6 py-4">Job Title</th>
-              <th class="px-6 py-4">Location</th>
+              <th class="px-6 py-4">US Location</th>
               <th class="px-6 py-4">ATS Engine</th>
               <th class="px-6 py-4 text-right">Actions</th>
             </tr>
@@ -127,57 +145,6 @@
       </div>
     </div>
   </main>
-
-  <!-- Target Companies Selection Modal -->
-  <div id="companyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
-        <div>
-          <h3 class="text-xl font-bold text-slate-100">Configure Target Companies</h3>
-          <p class="text-xs text-slate-400 mt-1">Select companies to harvest directly via native ATS APIs</p>
-        </div>
-        <button onclick="closeCompanyModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2">&times;</button>
-      </div>
-
-      <div class="p-6 overflow-y-auto space-y-6">
-        <!-- Select All / Deselect All Bar -->
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <div class="flex space-x-3 text-xs">
-            <button onclick="selectAllCompanies(true)" class="text-emerald-400 hover:underline font-semibold">Select All</button>
-            <span class="text-slate-600">•</span>
-            <button onclick="selectAllCompanies(false)" class="text-slate-400 hover:underline">Deselect All</button>
-          </div>
-          <span id="selectedCompanyCount" class="text-xs text-slate-400 font-medium">0 selected</span>
-        </div>
-
-        <!-- Checkbox Grid -->
-        <div id="companyCheckboxGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <!-- Dynamically populated -->
-        </div>
-
-        <!-- Add Custom Company Form -->
-        <div class="border-t border-slate-800 pt-4">
-          <h4 class="text-sm font-semibold text-slate-200 mb-3">+ Add New Target Company</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input type="text" id="addCompName" placeholder="Company Name (e.g. Linear)" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
-            <select id="addCompAts" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
-              <option value="ashby">Ashby</option>
-              <option value="greenhouse">Greenhouse</option>
-              <option value="lever">Lever</option>
-            </select>
-            <input type="text" id="addCompToken" placeholder="Board Token (e.g. linear)" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200">
-          </div>
-          <button onclick="addCustomCompany()" class="mt-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 font-semibold px-4 py-2 rounded-lg text-xs transition w-full">
-            Add Target Company
-          </button>
-        </div>
-      </div>
-
-      <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-end space-x-3">
-        <button onclick="closeCompanyModal()" class="px-4 py-2 rounded-lg text-slate-400 hover:text-white text-sm">Save & Close</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Profile Vault Modal -->
   <div id="profileModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">

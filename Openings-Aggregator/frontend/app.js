@@ -1,56 +1,10 @@
 let currentJobs = [];
-let allCompanies = [];
-let selectedCompanyNames = new Set();
+let viewMode = 'batch50'; // 'batch50' or 'all'
+let currentPage = 1;
+const BATCH_SIZE = 50;
 
 async function init() {
-  await loadCompanies();
-  await triggerHarvest(); // Automatically perform initial live API harvest on load
-}
-
-async function loadCompanies() {
-  try {
-    const res = await fetch('/api/companies');
-    const data = await res.json();
-    if (data.status === 'success') {
-      allCompanies = data.companies || [];
-      if (selectedCompanyNames.size === 0) {
-        allCompanies.forEach(c => selectedCompanyNames.add(c.name));
-      }
-      renderCompanyGrid();
-      document.getElementById('companyCount').innerText = allCompanies.length;
-    }
-  } catch(e) {}
-}
-
-function renderCompanyGrid() {
-  const grid = document.getElementById('companyCheckboxGrid');
-  grid.innerHTML = allCompanies.map(c => `
-    <label class="flex items-center space-x-2 bg-slate-950 border border-slate-800/80 p-2.5 rounded-lg cursor-pointer hover:border-slate-700 transition text-xs">
-      <input type="checkbox" value="${escapeHtml(c.name)}" ${selectedCompanyNames.has(c.name) ? 'checked' : ''} onchange="toggleCompanySelection('${escapeHtml(c.name)}', this.checked)" class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500">
-      <span class="font-semibold text-slate-200">${escapeHtml(c.name)}</span>
-      <span class="text-[10px] text-slate-500 uppercase font-mono text-emerald-400">(${escapeHtml(c.ats)})</span>
-    </label>
-  `).join('');
-  updateSelectedCount();
-}
-
-function toggleCompanySelection(name, isChecked) {
-  if (isChecked) selectedCompanyNames.add(name);
-  else selectedCompanyNames.delete(name);
-  updateSelectedCount();
-}
-
-function selectAllCompanies(shouldSelect) {
-  if (shouldSelect) {
-    allCompanies.forEach(c => selectedCompanyNames.add(c.name));
-  } else {
-    selectedCompanyNames.clear();
-  }
-  renderCompanyGrid();
-}
-
-function updateSelectedCount() {
-  document.getElementById('selectedCompanyCount').innerText = `${selectedCompanyNames.size} of ${allCompanies.length} selected`;
+  await triggerHarvest();
 }
 
 async function triggerHarvest() {
@@ -62,12 +16,11 @@ async function triggerHarvest() {
   const q = document.getElementById('inputQuery').value.trim();
   const loc = document.getElementById('inputLocation').value.trim();
   const minSal = parseInt(document.getElementById('salarySelect').value || "0");
-  const compList = Array.from(selectedCompanyNames);
 
   banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/60 border-emerald-500/40 text-emerald-300 block flex items-center space-x-3';
   banner.innerHTML = `
     <div class="w-4 h-4 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin"></div>
-    <span>⚡ Triggering live real-time API fetches across ${compList.length} company endpoints...</span>
+    <span>⚡ Triggering live backend API harvest across all company endpoints...</span>
   `;
 
   try {
@@ -75,7 +28,6 @@ async function triggerHarvest() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        companies: compList,
         query: q,
         location: loc,
         min_salary: minSal
@@ -86,7 +38,8 @@ async function triggerHarvest() {
     banner.innerText = `✅ ${data.message || 'Live API Harvest Complete!'}`;
     
     currentJobs = data.jobs || [];
-    renderJobs(currentJobs);
+    currentPage = 1;
+    renderJobs();
   } catch (e) {
     banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-rose-950/40 border-rose-500/30 text-rose-300 block';
     banner.innerText = `[!] Error connecting to live backend: ${e.message}`;
@@ -97,24 +50,77 @@ async function triggerHarvest() {
 }
 
 async function fetchJobs() {
-  await triggerHarvest();
+  const q = document.getElementById('inputQuery').value.trim();
+  const loc = document.getElementById('inputLocation').value.trim();
+  const ats = document.getElementById('atsSelect').value;
+  const sort = document.getElementById('sortSelect').value;
+  const minSal = document.getElementById('salarySelect').value;
+
+  const url = `/api/jobs?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&ats=${encodeURIComponent(ats)}&min_salary=${minSal}&sort_by=${sort}&limit=500`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === 'success') {
+      currentJobs = data.jobs || [];
+      currentPage = 1;
+      renderJobs();
+    }
+  } catch(e) {}
 }
 
-function renderJobs(jobs) {
-  const list = document.getElementById('jobList');
-  document.getElementById('txtCount').innerText = `Showing ${jobs.length} live target openings`;
+function setViewMode(mode) {
+  viewMode = mode;
+  document.getElementById('tabBatch50').className = mode === 'batch50' 
+    ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+    : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
 
-  if (jobs.length === 0) {
+  document.getElementById('tabAll').className = mode === 'all'
+    ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+    : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+
+  document.getElementById('paginationControls').style.display = mode === 'batch50' ? 'flex' : 'none';
+  currentPage = 1;
+  renderJobs();
+}
+
+function changePage(delta) {
+  const totalPages = Math.ceil(currentJobs.length / BATCH_SIZE) || 1;
+  currentPage += delta;
+  if (currentPage < 1) currentPage = 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  renderJobs();
+}
+
+function renderJobs() {
+  const list = document.getElementById('jobList');
+  const totalCount = currentJobs.length;
+
+  let displayJobs = currentJobs;
+  if (viewMode === 'batch50') {
+    const totalPages = Math.ceil(totalCount / BATCH_SIZE) || 1;
+    const start = (currentPage - 1) * BATCH_SIZE;
+    displayJobs = currentJobs.slice(start, start + BATCH_SIZE);
+
+    document.getElementById('txtCount').innerText = `Showing ${displayJobs.length} jobs (Batch ${currentPage} of ${totalPages} | Total US: ${totalCount})`;
+    document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('btnPrev').disabled = (currentPage === 1);
+    document.getElementById('btnNext').disabled = (currentPage === totalPages);
+  } else {
+    document.getElementById('txtCount').innerText = `Showing all ${totalCount} US jobs`;
+  }
+
+  if (displayJobs.length === 0) {
     list.innerHTML = `
       <tr>
         <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-          No live openings matched your parameters. Try broadening your prompt query or selecting additional company endpoints!
+          No live US openings matched your search parameters. Click "Fetch All US Openings" to update target feeds!
         </td>
       </tr>`;
     return;
   }
 
-  list.innerHTML = jobs.map((j, idx) => `
+  list.innerHTML = displayJobs.map((j, idx) => `
     <tr class="hover:bg-slate-800/40 transition">
       <td class="px-6 py-4 font-bold text-slate-200">${escapeHtml(j.company)}</td>
       <td class="px-6 py-4">
@@ -132,33 +138,11 @@ function renderJobs(jobs) {
           View Desc
         </button>
         <a href="${escapeHtml(j.apply_url)}" target="_blank" class="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-semibold px-3 py-1.5 rounded-lg border border-emerald-500/30 transition inline-block">
-          Apply ↗
+          ⚡ Auto-Apply ↗
         </a>
       </td>
     </tr>
   `).join('');
-}
-
-async function addCustomCompany() {
-  const name = document.getElementById('addCompName').value.trim();
-  const ats = document.getElementById('addCompAts').value;
-  const token = document.getElementById('addCompToken').value.trim();
-  if (!name || !token) return alert('Please enter company name and board token!');
-
-  const res = await fetch('/api/companies', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'add', name, ats, token })
-  });
-  const data = await res.json();
-  if (data.status === 'success') {
-    selectedCompanyNames.add(name);
-    await loadCompanies();
-    document.getElementById('addCompName').value = '';
-    document.getElementById('addCompToken').value = '';
-    alert(`Added ${name} (${ats.toUpperCase()}) to live target list!`);
-    await triggerHarvest();
-  }
 }
 
 async function openProfileModal() {
@@ -182,13 +166,6 @@ async function openProfileModal() {
 }
 
 function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
-function openCompanyModal() { document.getElementById('companyModal').classList.remove('hidden'); }
-function closeCompanyModal() { document.getElementById('companyModal').classList.add('hidden'); }
-
-function setQuery(q) {
-  document.getElementById('inputQuery').value = q;
-  triggerHarvest();
-}
 
 function openModal(idx) {
   const j = currentJobs[idx];
@@ -217,7 +194,7 @@ function exportCSV() {
   });
   const a = document.createElement('a');
   a.href = encodeURI(csv);
-  a.download = `live_openings_${currentJobs.length}_records.csv`;
+  a.download = `openings_${currentJobs.length}_jobs.csv`;
   document.body.appendChild(a); a.click(); a.remove();
 }
 
