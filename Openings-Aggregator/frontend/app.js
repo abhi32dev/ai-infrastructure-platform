@@ -151,18 +151,51 @@ async function openProfileModal() {
   const p = data.profile || {};
   const pers = p.personal || {};
   const auth = p.work_authorization || {};
+  const pref = p.preferences || {};
 
-  document.getElementById('profileBody').innerHTML = `
-    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
-      <div class="font-bold text-slate-100 text-sm mb-1">${escapeHtml(pers.fullName || 'Abhishek Singh')}</div>
-      <div><strong>Email:</strong> ${escapeHtml(pers.email)}</div>
-      <div><strong>Phone:</strong> ${escapeHtml(pers.phone)}</div>
-      <div><strong>Location:</strong> ${escapeHtml(pers.currentLocation)}</div>
-      <div><strong>US Authorization:</strong> ${escapeHtml(auth.legallyAuthorizedUS)} (Sponsorship: ${escapeHtml(auth.requireSponsorship)})</div>
-      <div><strong>Resume Vault:</strong> <span class="text-emerald-400 font-mono">Abhishek_Singh_Resume.html</span></div>
-    </div>
-  `;
+  const defaultText = `FULL NAME: ${pers.fullName || 'Abhishek Singh'}
+EMAIL: ${pers.email || 'asingh32us@gmail.com'}
+PHONE: ${pers.phone || '(669) 203-9217'}
+CURRENT LOCATION: ${pers.currentLocation || 'Fremont, CA, USA'}
+LINKEDIN: ${pers.linkedin || 'https://linkedin.com/in/abhishek32'}
+GITHUB: ${pers.github || 'https://github.com/abhi32dev'}
+
+WORK AUTHORIZATION:
+- Authorized to Work in US: ${auth.legallyAuthorizedUS || 'Yes'}
+- Require Visa Sponsorship: ${auth.requireSponsorship || 'Yes'}
+- Future Sponsorship: ${auth.futureSponsorship || 'Yes'}
+- Visa Type: ${auth.visaStatus || 'Requires Sponsorship'}
+
+PREFERENCES & INSTRUCTIONS:
+- Hybrid Office Attendance: ${pref.hybridOfficeAttendance || 'Yes, 3+ days/week'}
+- State of Residence: ${pref.stateOfResidence || 'California'}
+- School Location: ${pref.schoolLocation || 'California, USA'}
+- Notice Period: ${pref.noticePeriod || 'Immediate'}
+`;
+
+  document.getElementById('txtProfileNotepad').value = defaultText;
+  document.getElementById('profileSaveBanner').classList.add('hidden');
   document.getElementById('profileModal').classList.remove('hidden');
+}
+
+async function saveProfileNotepad() {
+  const text = document.getElementById('txtProfileNotepad').value;
+  const banner = document.getElementById('profileSaveBanner');
+
+  try {
+    const res = await fetch('/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ raw_text: text })
+    });
+    const data = await res.json();
+    banner.innerText = '✅ Profile notes & vault updated successfully!';
+    banner.classList.remove('hidden');
+    setTimeout(() => banner.classList.add('hidden'), 3000);
+  } catch (e) {
+    banner.innerText = `[!] Error saving profile: ${e.message}`;
+    banner.classList.remove('hidden');
+  }
 }
 
 function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }

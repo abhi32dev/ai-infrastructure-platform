@@ -205,6 +205,23 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
     except Exception:
       req_json = {}
 
+    if parsed.path == "/api/profile":
+        raw_text = req_json.get("raw_text", "")
+        parsed_data = req_json.get("profile", {})
+
+        if raw_text:
+            # Save raw text note alongside json
+            raw_path = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "notes.txt")
+            with open(raw_path, "w", encoding="utf-8") as f:
+                f.write(raw_text)
+
+        if parsed_data:
+            with open(VAULT_PATH, "w", encoding="utf-8") as f:
+                json.dump(parsed_data, f, indent=2)
+
+        self._send_json({"status": "success", "message": "Profile notes & vault updated!"})
+        return
+
     if parsed.path == "/api/harvest":
       selected = req_json.get("companies", None)
       query = req_json.get("query", "")
