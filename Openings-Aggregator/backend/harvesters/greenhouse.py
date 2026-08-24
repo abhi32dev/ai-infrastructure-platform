@@ -59,7 +59,11 @@ def fetch_greenhouse_jobs(company_token, company_name):
             for j in raw_jobs:
                 job_id = f"gh_{j.get('id')}"
                 title = j.get("title", "Unknown Title")
-                apply_url = j.get("absolute_url", "")
+                raw_url = j.get("absolute_url", "")
+                
+                # DIRECT APPLICATION FORM LINK: append #app to scroll & focus on application inputs
+                direct_apply_url = f"{raw_url}#app" if raw_url and not raw_url.endswith("#app") else raw_url
+                
                 location = (j.get("location", {}) or {}).get("name", "Remote / Unspecified")
                 
                 content = j.get("content", "")
@@ -75,7 +79,7 @@ def fetch_greenhouse_jobs(company_token, company_name):
                     "company": company_name,
                     "title": title,
                     "location": location,
-                    "apply_url": apply_url,
+                    "apply_url": direct_apply_url,
                     "description": clean_desc if len(clean_desc) > 30 else f"{title} at {company_name}",
                     "ats_provider": "Greenhouse",
                     "posted_date": exact_date,

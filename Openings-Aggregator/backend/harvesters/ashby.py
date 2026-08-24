@@ -18,7 +18,6 @@ def extract_salary_range(text, title):
         text = ""
     full = f"{title} {text}".lower()
     
-    # Check for $XXX,XXX or $XXXk patterns
     matches = re.findall(r'\$([0-9]{2,3})(?:,([0-9]{3}))?|([0-9]{2,3})k', full)
     vals = []
     for m in matches:
@@ -38,7 +37,6 @@ def extract_salary_range(text, title):
         v = vals[0]
         return f"${round(v/1000)}k / yr", v, v
         
-    # Standard tech salary band defaults based on seniority
     if "senior" in title.lower() or "staff" in title.lower() or "lead" in title.lower():
         return "$170k - $240k / yr (Base + Equity)", 170000, 240000
     elif "ai" in title.lower() or "machine learning" in title.lower() or "principal" in title.lower():
@@ -46,6 +44,11 @@ def extract_salary_range(text, title):
     return "$140k - $200k / yr (Base + Equity)", 140000, 200000
 
 def fetch_ashby_jobs(company_token, company_name):
+    """
+    Directly fetches public job postings from Ashby boards (Notion, Linear, Vercel, Scribe, Distyl).
+    URL: https://jobs.ashbyhq.com/{token}
+    Direct Application URL: https://jobs.ashbyhq.com/{token}/{id}/application
+    """
     url = f"https://jobs.ashbyhq.com/{company_token}"
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
     req = urllib.request.Request(url, headers=headers)
@@ -66,7 +69,9 @@ def fetch_ashby_jobs(company_token, company_name):
                 seen_ids.add(id_str)
                 
                 loc_name = location if location else "San Francisco, CA / US Remote"
-                apply_url = f"https://jobs.ashbyhq.com/{company_token}/{id_str}"
+                
+                # DIRECT APPLICATION FORM LINK: /application
+                direct_apply_url = f"https://jobs.ashbyhq.com/{company_token}/{id_str}/application"
                 
                 enriched_desc = f"{title} position at {company_name}. Core Stack & Focus: Python, TypeScript, Distributed Systems, Backend Architecture, Cloud Infrastructure, AI Systems. Location: {loc_name}."
                 
@@ -77,7 +82,7 @@ def fetch_ashby_jobs(company_token, company_name):
                     "company": company_name,
                     "title": title,
                     "location": loc_name,
-                    "apply_url": apply_url,
+                    "apply_url": direct_apply_url,
                     "description": enriched_desc,
                     "ats_provider": "Ashby",
                     "posted_date": today_date,
@@ -85,7 +90,7 @@ def fetch_ashby_jobs(company_token, company_name):
                     "salary_max": s_max,
                     "salary_display": salary_str
                 })
-            print(f"[+] Successfully fetched {len(jobs)} Ashby jobs for {company_name}!")
+            print(f"[+] Successfully fetched {len(jobs)} Ashby jobs with direct /application links for {company_name}!")
     except Exception as e:
         print(f"[!] Error fetching Ashby jobs for {company_name} ({company_token}): {e}")
         
