@@ -1,8 +1,18 @@
 import sqlite3
 import os
+import html
 import re
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "openings.db")
+
+def clean_text(raw_text):
+    if not raw_text:
+        return ""
+    text = html.unescape(raw_text)
+    text = re.sub(r'<(script|style)[^>]*>.*?</\1>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
+    return re.sub(r'\s+', ' ', text).strip()
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -22,7 +32,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-    # Migrate columns if existing DB
     try:
         cursor.execute("ALTER TABLE jobs ADD COLUMN salary_min INTEGER DEFAULT 0")
     except Exception:
@@ -58,13 +67,14 @@ def save_jobs(jobs):
     saved_count = 0
     for j in jobs:
         try:
-            s_min, s_max = parse_salary_bounds(f"{j.get('title', '')} {j.get('description', '')} {j.get('location', '')}")
+            clean_desc = clean_text(j.get("description", ""))
+            s_min, s_max = parse_salary_bounds(f"{j.get('title', '')} {clean_desc} {j.get('location', '')}")
             cursor.execute('''
                 INSERT OR REPLACE INTO jobs (id, company, title, location, apply_url, description, ats_provider, posted_date, salary_min, salary_max)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 j["id"], j["company"], j["title"], j["location"],
-                j["apply_url"], j["description"], j["ats_provider"], j["posted_date"],
+                j["apply_url"], clean_desc, j["ats_provider"], j["posted_date"],
                 s_min, s_max
             ))
             saved_count += 1

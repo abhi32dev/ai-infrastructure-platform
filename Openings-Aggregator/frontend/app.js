@@ -1,3 +1,8 @@
+let currentJobs = [];
+let viewMode = 'batch50';
+let currentPage = 1;
+const BATCH_SIZE = 50;
+
 async function init() {
   renderRecentChips();
   await triggerHarvest();
@@ -7,12 +12,8 @@ function saveRecentFilter(queryStr) {
   if (!queryStr || queryStr.trim().length === 0) return;
   const q = queryStr.trim();
   let recent = JSON.parse(localStorage.getItem('oa_recent_filters') || '[]');
-  
-  // Remove if duplicate, prepend to top
   recent = recent.filter(item => item.toLowerCase() !== q.toLowerCase());
   recent.unshift(q);
-  
-  // Keep strictly the last 2 skill set memories
   recent = recent.slice(0, 2);
   localStorage.setItem('oa_recent_filters', JSON.stringify(recent));
   renderRecentChips();
@@ -161,59 +162,72 @@ function renderJobs() {
     const salaryStr = formatSalary(j);
     const workTypePill = formatWorkType(j.location);
     const dateStr = j.posted_date || 'Recent';
+    const cleanDesc = cleanClientText(j.description);
 
     return `
-      <tr class="hover:bg-slate-800/50 transition">
+      <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/80">
         <!-- 1. Company & ATS Badge -->
-        <td class="px-5 py-4 font-bold text-slate-200">
-          <div>${escapeHtml(j.company)}</div>
-          <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] uppercase font-mono ${getAtsBadgeClass(j.ats_provider)}">
+        <td class="px-5 py-5 font-bold text-slate-100 text-base align-top">
+          <div class="tracking-tight">${escapeHtml(j.company)}</div>
+          <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded text-[11px] font-bold uppercase font-mono tracking-wider ${getAtsBadgeClass(j.ats_provider)}">
             ${escapeHtml(j.ats_provider)}
           </span>
         </td>
 
-        <!-- 2. Job Title -->
-        <td class="px-5 py-4 font-semibold text-slate-100">
-          ${escapeHtml(j.title)}
+        <!-- 2. Job Title (Allows 2-Line Wrapping, Left-Aligned) -->
+        <td class="px-5 py-5 text-left align-top">
+          <div class="font-bold text-slate-100 text-base leading-snug break-words whitespace-normal">
+            ${escapeHtml(j.title)}
+          </div>
         </td>
 
         <!-- 3. Date Posted -->
-        <td class="px-5 py-4 text-xs text-slate-400 font-mono">
+        <td class="px-5 py-5 text-sm text-slate-300 font-mono align-top whitespace-nowrap">
           ${escapeHtml(dateStr)}
         </td>
 
         <!-- 4. Salary Band -->
-        <td class="px-5 py-4 text-xs font-semibold text-emerald-400">
+        <td class="px-5 py-5 text-sm font-bold text-emerald-400 align-top whitespace-nowrap">
           ${escapeHtml(salaryStr)}
         </td>
 
         <!-- 5. Location & Work Type -->
-        <td class="px-5 py-4 text-xs">
-          <div class="text-slate-300 font-medium">${escapeHtml(j.location)}</div>
-          <div class="mt-1">${workTypePill}</div>
+        <td class="px-5 py-5 text-sm align-top whitespace-normal break-words">
+          <div class="text-slate-200 font-semibold leading-snug">${escapeHtml(j.location)}</div>
+          <div class="mt-1.5">${workTypePill}</div>
         </td>
 
-        <!-- 6. Hover & Click Description Popover -->
-        <td class="px-5 py-4 text-xs text-slate-400 max-w-md cursor-pointer hover:text-slate-200 transition"
-            title="${escapeAttr(j.description)}"
+        <!-- 6. Clean Description Preview (Hover Tooltip + Click Popover) -->
+        <td class="px-5 py-5 text-sm text-slate-300 align-top cursor-pointer hover:text-slate-100 transition whitespace-normal break-words"
+            title="${escapeAttr(cleanDesc)}"
             onclick="openModal(${idx})">
-          <div class="line-clamp-2 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80 hover:border-emerald-500/40 transition">
-            ${escapeHtml(j.description)}
+          <div class="line-clamp-3 bg-slate-950/80 p-3 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition leading-relaxed text-xs text-slate-300">
+            ${escapeHtml(cleanDesc)}
           </div>
-          <span class="text-[10px] text-emerald-400 mt-1 inline-block font-semibold">🔍 Click to inspect full window</span>
+          <div class="text-[11px] text-emerald-400 mt-1 font-bold flex items-center space-x-1">
+            <span>🔍 Click to inspect full window</span>
+          </div>
         </td>
 
         <!-- 7. Direct ⚡ Auto-Apply Action -->
-        <td class="px-5 py-4 text-right">
+        <td class="px-5 py-5 text-right align-top whitespace-nowrap">
           <a href="${escapeHtml(j.apply_url)}" target="_blank" 
-             class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3.5 py-2 rounded-lg text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1">
+             class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1.5">
             <span>⚡ Auto-Apply</span>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </a>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+function cleanClientText(str) {
+  if (!str) return '';
+  const doc = new DOMParser().parseFromString(str, 'text/html');
+  let clean = doc.body.textContent || '';
+  clean = clean.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').strip ? clean.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : clean.trim();
+  return clean;
 }
 
 function formatSalary(j) {
@@ -293,7 +307,7 @@ function openModal(idx) {
   if (!j) return;
   document.getElementById('modalTitle').innerText = j.title;
   document.getElementById('modalSub').innerText = `${j.company} • ${j.location} (${j.ats_provider}) • ${j.posted_date || 'Recent'}`;
-  document.getElementById('modalBody').innerText = j.description || 'No description provided.';
+  document.getElementById('modalBody').innerText = cleanClientText(j.description) || 'No description provided.';
   document.getElementById('modalApplyBtn').href = j.apply_url;
   document.getElementById('descModal').classList.remove('hidden');
 }
@@ -311,7 +325,7 @@ function exportCSV() {
   if (currentJobs.length === 0) return alert('No jobs to export!');
   let csv = 'data:text/csv;charset=utf-8,Company,Job Title,Date Posted,Salary,Location,ATS Engine,Apply URL,Description\n';
   currentJobs.forEach(j => {
-    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${j.posted_date||'Recent'}","${formatSalary(j)}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(j.description||'').replace(/"/g, '""')}"\n`;
+    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${j.posted_date||'Recent'}","${formatSalary(j)}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(cleanClientText(j.description)| me).replace(/"/g, '""')}"\n`;
   });
   const a = document.createElement('a');
   a.href = encodeURI(csv);
