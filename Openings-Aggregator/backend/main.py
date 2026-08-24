@@ -1,49 +1,89 @@
 #!/usr/bin/env python3
+"""
+Openings Aggregator — Live Real-Time Backend API Engine
+"""
+
 import os
 import json
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from backend.harvesters.greenhouse import fetch_greenhouse_jobs
 from backend.harvesters.lever import fetch_lever_jobs
 from backend.harvesters.ashby import fetch_ashby_jobs
-from backend.database import save_jobs, query_jobs
+from backend.database import save_jobs, query_jobs, parse_salary_bounds
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "target_companies.json")
 VAULT_PATH = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "profile_vault.json")
 
-def harvest_target_companies(selected_names=None):
+def harvest_single_company(company):
+    name = company.get("name")
+    ats = company.get("ats", "").lower()
+    token = company.get("token")
+    
+    print(f"[LIVE BACKEND] Triggering {ats.upper()} API fetch for {name} ({token})...")
+    if ats == "greenhouse":
+        return fetch_greenhouse_jobs(token, name)
+    elif ats == "lever":
+        return fetch_lever_jobs(token, name)
+    elif ats == "ashby":
+        return fetch_ashby_jobs(token, name)
+    return []
+
+def live_api_harvest(selected_names=None, query="", location="", min_salary=0):
     if not os.path.exists(CONFIG_PATH):
-        return 0, "Config file missing"
+        return [], "Config file missing"
         
     with open(CONFIG_PATH, "r") as f:
         cfg = json.load(f)
         
     companies = cfg.get("companies", [])
-    if selected_names:
+    if selected_names and len(selected_names) > 0:
         companies = [c for c in companies if c.get("name") in selected_names]
 
-    total_harvested = []
-    print(f"[*] Aggregating across {len(companies)} selected tech companies...")
-    
-    for c in companies:
-        name = c.get("name")
-        ats = c.get("ats", "").lower()
-        token = c.get("token")
+    print(f"[LIVE BACKEND] Launching parallel API harvesters across {len(companies)} companies...")
+
+    all_jobs = []
+    # Use multi-threading for fast sub-second parallel API fetches
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(harvest_single_company, c): c for c in companies}
+        for future in as_completed(futures):
+            try:
+                res = future.result()
+                all_jobs.extend(res)
+            except Exception as e:
+                print(f"[!] Worker exception: {e}")
+
+    # Save all fresh live jobs into local SQLite storage
+    save_jobs(all_jobs)
+
+    # Filter live payload by search query, location, and min salary on the fly
+    filtered = []
+    tokens = [t.strip().lower() for t in query.replace(",", " ").split() if t.strip()]
+    loc_lower = location.lower().strip()
+
+    for j in all_jobs:
+        text_full = f"{j.get('title','')} {j.get('description','')} {j.get('company','')}".lower()
         
-        print(f"[+] Harvesting {name} via {ats.upper()}...")
-        if ats == "greenhouse":
-            jobs = fetch_greenhouse_jobs(token, name)
-        elif ats == "lever":
-            jobs = fetch_lever_jobs(token, name)
-        elif ats == "ashby":
-            jobs = fetch_ashby_jobs(token, name)
-        else:
-            jobs = []
-            
-        total_harvested.extend(jobs)
-        
-    saved = save_jobs(total_harvested)
-    return saved, f"Harvested {saved} openings across {len(companies)} companies!"
+        # Check query tokens
+        if tokens:
+            if not all(t in text_full for t in tokens):
+                continue
+
+        # Check location
+        if loc_lower:
+            if loc_lower not in j.get("location", "").lower() and loc_lower not in text_full:
+                continue
+
+        # Check salary floor
+        if min_salary > 0:
+            s_min, s_max = parse_salary_bounds(text_full)
+            if s_max > 0 and s_max < min_salary:
+                continue
+
+        filtered.append(j)
+
+    return filtered, f"Live fetched {len(all_jobs)} openings across {len(companies)} native company APIs!"
 
 class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
     def translate_path(self, path):
@@ -113,8 +153,24 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
 
         if parsed.path == "/api/harvest":
             selected = req_json.get("companies", None)
-            saved, msg = harvest_target_companies(selected_names=selected)
-            self._send_json({"status": "success", "message": msg, "count": saved})
+            query = req_json.get("query", "")
+            location = req_json.get("location", "")
+            min_sal = int(req_json.get("min_salary", 0))
+
+            print(f"[REALTIME BACKEND] Triggering live API harvest for query='{query}', location='{location}'...")
+            live_jobs, msg = live_api_harvest(
+                selected_names=selected,
+                query=query,
+                location=location,
+                min_salary=min_sal
+            )
+
+            self._send_json({
+                "status": "success",
+                "message": msg,
+                "count": len(live_jobs),
+                "jobs": live_jobs
+            })
             return
 
         if parsed.path == "/api/companies":
@@ -131,7 +187,6 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
                 cfg = {"companies": []}
 
             if action == "add" and name and ats and token:
-                # Deduplicate by name
                 cfg["companies"] = [c for c in cfg["companies"] if c.get("name").lower() != name.lower()]
                 cfg["companies"].append({"name": name, "ats": ats.lower(), "token": token, "category": category})
                 with open(CONFIG_PATH, "w") as f:
@@ -153,7 +208,7 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
 def run_server(port=8000):
     server_address = ('', port)
     httpd = HTTPServer(server_address, AggregatorHTTPHandler)
-    print(f"🚀 Openings Aggregator Server active on http://localhost:{port}")
+    print(f"🚀 Openings Aggregator Real-Time Backend active on http://localhost:{port}")
     httpd.serve_forever()
 
 if __name__ == "__main__":

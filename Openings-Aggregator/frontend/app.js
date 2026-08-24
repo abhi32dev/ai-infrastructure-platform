@@ -4,7 +4,7 @@ let selectedCompanyNames = new Set();
 
 async function init() {
   await loadCompanies();
-  await fetchJobs();
+  await triggerHarvest(); // Automatically perform initial live API harvest on load
 }
 
 async function loadCompanies() {
@@ -13,7 +13,6 @@ async function loadCompanies() {
     const data = await res.json();
     if (data.status === 'success') {
       allCompanies = data.companies || [];
-      // Default to selecting all companies initially
       if (selectedCompanyNames.size === 0) {
         allCompanies.forEach(c => selectedCompanyNames.add(c.name));
       }
@@ -29,7 +28,7 @@ function renderCompanyGrid() {
     <label class="flex items-center space-x-2 bg-slate-950 border border-slate-800/80 p-2.5 rounded-lg cursor-pointer hover:border-slate-700 transition text-xs">
       <input type="checkbox" value="${escapeHtml(c.name)}" ${selectedCompanyNames.has(c.name) ? 'checked' : ''} onchange="toggleCompanySelection('${escapeHtml(c.name)}', this.checked)" class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500">
       <span class="font-semibold text-slate-200">${escapeHtml(c.name)}</span>
-      <span class="text-[10px] text-slate-500 uppercase">(${escapeHtml(c.ats)})</span>
+      <span class="text-[10px] text-slate-500 uppercase font-mono text-emerald-400">(${escapeHtml(c.ats)})</span>
     </label>
   `).join('');
   updateSelectedCount();
@@ -39,7 +38,6 @@ function toggleCompanySelection(name, isChecked) {
   if (isChecked) selectedCompanyNames.add(name);
   else selectedCompanyNames.delete(name);
   updateSelectedCount();
-  fetchJobs();
 }
 
 function selectAllCompanies(shouldSelect) {
@@ -49,42 +47,68 @@ function selectAllCompanies(shouldSelect) {
     selectedCompanyNames.clear();
   }
   renderCompanyGrid();
-  fetchJobs();
 }
 
 function updateSelectedCount() {
   document.getElementById('selectedCompanyCount').innerText = `${selectedCompanyNames.size} of ${allCompanies.length} selected`;
 }
 
-async function fetchJobs() {
+async function triggerHarvest() {
+  const btn = document.getElementById('btnHarvest');
+  const banner = document.getElementById('statusBanner');
+  btn.disabled = true;
+  btn.classList.add('opacity-50');
+
   const q = document.getElementById('inputQuery').value.trim();
   const loc = document.getElementById('inputLocation').value.trim();
-  const ats = document.getElementById('atsSelect').value;
-  const sort = document.getElementById('sortSelect').value;
-  const minSal = document.getElementById('salarySelect').value;
+  const minSal = parseInt(document.getElementById('salarySelect').value || "0");
+  const compList = Array.from(selectedCompanyNames);
 
-  const compList = Array.from(selectedCompanyNames).join(',');
-  const url = `/api/jobs?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&ats=${encodeURIComponent(ats)}&companies=${encodeURIComponent(compList)}&min_salary=${minSal}&sort_by=${sort}&limit=300`;
+  banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/60 border-emerald-500/40 text-emerald-300 block flex items-center space-x-3';
+  banner.innerHTML = `
+    <div class="w-4 h-4 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin"></div>
+    <span>⚡ Triggering live real-time API fetches across ${compList.length} company endpoints...</span>
+  `;
 
   try {
-    const res = await fetch(url);
+    const res = await fetch('/api/harvest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        companies: compList,
+        query: q,
+        location: loc,
+        min_salary: minSal
+      })
+    });
     const data = await res.json();
-    if (data.status === 'success') {
-      currentJobs = data.jobs || [];
-      renderJobs(currentJobs);
-    }
-  } catch(e) {}
+    banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/40 border-emerald-500/30 text-emerald-300 block';
+    banner.innerText = `✅ ${data.message || 'Live API Harvest Complete!'}`;
+    
+    currentJobs = data.jobs || [];
+    renderJobs(currentJobs);
+  } catch (e) {
+    banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-rose-950/40 border-rose-500/30 text-rose-300 block';
+    banner.innerText = `[!] Error connecting to live backend: ${e.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('opacity-50');
+  }
+}
+
+async function fetchJobs() {
+  await triggerHarvest();
 }
 
 function renderJobs(jobs) {
   const list = document.getElementById('jobList');
-  document.getElementById('txtCount').innerText = `Showing ${jobs.length} target openings`;
+  document.getElementById('txtCount').innerText = `Showing ${jobs.length} live target openings`;
 
   if (jobs.length === 0) {
     list.innerHTML = `
       <tr>
         <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-          No openings match your current search criteria. Click "Fetch Selected Openings" to update target feeds!
+          No live openings matched your parameters. Try broadening your prompt query or selecting additional company endpoints!
         </td>
       </tr>`;
     return;
@@ -115,34 +139,6 @@ function renderJobs(jobs) {
   `).join('');
 }
 
-async function triggerHarvest() {
-  const btn = document.getElementById('btnHarvest');
-  const banner = document.getElementById('statusBanner');
-  btn.disabled = true;
-  btn.classList.add('opacity-50');
-
-  banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/40 border-emerald-500/30 text-emerald-300 block';
-  banner.innerText = '⚡ Aggregating target company APIs...';
-
-  try {
-    const compList = Array.from(selectedCompanyNames);
-    const res = await fetch('/api/harvest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companies: compList })
-    });
-    const data = await res.json();
-    banner.innerText = `✅ ${data.message || 'Harvest completed!'}`;
-    await fetchJobs();
-  } catch (e) {
-    banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-rose-950/40 border-rose-500/30 text-rose-300 block';
-    banner.innerText = `[!] Error harvesting jobs: ${e.message}`;
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('opacity-50');
-  }
-}
-
 async function addCustomCompany() {
   const name = document.getElementById('addCompName').value.trim();
   const ats = document.getElementById('addCompAts').value;
@@ -160,7 +156,8 @@ async function addCustomCompany() {
     await loadCompanies();
     document.getElementById('addCompName').value = '';
     document.getElementById('addCompToken').value = '';
-    alert(`Added ${name} to target list!`);
+    alert(`Added ${name} (${ats.toUpperCase()}) to live target list!`);
+    await triggerHarvest();
   }
 }
 
@@ -178,7 +175,7 @@ async function openProfileModal() {
       <div><strong>Phone:</strong> ${escapeHtml(pers.phone)}</div>
       <div><strong>Location:</strong> ${escapeHtml(pers.currentLocation)}</div>
       <div><strong>US Authorization:</strong> ${escapeHtml(auth.legallyAuthorizedUS)} (Sponsorship: ${escapeHtml(auth.requireSponsorship)})</div>
-      <div><strong>Resume File:</strong> <span class="text-emerald-400 font-mono">Abhishek_Singh_Resume.html</span></div>
+      <div><strong>Resume Vault:</strong> <span class="text-emerald-400 font-mono">Abhishek_Singh_Resume.html</span></div>
     </div>
   `;
   document.getElementById('profileModal').classList.remove('hidden');
@@ -190,7 +187,7 @@ function closeCompanyModal() { document.getElementById('companyModal').classList
 
 function setQuery(q) {
   document.getElementById('inputQuery').value = q;
-  fetchJobs();
+  triggerHarvest();
 }
 
 function openModal(idx) {
@@ -220,7 +217,7 @@ function exportCSV() {
   });
   const a = document.createElement('a');
   a.href = encodeURI(csv);
-  a.download = `openings_aggregator_${currentJobs.length}_jobs.csv`;
+  a.download = `live_openings_${currentJobs.length}_records.csv`;
   document.body.appendChild(a); a.click(); a.remove();
 }
 
