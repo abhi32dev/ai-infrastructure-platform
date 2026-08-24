@@ -133,6 +133,13 @@ function changePage(delta) {
   renderJobs();
 }
 
+function setColumnSort(col, dir) {
+  currentSortCol = col;
+  currentSortDir = dir;
+  updateSortIndicators();
+  renderJobs();
+}
+
 function toggleColumnSort(col) {
   if (currentSortCol === col) {
     currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
@@ -140,22 +147,25 @@ function toggleColumnSort(col) {
     currentSortCol = col;
     currentSortDir = 'asc';
   }
+  updateSortIndicators();
+  renderJobs();
+}
 
-  // Update header arrow indicators
+function updateSortIndicators() {
   ['company', 'title', 'posted_date', 'salary', 'location'].forEach(c => {
-    const el = document.getElementById(`sort_${c}`);
-    if (el) {
-      if (c === col) {
-        el.innerText = currentSortDir === 'asc' ? '▲' : '▼';
-        el.className = 'text-emerald-400 font-bold text-xs';
+    const ascEl = document.getElementById(`sort_asc_${c}`);
+    const descEl = document.getElementById(`sort_desc_${c}`);
+
+    if (ascEl && descEl) {
+      if (c === currentSortCol) {
+        ascEl.className = currentSortDir === 'asc' ? 'text-emerald-400 font-black text-xs scale-125' : 'text-slate-600 text-[9px]';
+        descEl.className = currentSortDir === 'desc' ? 'text-emerald-400 font-black text-xs scale-125' : 'text-slate-600 text-[9px]';
       } else {
-        el.innerText = '▲▼';
-        el.className = 'text-slate-500 text-[10px]';
+        ascEl.className = 'text-slate-600 hover:text-slate-300 text-[9px]';
+        descEl.className = 'text-slate-600 hover:text-slate-300 text-[9px]';
       }
     }
   });
-
-  renderJobs();
 }
 
 function renderJobs() {

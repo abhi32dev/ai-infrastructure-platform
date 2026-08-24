@@ -155,35 +155,50 @@
         <table class="w-full text-left text-sm text-slate-200 border-collapse">
           <thead class="bg-slate-950 text-slate-300 text-xs font-bold uppercase tracking-wider border-b border-slate-800 select-none">
             <tr>
-              <!-- Interactive Up/Down Column Sort Controls -->
+              <!-- Vertical Arrow Stack ▲ on top, ▼ on bottom -->
               <th class="px-5 py-4 resize-x overflow-auto min-w-[160px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('company')">
                 <div class="flex items-center justify-between">
                   <span>Company</span>
-                  <span id="sort_company" class="text-slate-500 text-[10px]">▲▼</span>
+                  <div class="flex flex-col text-[9px] leading-tight font-mono ml-2">
+                    <button onclick="event.stopPropagation(); setColumnSort('company', 'asc')" id="sort_asc_company" class="hover:text-emerald-400 text-slate-500">▲</button>
+                    <button onclick="event.stopPropagation(); setColumnSort('company', 'desc')" id="sort_desc_company" class="hover:text-emerald-400 text-slate-500">▼</button>
+                  </div>
                 </div>
               </th>
               <th class="px-5 py-4 resize-x overflow-auto min-w-[240px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('title')">
                 <div class="flex items-center justify-between">
                   <span>Job Title</span>
-                  <span id="sort_title" class="text-slate-500 text-[10px]">▲▼</span>
+                  <div class="flex flex-col text-[9px] leading-tight font-mono ml-2">
+                    <button onclick="event.stopPropagation(); setColumnSort('title', 'asc')" id="sort_asc_title" class="hover:text-emerald-400 text-slate-500">▲</button>
+                    <button onclick="event.stopPropagation(); setColumnSort('title', 'desc')" id="sort_desc_title" class="hover:text-emerald-400 text-slate-500">▼</button>
+                  </div>
                 </div>
               </th>
               <th class="px-5 py-4 resize-x overflow-auto min-w-[130px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('posted_date')">
                 <div class="flex items-center justify-between">
                   <span>Date Posted</span>
-                  <span id="sort_posted_date" class="text-slate-500 text-[10px]">▲▼</span>
+                  <div class="flex flex-col text-[9px] leading-tight font-mono ml-2">
+                    <button onclick="event.stopPropagation(); setColumnSort('posted_date', 'asc')" id="sort_asc_posted_date" class="hover:text-emerald-400 text-slate-500">▲</button>
+                    <button onclick="event.stopPropagation(); setColumnSort('posted_date', 'desc')" id="sort_desc_posted_date" class="hover:text-emerald-400 text-slate-500">▼</button>
+                  </div>
                 </div>
               </th>
               <th class="px-5 py-4 resize-x overflow-auto min-w-[180px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('salary')">
                 <div class="flex items-center justify-between">
                   <span>Salary Band ($)</span>
-                  <span id="sort_salary" class="text-slate-500 text-[10px]">▲▼</span>
+                  <div class="flex flex-col text-[9px] leading-tight font-mono ml-2">
+                    <button onclick="event.stopPropagation(); setColumnSort('salary', 'asc')" id="sort_asc_salary" class="hover:text-emerald-400 text-slate-500">▲</button>
+                    <button onclick="event.stopPropagation(); setColumnSort('salary', 'desc')" id="sort_desc_salary" class="hover:text-emerald-400 text-slate-500">▼</button>
+                  </div>
                 </div>
               </th>
               <th class="px-5 py-4 resize-x overflow-auto min-w-[220px] border-r border-slate-800/60 cursor-pointer hover:text-emerald-400 transition" onclick="toggleColumnSort('location')">
                 <div class="flex items-center justify-between">
                   <span>Location</span>
-                  <span id="sort_location" class="text-slate-500 text-[10px]">▲▼</span>
+                  <div class="flex flex-col text-[9px] leading-tight font-mono ml-2">
+                    <button onclick="event.stopPropagation(); setColumnSort('location', 'asc')" id="sort_asc_location" class="hover:text-emerald-400 text-slate-500">▲</button>
+                    <button onclick="event.stopPropagation(); setColumnSort('location', 'desc')" id="sort_desc_location" class="hover:text-emerald-400 text-slate-500">▼</button>
+                  </div>
                 </div>
               </th>
               <th class="px-5 py-4 resize-x overflow-auto min-w-[320px] border-r border-slate-800/60">
