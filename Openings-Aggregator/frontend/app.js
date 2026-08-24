@@ -134,7 +134,6 @@ function renderJobs() {
   const list = document.getElementById('jobList');
   const atsFilter = document.getElementById('atsSelect').value;
 
-  // Filter current jobs by ATS engine if selected
   let filteredJobs = currentJobs;
   if (atsFilter) {
     filteredJobs = currentJobs.filter(j => j.ats_provider === atsFilter);
@@ -217,11 +216,23 @@ function renderJobs() {
           </div>
         </td>
 
+        <!-- 7. Direct ⚡ Auto-Apply Action -->
+        <td class="px-5 py-5 text-right align-top whitespace-nowrap">
+          <button onclick="triggerAutoApply(${idx})" 
+                  class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1.5 cursor-pointer">
+            <span>⚡ Auto-Apply</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 async function triggerAutoApply(idx) {
   const j = currentJobs[idx];
   if (!j) return;
 
-  // Record application in SQLite applied_tracker database
   try {
     await fetch('/api/tracker', {
       method: 'POST',
@@ -240,7 +251,6 @@ async function triggerAutoApply(idx) {
     });
   } catch(e) {}
 
-  // Open direct application posting URL in a new tab
   window.open(j.apply_url, '_blank');
 }
 
@@ -259,7 +269,6 @@ async function loadTrackerApplications() {
     const data = await res.json();
     const apps = data.applications || [];
 
-    // Calculate metrics
     document.getElementById('metricTotal').innerText = apps.length;
     document.getElementById('metricApplied').innerText = apps.filter(a => a.status === 'Applied' || a.status === 'In Review').length;
     document.getElementById('metricInterview').innerText = apps.filter(a => a.status === 'Interviewing').length;
@@ -344,7 +353,7 @@ function cleanClientText(str) {
   if (!str) return '';
   const doc = new DOMParser().parseFromString(str, 'text/html');
   let clean = doc.body.textContent || '';
-  clean = clean.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').strip ? clean.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : clean.trim();
+  clean = clean.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   return clean;
 }
 
@@ -443,7 +452,7 @@ function exportCSV() {
   if (currentJobs.length === 0) return alert('No jobs to export!');
   let csv = 'data:text/csv;charset=utf-8,Company,Job Title,Date Posted,Salary,Location,ATS Engine,Apply URL,Description\n';
   currentJobs.forEach(j => {
-    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${j.posted_date||'Recent'}","${formatSalary(j)}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(cleanClientText(j.description)| me).replace(/"/g, '""')}"\n`;
+    csv += `"${(j.company||'').replace(/"/g, '""')}","${(j.title||'').replace(/"/g, '""')}","${j.posted_date||'Recent'}","${formatSalary(j)}","${(j.location||'').replace(/"/g, '""')}","${j.ats_provider}","${j.apply_url}","${(cleanClientText(j.description)).replace(/"/g, '""')}"\n`;
   });
   const a = document.createElement('a');
   a.href = encodeURI(csv);
