@@ -32,6 +32,23 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    # Create Application Tracker Table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS applied_tracker (
+            id TEXT PRIMARY KEY,
+            company TEXT,
+            title TEXT,
+            location TEXT,
+            apply_url TEXT,
+            applied_date TEXT,
+            status TEXT DEFAULT 'Applied',
+            email_updates TEXT,
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     try:
         cursor.execute("ALTER TABLE jobs ADD COLUMN salary_min INTEGER DEFAULT 0")
     except Exception:
@@ -84,6 +101,49 @@ def save_jobs(jobs):
     conn.commit()
     conn.close()
     return saved_count
+
+def record_application(app_data):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    app_id = app_data.get("id") or f"app_{app_data.get('company')}_{app_data.get('title')}".lower().replace(" ", "_")
+    
+    cursor.execute('''
+        INSERT OR REPLACE INTO applied_tracker (id, company, title, location, apply_url, applied_date, status, email_updates, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        app_id,
+        app_data.get("company", "Unknown"),
+        app_data.get("title", "Unknown"),
+        app_data.get("location", "US"),
+        app_data.get("apply_url", ""),
+        app_data.get("applied_date", "2026-08-23"),
+        app_data.get("status", "Applied"),
+        app_data.get("email_updates", "Confirmation Pending"),
+        app_data.get("notes", "Auto-applied via Openings Aggregator")
+    ))
+    conn.commit()
+    conn.close()
+    return app_id
+
+def update_application_status(app_id, new_status):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE applied_tracker SET status = ? WHERE id = ?", (new_status, app_id))
+    conn.commit()
+    conn.close()
+
+def get_applied_tracker():
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM applied_tracker ORDER BY created_at DESC")
+    rows = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    return rows
 
 def query_jobs(search_query="", location_query="", ats_filter="", company_filter="", min_salary=0, sort_by="date", limit=300):
     init_db()

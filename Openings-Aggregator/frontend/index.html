@@ -25,8 +25,11 @@
       </div>
 
       <div class="flex items-center space-x-3">
+        <button onclick="openTrackerModal()" class="bg-emerald-950/80 hover:bg-emerald-900/90 text-emerald-300 font-bold px-4 py-2 rounded-xl text-sm border border-emerald-500/40 transition flex items-center space-x-2 shadow-lg shadow-emerald-500/10">
+          <span>📊 Application Tracker</span>
+        </button>
         <button onclick="openProfileModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg text-sm border border-slate-700 transition flex items-center space-x-2">
-          <span>📝 Profile & Instructions Vault</span>
+          <span>📝 Profile Vault</span>
         </button>
         <button id="btnHarvest" onclick="triggerHarvest()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -206,6 +209,70 @@
       <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-end space-x-3">
         <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-slate-400 hover:text-white text-sm">Close</button>
         <a id="modalApplyBtn" href="#" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2 rounded-lg text-sm transition">⚡ Auto-Apply Direct Posting ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Monitoring Tracker Dashboard Modal -->
+  <div id="trackerModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-6xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-black text-white flex items-center space-x-2">
+            <span>📊 Live Application Monitoring Dashboard</span>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-1 rounded-full border border-emerald-500/40">LOCAL DATABASE RECORD</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1">Real-time status tracking, live posting links, and status updates</p>
+        </div>
+        <button onclick="closeTrackerModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2">&times;</button>
+      </div>
+
+      <!-- Tracker Summary Cards -->
+      <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-950/50 border-b border-slate-800/80">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400 font-semibold uppercase">Total Applications</div>
+          <div id="metricTotal" class="text-2xl font-black text-emerald-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400 font-semibold uppercase">In Review / Submitted</div>
+          <div id="metricApplied" class="text-2xl font-black text-indigo-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400 font-semibold uppercase">Interviews Active</div>
+          <div id="metricInterview" class="text-2xl font-black text-amber-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400 font-semibold uppercase">Offers Received</div>
+          <div id="metricOffer" class="text-2xl font-black text-teal-400 mt-1">0</div>
+        </div>
+      </div>
+
+      <!-- Tracker Application Table -->
+      <div class="p-6 overflow-y-auto flex-1">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-200">
+            <thead class="bg-slate-950 text-slate-400 text-xs font-bold uppercase border-b border-slate-800">
+              <tr>
+                <th class="px-4 py-3">Company</th>
+                <th class="px-4 py-3">Job Title</th>
+                <th class="px-4 py-3">Applied Date</th>
+                <th class="px-4 py-3">Live Posting Link</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-right">Update Status</th>
+              </tr>
+            </thead>
+            <tbody id="trackerTableBody" class="divide-y divide-slate-800/80">
+              <!-- Dynamically populated from SQLite -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-between items-center text-xs">
+        <span class="text-slate-500">Live tracker linked to local SQLite database openings.db</span>
+        <button onclick="closeTrackerModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition">
+          Close Tracker
+        </button>
       </div>
     </div>
   </div>

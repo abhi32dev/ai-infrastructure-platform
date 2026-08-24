@@ -217,17 +217,111 @@ function renderJobs() {
           </div>
         </td>
 
-        <!-- 7. Direct ⚡ Auto-Apply Action -->
-        <td class="px-5 py-5 text-right align-top whitespace-nowrap">
-          <a href="${escapeHtml(j.apply_url)}" target="_blank" 
-             class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition inline-flex items-center space-x-1.5">
-            <span>⚡ Auto-Apply</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+async function triggerAutoApply(idx) {
+  const j = currentJobs[idx];
+  if (!j) return;
+
+  // Record application in SQLite applied_tracker database
+  try {
+    await fetch('/api/tracker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'record',
+        id: j.id,
+        company: j.company,
+        title: j.title,
+        location: j.location,
+        apply_url: j.apply_url,
+        applied_date: new Date().toISOString().split('T')[0],
+        status: 'Applied',
+        email_updates: 'Confirmation Pending'
+      })
+    });
+  } catch(e) {}
+
+  // Open direct application posting URL in a new tab
+  window.open(j.apply_url, '_blank');
+}
+
+async function openTrackerModal() {
+  await loadTrackerApplications();
+  document.getElementById('trackerModal').classList.remove('hidden');
+}
+
+function closeTrackerModal() {
+  document.getElementById('trackerModal').classList.add('hidden');
+}
+
+async function loadTrackerApplications() {
+  try {
+    const res = await fetch('/api/tracker');
+    const data = await res.json();
+    const apps = data.applications || [];
+
+    // Calculate metrics
+    document.getElementById('metricTotal').innerText = apps.length;
+    document.getElementById('metricApplied').innerText = apps.filter(a => a.status === 'Applied' || a.status === 'In Review').length;
+    document.getElementById('metricInterview').innerText = apps.filter(a => a.status === 'Interviewing').length;
+    document.getElementById('metricOffer').innerText = apps.filter(a => a.status === 'Offer').length;
+
+    const tbody = document.getElementById('trackerTableBody');
+    if (apps.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+            No applications recorded yet. Click "⚡ Auto-Apply" on any job to track it live!
+          </td>
+        </tr>`;
+      return;
+    }
+
+    tbody.innerHTML = apps.map((a, idx) => `
+      <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/80">
+        <td class="px-4 py-3.5 font-bold text-slate-100">${escapeHtml(a.company)}</td>
+        <td class="px-4 py-3.5 font-semibold text-slate-200">${escapeHtml(a.title)}</td>
+        <td class="px-4 py-3.5 text-xs text-slate-400 font-mono">${escapeHtml(a.applied_date)}</td>
+        <td class="px-4 py-3.5 text-xs">
+          <a href="${escapeHtml(a.apply_url)}" target="_blank" class="text-emerald-400 font-semibold hover:underline flex items-center space-x-1">
+            <span>Direct Live Posting ↗</span>
           </a>
         </td>
+        <td class="px-4 py-3.5 text-xs">
+          <span class="px-2.5 py-1 rounded-full font-bold ${getTrackerBadgeClass(a.status)}">
+            ${escapeHtml(a.status)}
+          </span>
+        </td>
+        <td class="px-4 py-3.5 text-right">
+          <select onchange="updateAppStatus('${escapeAttr(a.id)}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+            <option value="Applied" ${a.status === 'Applied' ? 'selected' : ''}>Applied</option>
+            <option value="In Review" ${a.status === 'In Review' ? 'selected' : ''}>In Review</option>
+            <option value="Interviewing" ${a.status === 'Interviewing' ? 'selected' : ''}>Interviewing</option>
+            <option value="Offer" ${a.status === 'Offer' ? 'selected' : ''}>Offer</option>
+            <option value="Rejected" ${a.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+          </select>
+        </td>
       </tr>
-    `;
-  }).join('');
+    `).join('');
+  } catch(e) {}
+}
+
+async function updateAppStatus(appId, newStatus) {
+  try {
+    await fetch('/api/tracker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update_status', id: appId, status: newStatus })
+    });
+    await loadTrackerApplications();
+  } catch(e) {}
+}
+
+function getTrackerBadgeClass(status) {
+  if (status === 'Offer') return 'bg-teal-950 text-teal-300 border border-teal-800';
+  if (status === 'Interviewing') return 'bg-amber-950 text-amber-300 border border-amber-800';
+  if (status === 'In Review') return 'bg-indigo-950 text-indigo-300 border border-indigo-800';
+  if (status === 'Rejected') return 'bg-rose-950 text-rose-300 border border-rose-800';
+  return 'bg-emerald-950 text-emerald-300 border border-emerald-800';
 }
 
 function cleanClientText(str) {

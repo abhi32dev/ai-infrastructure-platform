@@ -11,7 +11,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from backend.harvesters.greenhouse import fetch_greenhouse_jobs
 from backend.harvesters.lever import fetch_lever_jobs
 from backend.harvesters.ashby import fetch_ashby_jobs
-from backend.database import save_jobs, query_jobs, parse_salary_bounds
+from backend.database import save_jobs, query_jobs, parse_salary_bounds, get_applied_tracker, record_application, update_application_status
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "target_companies.json")
 VAULT_PATH = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "profile_vault.json")
@@ -180,6 +180,11 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       )
       return
 
+    if parsed.path == "/api/tracker":
+      apps = get_applied_tracker()
+      self._send_json({"status": "success", "count": len(apps), "applications": apps})
+      return
+
     if parsed.path == "/api/profile":
       if os.path.exists(VAULT_PATH):
         with open(VAULT_PATH, "r") as f:
@@ -204,6 +209,17 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       req_json = json.loads(post_data)
     except Exception:
       req_json = {}
+
+    if parsed.path == "/api/tracker":
+      action = req_json.get("action", "record")
+      if action == "update_status":
+        update_application_status(req_json.get("id"), req_json.get("status"))
+        msg = "Application status updated!"
+      else:
+        record_application(req_json)
+        msg = "Application recorded in local tracker database!"
+      self._send_json({"status": "success", "message": msg})
+      return
 
     if parsed.path == "/api/profile":
         raw_text = req_json.get("raw_text", "")
