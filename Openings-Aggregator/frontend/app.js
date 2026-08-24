@@ -3,11 +3,68 @@ let viewMode = 'batch50';
 let currentPage = 1;
 const BATCH_SIZE = 50;
 let currentSortCol = 'date';
-let currentSortDir = 'desc'; // 'asc' or 'desc'
+let currentSortDir = 'desc';
 
 async function init() {
+  loadPreferences();
   renderRecentChips();
   await triggerHarvest();
+}
+
+function savePreferences() {
+  const prefs = {
+    query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
+    company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
+    location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : '',
+    sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'date',
+    salary: document.getElementById('salarySelect') ? document.getElementById('salarySelect').value : '0',
+    ats: document.getElementById('atsSelect') ? document.getElementById('atsSelect').value : '',
+    viewMode: viewMode,
+    sortCol: currentSortCol,
+    sortDir: currentSortDir
+  };
+  localStorage.setItem('oa_user_preferences', JSON.stringify(prefs));
+}
+
+function loadPreferences() {
+  const saved = localStorage.getItem('oa_user_preferences');
+  if (!saved) return;
+  try {
+    const prefs = JSON.parse(saved);
+    if (prefs.query !== undefined && document.getElementById('inputQuery')) {
+      document.getElementById('inputQuery').value = prefs.query;
+    }
+    if (prefs.company !== undefined && document.getElementById('inputCompanyFilter')) {
+      document.getElementById('inputCompanyFilter').value = prefs.company;
+    }
+    if (prefs.location !== undefined && document.getElementById('inputLocation')) {
+      document.getElementById('inputLocation').value = prefs.location;
+    }
+    if (prefs.sort !== undefined && document.getElementById('sortSelect')) {
+      document.getElementById('sortSelect').value = prefs.sort;
+    }
+    if (prefs.salary !== undefined && document.getElementById('salarySelect')) {
+      document.getElementById('salarySelect').value = prefs.salary;
+    }
+    if (prefs.ats !== undefined && document.getElementById('atsSelect')) {
+      document.getElementById('atsSelect').value = prefs.ats;
+    }
+    if (prefs.viewMode) {
+      viewMode = prefs.viewMode;
+      document.getElementById('tabBatch50').className = viewMode === 'batch50' 
+        ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+        : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+
+      document.getElementById('tabAll').className = viewMode === 'all'
+        ? 'px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition'
+        : 'px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+
+      document.getElementById('paginationControls').style.display = viewMode === 'batch50' ? 'flex' : 'none';
+    }
+    if (prefs.sortCol) currentSortCol = prefs.sortCol;
+    if (prefs.sortDir) currentSortDir = prefs.sortDir;
+    updateSortIndicators();
+  } catch(e) {}
 }
 
 function saveRecentFilter(queryStr) {
@@ -42,10 +99,13 @@ function renderRecentChips() {
 
 function applyRecentSkillMemory(q) {
   document.getElementById('inputQuery').value = q;
+  savePreferences();
   triggerHarvest();
 }
 
 async function triggerHarvest() {
+  savePreferences();
+
   const btn = document.getElementById('btnHarvest');
   const banner = document.getElementById('statusBanner');
   btn.disabled = true;
@@ -90,6 +150,8 @@ async function triggerHarvest() {
 }
 
 async function fetchJobs() {
+  savePreferences();
+
   const q = document.getElementById('inputQuery').value.trim();
   const loc = document.getElementById('inputLocation').value.trim();
   const comp = document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value.trim() : '';
@@ -122,6 +184,7 @@ function setViewMode(mode) {
 
   document.getElementById('paginationControls').style.display = mode === 'batch50' ? 'flex' : 'none';
   currentPage = 1;
+  savePreferences();
   renderJobs();
 }
 
@@ -137,6 +200,7 @@ function setColumnSort(col, dir) {
   currentSortCol = col;
   currentSortDir = dir;
   updateSortIndicators();
+  savePreferences();
   renderJobs();
 }
 
@@ -148,6 +212,7 @@ function toggleColumnSort(col) {
     currentSortDir = 'asc';
   }
   updateSortIndicators();
+  savePreferences();
   renderJobs();
 }
 
@@ -181,7 +246,6 @@ function renderJobs() {
     filteredJobs = filteredJobs.filter(j => (j.company || '').toLowerCase().includes(compFilter));
   }
 
-  // Perform Client-Side Column Sorting (Ascending / Descending)
   filteredJobs.sort((a, b) => {
     let valA = a[currentSortCol] || '';
     let valB = b[currentSortCol] || '';
@@ -253,7 +317,7 @@ function renderJobs() {
           ${escapeHtml(dateStr)}
         </td>
 
-        <!-- 4. Explicit Salary Band (Zero Competitive Pay Text) -->
+        <!-- 4. Explicit Salary Band -->
         <td class="px-5 py-5 text-sm font-bold text-emerald-400 align-top whitespace-normal break-words border-r border-slate-800/40">
           ${escapeHtml(salaryStr)}
         </td>
@@ -427,7 +491,6 @@ function formatSalary(j) {
     if (minK > 0 && minK !== maxK) return `$${minK}k - $${maxK}k / yr`;
     return `$${maxK}k / yr`;
   }
-  // Standard tech salary band based on title seniority
   const t = (j.title || '').toLowerCase();
   if (t.includes('senior') || t.includes('staff') || t.includes('lead')) {
     return '$170k - $240k / yr (Base + Equity)';
