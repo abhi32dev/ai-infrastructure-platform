@@ -1,0 +1,17 @@
+{
+  "companies": [
+    { "name": "Stripe", "ats": "greenhouse", "token": "stripe" },
+    { "name": "OpenAI", "ats": "greenhouse", "token": "openai" },
+    { "name": "Figma", "ats": "greenhouse", "token": "figma" },
+    { "name": "Anthropic", "ats": "greenhouse", "token": "anthropic" },
+    { "name": "Airbnb", "ats": "greenhouse", "token": "airbnb" },
+    { "name": "Notion", "ats": "ashby", "token": "notion" },
+    { "name": "Linear", "ats": "ashby", "token": "linear" },
+    { "name": "Vercel", "ats": "ashby", "token": "vercel" },
+    { "name": "Scribe", "ats": "ashby", "token": "scribe" },
+    { "name": "Distyl", "ats": "ashby", "token": "distyl" },
+    { "name": "Spotify", "ats": "lever", "token": "spotify" },
+    { "name": "Netflix", "ats": "lever", "token": "netflix" },
+    { "name": "Palantir", "ats": "lever", "token": "palantir" }
+  ]
+}
