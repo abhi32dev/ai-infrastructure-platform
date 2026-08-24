@@ -12,9 +12,9 @@
   },
   "work_authorization": {
     "legallyAuthorizedUS": "Yes",
-    "requireSponsorship": "No",
-    "futureSponsorship": "No",
-    "visaStatus": "U.S. Citizen / Permanent Resident"
+    "requireSponsorship": "Yes",
+    "futureSponsorship": "Yes",
+    "visaStatus": "Requires Sponsorship (e.g. H-1B, F-1 OPT, O-1, TN)"
   },
   "eeo": {
     "gender": "Male",
