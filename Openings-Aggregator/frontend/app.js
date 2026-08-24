@@ -16,6 +16,7 @@ async function savePreferences() {
     query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
     company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
     location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : '',
+    workMode: document.getElementById('workModeSelect') ? document.getElementById('workModeSelect').value : '',
     type: document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '',
     sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'date',
     salary: document.getElementById('salarySelect') ? document.getElementById('salarySelect').value : '0',
@@ -65,6 +66,9 @@ async function loadPreferences() {
   }
   if (prefs.location !== undefined && document.getElementById('inputLocation')) {
     document.getElementById('inputLocation').value = prefs.location;
+  }
+  if (prefs.workMode !== undefined && document.getElementById('workModeSelect')) {
+    document.getElementById('workModeSelect').value = prefs.workMode;
   }
   if (prefs.type !== undefined && document.getElementById('typeSelect')) {
     document.getElementById('typeSelect').value = prefs.type;
@@ -262,13 +266,23 @@ function updateSortIndicators() {
   });
 }
 
+const BAY_AREA_CITIES = [
+  'san francisco', 'san jose', 'palo alto', 'mountain view', 'sunnyvale', 
+  'santa clara', 'cupertino', 'oakland', 'berkeley', 'san mateo', 
+  'redwood city', 'fremont', 'menlo park', 'pleasanton', 'milpitas', 
+  'san bruno', 'bay area', 'sf'
+];
+
 function renderJobs() {
   const list = document.getElementById('jobList');
   const atsFilter = document.getElementById('atsSelect').value;
   const compFilter = document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value.trim().toLowerCase() : '';
   const typeFilter = document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '';
+  const modeFilter = document.getElementById('workModeSelect') ? document.getElementById('workModeSelect').value : '';
+  const locInput = document.getElementById('inputLocation') ? document.getElementById('inputLocation').value.trim().toLowerCase() : '';
 
   let filteredJobs = currentJobs;
+
   if (atsFilter) {
     filteredJobs = filteredJobs.filter(j => j.ats_provider === atsFilter);
   }
@@ -277,6 +291,26 @@ function renderJobs() {
   }
   if (typeFilter) {
     filteredJobs = filteredJobs.filter(j => (j.employment_type || 'Full-Time') === typeFilter);
+  }
+
+  // Work Location Mode Filter (Remote vs Hybrid vs On-Site)
+  if (modeFilter === 'Remote') {
+    filteredJobs = filteredJobs.filter(j => {
+      const loc = (j.location || '').toLowerCase();
+      return loc.includes('remote') || loc.includes('us') || loc.includes('united states');
+    });
+  } else if (modeFilter === 'Hybrid' || modeFilter === 'On-Site') {
+    filteredJobs = filteredJobs.filter(j => {
+      const loc = (j.location || '').toLowerCase();
+      const matchesMode = modeFilter === 'Hybrid' ? loc.includes('hybrid') : (!loc.includes('remote') && !loc.includes('hybrid'));
+      
+      // Default to SF Bay Area if no custom location typed
+      if (!locInput || locInput.includes('bay area') || locInput.includes('san francisco')) {
+        const isBayArea = BAY_AREA_CITIES.some(city => loc.includes(city));
+        return matchesMode || isBayArea;
+      }
+      return matchesMode;
+    });
   }
 
   filteredJobs.sort((a, b) => {
