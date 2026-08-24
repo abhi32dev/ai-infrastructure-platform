@@ -132,13 +132,21 @@ function changePage(delta) {
 
 function renderJobs() {
   const list = document.getElementById('jobList');
-  const totalCount = currentJobs.length;
+  const atsFilter = document.getElementById('atsSelect').value;
 
-  let displayJobs = currentJobs;
+  // Filter current jobs by ATS engine if selected
+  let filteredJobs = currentJobs;
+  if (atsFilter) {
+    filteredJobs = currentJobs.filter(j => j.ats_provider === atsFilter);
+  }
+
+  const totalCount = filteredJobs.length;
+
+  let displayJobs = filteredJobs;
   if (viewMode === 'batch50') {
     const totalPages = Math.ceil(totalCount / BATCH_SIZE) || 1;
     const start = (currentPage - 1) * BATCH_SIZE;
-    displayJobs = currentJobs.slice(start, start + BATCH_SIZE);
+    displayJobs = filteredJobs.slice(start, start + BATCH_SIZE);
 
     document.getElementById('txtCount').innerText = `Showing ${displayJobs.length} jobs (Batch ${currentPage} of ${totalPages} | Total US: ${totalCount})`;
     document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;

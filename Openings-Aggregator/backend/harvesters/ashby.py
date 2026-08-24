@@ -1,69 +1,55 @@
 import urllib.request
 import json
+import html
 import re
+
+def clean_html_text(raw_text):
+    if not raw_text:
+        return ""
+    text = html.unescape(raw_text)
+    text = re.sub(r'<(script|style)[^>]*>.*?</\1>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
+    return re.sub(r'\s+', ' ', text).strip()
 
 def fetch_ashby_jobs(company_token, company_name):
     """
-    Directly fetches public job postings from Ashby GraphQL API.
-    URL: POST https://api.ashbyhq.com/posting-api/job-board/{token}
+    Directly fetches public job postings from Ashby boards (Notion, Linear, Vercel, Scribe, Distyl).
+    URL: https://jobs.ashbyhq.com/{token}
     """
-    url = f"https://api.ashbyhq.com/posting-api/job-board/{company_token}"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-        'Content-Type': 'application/json'
-    }
-    
-    payload = json.dumps({"operationName": "ApiJobBoardWithDescription", "variables": {"organizationHostedJobsPageName": company_token}}).encode('utf-8')
-    req = urllib.request.Request(url, data=payload, headers=headers)
+    url = f"https://jobs.ashbyhq.com/{company_token}"
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
+    req = urllib.request.Request(url, headers=headers)
     
     jobs = []
     try:
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            job_postings = (data.get("data", {}) or {}).get("jobBoard", {}).get("jobPostings", [])
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            page_html = resp.read().decode('utf-8', errors='ignore')
             
-            for j in job_postings:
-                job_id = f"ashby_{j.get('id')}"
-                title = j.get("title", "Unknown Title")
-                location = j.get("locationName", "Remote / Unspecified")
+            # Extract JSON objects or script blocks
+            matches = re.findall(r'\"id\":\"([a-f0-9\-]{36})\",\"title\":\"([^\"]+)\"(?:,\"locationName\":\"([^\"]+)\")?', page_html)
+            
+            seen_ids = set()
+            for id_str, title, location in matches:
+                if id_str in seen_ids:
+                    continue
+                seen_ids.add(id_str)
                 
-                # Direct apply link structure
-                apply_url = f"https://jobs.ashbyhq.com/{company_token}/{j.get('id')}"
-                
-                desc_html = j.get("descriptionHtml", "")
-                clean_desc = re.sub(r'<[^>]+>', ' ', desc_html)
-                clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
+                loc_name = location if location else "San Francisco, CA / US Remote"
+                apply_url = f"https://jobs.ashbyhq.com/{company_token}/{id_str}"
                 
                 jobs.append({
-                    "id": job_id,
+                    "id": f"ashby_{id_str}",
                     "company": company_name,
                     "title": title,
-                    "location": location,
+                    "location": loc_name,
                     "apply_url": apply_url,
-                    "description": clean_desc if len(clean_desc) > 30 else f"{title} at {company_name}",
+                    "description": f"{title} position at {company_name} in {loc_name}.",
                     "ats_provider": "Ashby",
-                    "posted_date": "Active"
+                    "posted_date": "Recent"
                 })
-    except Exception:
-        # Fallback to direct page parse for Ashby
-        fallback_url = f"https://jobs.ashbyhq.com/{company_token}"
-        try:
-            req_fb = urllib.request.Request(fallback_url, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_fb, timeout=5) as resp_fb:
-                html = resp_fb.read().decode('utf-8', errors='ignore')
-                raw_ids = re.findall(r'/([a-f0-9\-]{36})', html)
-                for id_match in set(raw_ids):
-                    jobs.append({
-                        "id": f"ashby_{id_match}",
-                        "company": company_name,
-                        "title": f"Position at {company_name}",
-                        "location": "San Francisco, CA / Remote",
-                        "apply_url": f"https://jobs.ashbyhq.com/{company_token}/{id_match}",
-                        "description": f"Active position at {company_name}. Click apply link to view full description.",
-                        "ats_provider": "Ashby",
-                        "posted_date": "Active"
-                    })
-        except Exception as e2:
-            print(f"[!] Error fetching Ashby jobs for {company_name}: {e2}")
-            
+            print(f"[+] Successfully fetched {len(jobs)} Ashby jobs for {company_name}!")
+    except Exception as e:
+        print(f"[!] Error fetching Ashby jobs for {company_name} ({company_token}): {e}")
+        
     return jobs
