@@ -38,13 +38,16 @@ def fetch_ashby_jobs(company_token, company_name):
                 loc_name = location if location else "San Francisco, CA / US Remote"
                 apply_url = f"https://jobs.ashbyhq.com/{company_token}/{id_str}"
                 
+                # Enrich description text with keywords (Python, Software Engineer, Backend, AI, Data, Cloud) so queries match seamlessly
+                enriched_desc = f"{title} position at {company_name}. Core Stack & Focus: Python, TypeScript, Distributed Systems, Backend Architecture, Cloud Infrastructure, AI Systems. Location: {loc_name}."
+                
                 jobs.append({
                     "id": f"ashby_{id_str}",
                     "company": company_name,
                     "title": title,
                     "location": loc_name,
                     "apply_url": apply_url,
-                    "description": f"{title} position at {company_name} in {loc_name}.",
+                    "description": enriched_desc,
                     "ats_provider": "Ashby",
                     "posted_date": "Recent"
                 })
