@@ -23,6 +23,7 @@
     "disability": "No, I do not have a disability"
   },
   "preferences": {
+    "autoSubmit": "Yes",
     "hybridOfficeAttendance": "Yes, willing to work in office 3+ days/week",
     "stateOfResidence": "California",
     "schoolLocation": "California, USA",

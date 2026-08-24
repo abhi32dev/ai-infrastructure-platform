@@ -79,18 +79,46 @@ def solve_form_field(telemetry_data):
 
     # 6. EEO Gender / Race / Veteran
     if "gender" in field_label:
-        return {"status": "resolved", "action": "select_dropdown", "value": eeo.get("gender", "Male")}
+      return {
+          "status": "resolved",
+          "action": "select_dropdown",
+          "value": eeo.get("gender", "Male"),
+      }
     if "race" in field_label or "ethnicity" in field_label:
-        return {"status": "resolved", "action": "select_dropdown", "value": eeo.get("race", "Asian (Not Hispanic or Latino)")}
+      return {
+          "status": "resolved",
+          "action": "select_dropdown",
+          "value": eeo.get("race", "Asian (Not Hispanic or Latino)"),
+      }
     if "veteran" in field_label:
-        return {"status": "resolved", "action": "select_dropdown", "value": eeo.get("veteran", "I am not a veteran")}
+      return {
+          "status": "resolved",
+          "action": "select_dropdown",
+          "value": eeo.get("veteran", "I am not a veteran"),
+      }
     if "disability" in field_label:
-        return {"status": "resolved", "action": "select_dropdown", "value": eeo.get("disability", "No, I do not have a disability")}
+      return {
+          "status": "resolved",
+          "action": "select_dropdown",
+          "value": eeo.get("disability", "No, I do not have a disability"),
+      }
 
-    # 7. Default Safe Fallback
+    # 7. Final Auto-Submit Action
+    if any(
+        k in field_label or k in dom_snippet
+        for k in ["submit", "send application", "apply now", "submit application"]
+    ):
+      return {
+          "status": "resolved",
+          "action": "click_submit",
+          "value": "submit_now",
+          "reason": "Auto-Submit enabled in profile vault",
+      }
+
+    # 8. Default Safe Fallback
     return {
         "status": "fallback",
         "action": "fill_input",
         "value": pers.get("fullName", "Abhishek Singh"),
-        "reason": "Default fallback to master profile details"
+        "reason": "Default fallback to master profile details",
     }

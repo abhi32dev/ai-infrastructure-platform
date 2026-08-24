@@ -1,9 +1,10 @@
 {
   "query": "Python",
-  "company": "Notion",
+  "company": "",
   "location": "",
+  "type": "Contract",
   "sort": "date",
-  "salary": "180000",
+  "salary": "120000",
   "ats": "Ashby",
   "viewMode": "batch50",
   "currentPage": 1,
