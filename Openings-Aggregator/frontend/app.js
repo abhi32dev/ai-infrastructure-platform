@@ -11,11 +11,13 @@ async function init() {
   await fetchJobs();
 }
 
-async function savePreferences() {
+const DEFAULT_BAY_AREA_STR = "San Francisco, San Jose, Palo Alto, Mountain View, Sunnyvale, Santa Clara, Cupertino, Oakland, Berkeley, San Mateo, Redwood City, Fremont, Menlo Park";
+
+function savePreferences() {
   const prefs = {
     query: document.getElementById('inputQuery') ? document.getElementById('inputQuery').value : 'Python',
     company: document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value : '',
-    location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : 'Bay Area',
+    location: document.getElementById('inputLocation') ? document.getElementById('inputLocation').value : DEFAULT_BAY_AREA_STR,
     workMode: document.getElementById('workModeSelect') ? document.getElementById('workModeSelect').value : '',
     type: document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '',
     sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'date',
@@ -65,7 +67,7 @@ async function loadPreferences() {
     document.getElementById('inputCompanyFilter').value = prefs.company;
   }
   if (prefs.location !== undefined && document.getElementById('inputLocation')) {
-    document.getElementById('inputLocation').value = prefs.location || 'Bay Area';
+    document.getElementById('inputLocation').value = prefs.location || DEFAULT_BAY_AREA_STR;
   }
   if (prefs.workMode !== undefined && document.getElementById('workModeSelect')) {
     document.getElementById('workModeSelect').value = prefs.workMode;
@@ -293,16 +295,15 @@ function renderJobs() {
     filteredJobs = filteredJobs.filter(j => (j.employment_type || 'Full-Time') === typeFilter);
   }
 
-  // Location Filter (Default: "Bay Area" umbrella, or specific city if typed)
+  // Multi-Zone Location Token Matching (Matches any specified Bay Area city or custom typed location)
   if (locInput) {
-    if (locInput === 'bay area' || locInput === 'bayarea' || locInput === 'sf bay area') {
+    const targetCities = locInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+    
+    if (targetCities.length > 0) {
       filteredJobs = filteredJobs.filter(j => {
         const loc = (j.location || '').toLowerCase();
-        return BAY_AREA_CITIES.some(city => loc.includes(city));
+        return targetCities.some(city => loc.includes(city) || (city === 'bay area' && BAY_AREA_CITIES.some(b => loc.includes(b))));
       });
-    } else {
-      // Specific city filtering (e.g. "San Francisco", "San Jose", "Menlo Park", "Fremont")
-      filteredJobs = filteredJobs.filter(j => (j.location || '').toLowerCase().includes(locInput));
     }
   }
 

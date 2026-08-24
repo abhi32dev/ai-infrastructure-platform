@@ -1,10 +1,11 @@
 {
   "query": "Python",
   "company": "",
-  "location": "",
+  "location": "Bay Area",
+  "workMode": "Remote",
   "type": "Contract",
   "sort": "date",
-  "salary": "120000",
+  "salary": "0",
   "ats": "Ashby",
   "viewMode": "batch50",
   "currentPage": 1,
