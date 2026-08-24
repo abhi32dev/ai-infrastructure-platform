@@ -2,6 +2,7 @@ import sqlite3
 import os
 import html
 import re
+import datetime
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "openings.db")
 
@@ -17,6 +18,8 @@ def clean_text(raw_text):
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    
+    # 1. Main Jobs Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS jobs (
             id TEXT PRIMARY KEY,
@@ -33,7 +36,7 @@ def init_db():
         )
     ''')
 
-    # Create Application Tracker Table
+    # 2. Main Application Tracker Summary Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS applied_tracker (
             id TEXT PRIMARY KEY,
@@ -42,19 +45,43 @@ def init_db():
             location TEXT,
             apply_url TEXT,
             applied_date TEXT,
+            apply_count INTEGER DEFAULT 1,
             status TEXT DEFAULT 'Applied',
             email_updates TEXT,
             notes TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            last_applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
+    # 3. Persistent Append Log Table for Multiple Applications & Audit Trail
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS application_logs (
+            log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            app_id TEXT,
+            company TEXT,
+            title TEXT,
+            apply_url TEXT,
+            action_type TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            notes TEXT
+        )
+    ''')
+
+    # Migration checks
     try:
         cursor.execute("ALTER TABLE jobs ADD COLUMN salary_min INTEGER DEFAULT 0")
     except Exception:
         pass
     try:
         cursor.execute("ALTER TABLE jobs ADD COLUMN salary_max INTEGER DEFAULT 0")
+    except Exception:
+        pass
+    try:
+        cursor.execute("ALTER TABLE applied_tracker ADD COLUMN apply_count INTEGER DEFAULT 1")
+    except Exception:
+        pass
+    try:
+        cursor.execute("ALTER TABLE applied_tracker ADD COLUMN last_applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     except Exception:
         pass
 
@@ -103,35 +130,69 @@ def save_jobs(jobs):
     return saved_count
 
 def record_application(app_data):
+    """
+    Records an application or appends a repeat log entry if already applied!
+    """
     init_db()
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
-    app_id = app_data.get("id") or f"app_{app_data.get('company')}_{app_data.get('title')}".lower().replace(" ", "_")
+    company = app_data.get("company", "Unknown")
+    title = app_data.get("title", "Unknown")
+    apply_url = app_data.get("apply_url", "")
+    app_id = app_data.get("id") or f"app_{company}_{title}".lower().replace(" ", "_")
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute("SELECT apply_count FROM applied_tracker WHERE id = ?", (app_id,))
+    row = cursor.fetchone()
     
+    if row:
+        new_count = (row[0] or 1) + 1
+        cursor.execute('''
+            UPDATE applied_tracker 
+            SET apply_count = ?, last_applied_at = ?, notes = ?
+            WHERE id = ?
+        ''', (new_count, now_str, f"Re-applied (Total: {new_count} times)", app_id))
+        action_str = f"Re-applied (Attempt #{new_count})"
+    else:
+        new_count = 1
+        cursor.execute('''
+            INSERT INTO applied_tracker (id, company, title, location, apply_url, applied_date, apply_count, status, email_updates, notes, last_applied_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            app_id, company, title, app_data.get("location", "US"),
+            apply_url, app_data.get("applied_date", now_str[:10]), 1,
+            app_data.get("status", "Applied"), "Confirmation Pending",
+            "Initial Auto-Apply", now_str
+        ))
+        action_str = "Initial Application"
+
     cursor.execute('''
-        INSERT OR REPLACE INTO applied_tracker (id, company, title, location, apply_url, applied_date, status, email_updates, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (
-        app_id,
-        app_data.get("company", "Unknown"),
-        app_data.get("title", "Unknown"),
-        app_data.get("location", "US"),
-        app_data.get("apply_url", ""),
-        app_data.get("applied_date", "2026-08-23"),
-        app_data.get("status", "Applied"),
-        app_data.get("email_updates", "Confirmation Pending"),
-        app_data.get("notes", "Auto-applied via Openings Aggregator")
-    ))
+        INSERT INTO application_logs (app_id, company, title, apply_url, action_type, timestamp, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (app_id, company, title, apply_url, action_str, now_str, f"Recorded via UI (Count: {new_count})"))
+
     conn.commit()
     conn.close()
-    return app_id
+    return app_id, new_count
 
 def update_application_status(app_id, new_status):
     init_db()
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     cursor.execute("UPDATE applied_tracker SET status = ? WHERE id = ?", (new_status, app_id))
+    
+    cursor.execute("SELECT company, title, apply_url FROM applied_tracker WHERE id = ?", (app_id,))
+    row = cursor.fetchone()
+    if row:
+        comp, tit, url = row
+        cursor.execute('''
+            INSERT INTO application_logs (app_id, company, title, apply_url, action_type, timestamp, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (app_id, comp, tit, url, f"Status set to {new_status}", now_str, f"Updated status to {new_status}"))
+
     conn.commit()
     conn.close()
 
@@ -140,10 +201,16 @@ def get_applied_tracker():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM applied_tracker ORDER BY created_at DESC")
-    rows = [dict(r) for r in cursor.fetchall()]
+    
+    cursor.execute("SELECT * FROM applied_tracker ORDER BY last_applied_at DESC")
+    apps = [dict(r) for r in cursor.fetchall()]
+
+    for a in apps:
+        cursor.execute("SELECT action_type, timestamp, notes FROM application_logs WHERE app_id = ? ORDER BY log_id ASC", (a["id"],))
+        a["audit_logs"] = [dict(log) for log in cursor.fetchall()]
+
     conn.close()
-    return rows
+    return apps
 
 def query_jobs(search_query="", location_query="", ats_filter="", company_filter="", min_salary=0, sort_by="date", limit=300):
     init_db()

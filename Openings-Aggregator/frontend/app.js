@@ -276,32 +276,48 @@ async function loadTrackerApplications() {
       return;
     }
 
-    tbody.innerHTML = apps.map((a, idx) => `
-      <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/80">
-        <td class="px-4 py-3.5 font-bold text-slate-100">${escapeHtml(a.company)}</td>
-        <td class="px-4 py-3.5 font-semibold text-slate-200">${escapeHtml(a.title)}</td>
-        <td class="px-4 py-3.5 text-xs text-slate-400 font-mono">${escapeHtml(a.applied_date)}</td>
-        <td class="px-4 py-3.5 text-xs">
-          <a href="${escapeHtml(a.apply_url)}" target="_blank" class="text-emerald-400 font-semibold hover:underline flex items-center space-x-1">
-            <span>Direct Live Posting ↗</span>
-          </a>
-        </td>
-        <td class="px-4 py-3.5 text-xs">
-          <span class="px-2.5 py-1 rounded-full font-bold ${getTrackerBadgeClass(a.status)}">
-            ${escapeHtml(a.status)}
-          </span>
-        </td>
-        <td class="px-4 py-3.5 text-right">
-          <select onchange="updateAppStatus('${escapeAttr(a.id)}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
-            <option value="Applied" ${a.status === 'Applied' ? 'selected' : ''}>Applied</option>
-            <option value="In Review" ${a.status === 'In Review' ? 'selected' : ''}>In Review</option>
-            <option value="Interviewing" ${a.status === 'Interviewing' ? 'selected' : ''}>Interviewing</option>
-            <option value="Offer" ${a.status === 'Offer' ? 'selected' : ''}>Offer</option>
-            <option value="Rejected" ${a.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
-          </select>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = apps.map(a => {
+      const countBadge = (a.apply_count && a.apply_count > 1) 
+        ? `<span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Applied ${a.apply_count}x</span>` 
+        : '';
+
+      const logsHtml = (a.audit_logs || []).map(l => 
+        `<div class="text-[10px] text-slate-400 font-mono">• ${escapeHtml(l.timestamp)}: ${escapeHtml(l.action_type)}</div>`
+      ).join('');
+
+      return `
+        <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/80">
+          <td class="px-4 py-3.5 font-bold text-slate-100 align-top">
+            <div>${escapeHtml(a.company)}</div>
+            <div>${countBadge}</div>
+          </td>
+          <td class="px-4 py-3.5 font-semibold text-slate-200 align-top">
+            <div>${escapeHtml(a.title)}</div>
+            <div class="mt-1 space-y-0.5">${logsHtml}</div>
+          </td>
+          <td class="px-4 py-3.5 text-xs text-slate-400 font-mono align-top">${escapeHtml(a.applied_date)}</td>
+          <td class="px-4 py-3.5 text-xs align-top">
+            <a href="${escapeHtml(a.apply_url)}" target="_blank" class="text-emerald-400 font-semibold hover:underline flex items-center space-x-1">
+              <span>Direct Live Posting ↗</span>
+            </a>
+          </td>
+          <td class="px-4 py-3.5 text-xs align-top">
+            <span class="px-2.5 py-1 rounded-full font-bold ${getTrackerBadgeClass(a.status)}">
+              ${escapeHtml(a.status)}
+            </span>
+          </td>
+          <td class="px-4 py-3.5 text-right align-top">
+            <select onchange="updateAppStatus('${escapeAttr(a.id)}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+              <option value="Applied" ${a.status === 'Applied' ? 'selected' : ''}>Applied</option>
+              <option value="In Review" ${a.status === 'In Review' ? 'selected' : ''}>In Review</option>
+              <option value="Interviewing" ${a.status === 'Interviewing' ? 'selected' : ''}>Interviewing</option>
+              <option value="Offer" ${a.status === 'Offer' ? 'selected' : ''}>Offer</option>
+              <option value="Rejected" ${a.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+            </select>
+          </td>
+        </tr>
+      `;
+    }).join('');
   } catch(e) {}
 }
 
