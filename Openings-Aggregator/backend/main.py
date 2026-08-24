@@ -12,6 +12,7 @@ from backend.harvesters.greenhouse import fetch_greenhouse_jobs
 from backend.harvesters.lever import fetch_lever_jobs
 from backend.harvesters.ashby import fetch_ashby_jobs
 from backend.database import save_jobs, query_jobs, parse_salary_bounds, get_applied_tracker, record_application, update_application_status
+from backend.telemetry_solver import solve_form_field
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "target_companies.json")
 VAULT_PATH = os.path.join(os.path.dirname(__file__), "..", "resume_vault", "profile_vault.json")
@@ -180,6 +181,15 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       )
       return
 
+    if parsed.path == "/api/telemetry":
+      log_file = os.path.join(os.path.dirname(__file__), "..", "telemetry.log")
+      logs = []
+      if os.path.exists(log_file):
+        with open(log_file, "r", encoding="utf-8") as f:
+          logs = [line.strip() for line in f.readlines() if line.strip()][-50:]
+      self._send_json({"status": "success", "logs": logs})
+      return
+
     if parsed.path == "/api/tracker":
       apps = get_applied_tracker()
       self._send_json({"status": "success", "count": len(apps), "applications": apps})
@@ -209,6 +219,15 @@ class AggregatorHTTPHandler(SimpleHTTPRequestHandler):
       req_json = json.loads(post_data)
     except Exception:
       req_json = {}
+
+    if parsed.path == "/api/telemetry":
+      # Solve stuck form field in real-time
+      solution = solve_form_field(req_json)
+      log_file = os.path.join(os.path.dirname(__file__), "..", "telemetry.log")
+      with open(log_file, "a", encoding="utf-8") as f:
+        f.write(f"[{req_json.get('ats_type','ATS')}] {req_json.get('page_url')} | Field: {req_json.get('field_name')} | Solved: {solution.get('value')}\n")
+      self._send_json({"status": "success", "solution": solution})
+      return
 
     if parsed.path == "/api/tracker":
       action = req_json.get("action", "record")
