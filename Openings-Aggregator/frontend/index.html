@@ -63,9 +63,14 @@
         </span>
         <div id="recentChips" class="flex flex-wrap gap-2">
           <!-- Dynamically populated from localStorage -->
+        </div>      <!-- Advanced Combination Filters & Controls -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-4 border-t border-slate-800/80 text-xs">
+        <div>
+          <label class="block text-slate-400 font-medium mb-1">Company Filter (All 34+ Companies)</label>
+          <input type="text" id="inputCompanyFilter" oninput="fetchJobs()" placeholder="Empty = All, or Notion, Stripe..." 
+                 class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 text-xs">
+
         <div>
           <label class="block text-slate-400 font-medium mb-1">Sorting</label>
           <select id="sortSelect" onchange="fetchJobs()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
@@ -100,7 +105,7 @@
 
         <div>
           <label class="block text-slate-400 font-medium mb-1">US Location (State / City / Remote)</label>
-          <input type="text" id="inputLocation" oninput="fetchJobs()" placeholder="Empty = All US, or type CA, SF, Austin..." 
+          <input type="text" id="inputLocation" oninput="fetchJobs()" placeholder="Empty = All US, or CA, SF..." 
                  class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
       </div>
@@ -109,11 +114,11 @@
     <!-- Status Banner -->
     <div id="statusBanner" class="hidden mb-6 p-4 rounded-xl text-sm border"></div>
 
-    <!-- Ultra-Wide Full Screen Job Table Card -->
+    <!-- Ultra-Wide Full Screen Job Table Card with Draggable Resizable Columns -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-100">Strict US Openings — High Density View</h2>
+          <h2 class="text-lg font-bold text-slate-100">Strict US Openings — Draggable Resizable Columns View</h2>
           <p id="txtCount" class="text-xs text-slate-400 mt-0.5">Showing 0 jobs</p>
         </div>
 
@@ -144,12 +149,12 @@
         <table class="w-full text-left text-sm text-slate-200 border-collapse">
           <thead class="bg-slate-950 text-slate-300 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
             <tr>
-              <th class="px-5 py-4 w-44">Company</th>
-              <th class="px-5 py-4 w-72">Job Title</th>
-              <th class="px-5 py-4 w-32">Date Posted</th>
-              <th class="px-5 py-4 w-44">Salary Band</th>
-              <th class="px-5 py-4 w-56">Location & Work Type</th>
-              <th class="px-5 py-4 min-w-[320px]">Description Preview (Hover / Click)</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[160px] border-r border-slate-800/60">Company ↔</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[240px] border-r border-slate-800/60">Job Title ↔</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[130px] border-r border-slate-800/60">Date Posted ↔</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[180px] border-r border-slate-800/60">Salary Band ↔</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[220px] border-r border-slate-800/60">Location & Work Type ↔</th>
+              <th class="px-5 py-4 resize-x overflow-auto min-w-[320px] border-r border-slate-800/60">Description Preview (Hover / Click) ↔</th>
               <th class="px-5 py-4 text-right w-36">Action</th>
             </tr>
           </thead>
@@ -158,6 +163,7 @@
           </tbody>
         </table>
       </div>
+    </div> </div>
     </div>
   </main>
 

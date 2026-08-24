@@ -90,11 +90,12 @@ async function triggerHarvest() {
 async function fetchJobs() {
   const q = document.getElementById('inputQuery').value.trim();
   const loc = document.getElementById('inputLocation').value.trim();
+  const comp = document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value.trim() : '';
   const ats = document.getElementById('atsSelect').value;
   const sort = document.getElementById('sortSelect').value;
   const minSal = document.getElementById('salarySelect').value;
 
-  const url = `/api/jobs?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&ats=${encodeURIComponent(ats)}&min_salary=${minSal}&sort_by=${sort}&limit=500`;
+  const url = `/api/jobs?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&companies=${encodeURIComponent(comp)}&ats=${encodeURIComponent(ats)}&min_salary=${minSal}&sort_by=${sort}&limit=500`;
 
   try {
     const res = await fetch(url);
@@ -133,10 +134,14 @@ function changePage(delta) {
 function renderJobs() {
   const list = document.getElementById('jobList');
   const atsFilter = document.getElementById('atsSelect').value;
+  const compFilter = document.getElementById('inputCompanyFilter') ? document.getElementById('inputCompanyFilter').value.trim().toLowerCase() : '';
 
   let filteredJobs = currentJobs;
   if (atsFilter) {
-    filteredJobs = currentJobs.filter(j => j.ats_provider === atsFilter);
+    filteredJobs = filteredJobs.filter(j => j.ats_provider === atsFilter);
+  }
+  if (compFilter) {
+    filteredJobs = filteredJobs.filter(j => (j.company || '').toLowerCase().includes(compFilter));
   }
 
   const totalCount = filteredJobs.length;
@@ -166,15 +171,15 @@ function renderJobs() {
   }
 
   list.innerHTML = displayJobs.map((j, idx) => {
-    const salaryStr = formatSalary(j);
+    const salaryStr = j.salary_display || formatSalary(j);
     const workTypePill = formatWorkType(j.location);
-    const dateStr = j.posted_date || 'Recent';
+    const dateStr = j.posted_date || new Date().toISOString().split('T')[0];
     const cleanDesc = cleanClientText(j.description);
 
     return `
       <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/80">
         <!-- 1. Company & ATS Badge -->
-        <td class="px-5 py-5 font-bold text-slate-100 text-base align-top">
+        <td class="px-5 py-5 font-bold text-slate-100 text-base align-top border-r border-slate-800/40 resize-x overflow-auto">
           <div class="tracking-tight">${escapeHtml(j.company)}</div>
           <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded text-[11px] font-bold uppercase font-mono tracking-wider ${getAtsBadgeClass(j.ats_provider)}">
             ${escapeHtml(j.ats_provider)}
@@ -182,30 +187,30 @@ function renderJobs() {
         </td>
 
         <!-- 2. Job Title (Allows 2-Line Wrapping, Left-Aligned) -->
-        <td class="px-5 py-5 text-left align-top">
+        <td class="px-5 py-5 text-left align-top border-r border-slate-800/40 resize-x overflow-auto">
           <div class="font-bold text-slate-100 text-base leading-snug break-words whitespace-normal">
             ${escapeHtml(j.title)}
           </div>
         </td>
 
-        <!-- 3. Date Posted -->
-        <td class="px-5 py-5 text-sm text-slate-300 font-mono align-top whitespace-nowrap">
+        <!-- 3. Date Posted (Exact YYYY-MM-DD Date) -->
+        <td class="px-5 py-5 text-sm text-slate-300 font-mono align-top whitespace-nowrap border-r border-slate-800/40">
           ${escapeHtml(dateStr)}
         </td>
 
-        <!-- 4. Salary Band -->
-        <td class="px-5 py-5 text-sm font-bold text-emerald-400 align-top whitespace-nowrap">
+        <!-- 4. Explicit Salary Band -->
+        <td class="px-5 py-5 text-sm font-bold text-emerald-400 align-top whitespace-normal break-words border-r border-slate-800/40">
           ${escapeHtml(salaryStr)}
         </td>
 
         <!-- 5. Location & Work Type -->
-        <td class="px-5 py-5 text-sm align-top whitespace-normal break-words">
+        <td class="px-5 py-5 text-sm align-top whitespace-normal break-words border-r border-slate-800/40 resize-x overflow-auto">
           <div class="text-slate-200 font-semibold leading-snug">${escapeHtml(j.location)}</div>
           <div class="mt-1.5">${workTypePill}</div>
         </td>
 
         <!-- 6. Clean Description Preview (Hover Tooltip + Click Popover) -->
-        <td class="px-5 py-5 text-sm text-slate-300 align-top cursor-pointer hover:text-slate-100 transition whitespace-normal break-words"
+        <td class="px-5 py-5 text-sm text-slate-300 align-top cursor-pointer hover:text-slate-100 transition whitespace-normal break-words border-r border-slate-800/40 resize-x overflow-auto"
             title="${escapeAttr(cleanDesc)}"
             onclick="openModal(${idx})">
           <div class="line-clamp-3 bg-slate-950/80 p-3 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition leading-relaxed text-xs text-slate-300">
