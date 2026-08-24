@@ -1,10 +1,45 @@
-let currentJobs = [];
-let viewMode = 'batch50';
-let currentPage = 1;
-const BATCH_SIZE = 50;
-
 async function init() {
+  renderRecentChips();
   await triggerHarvest();
+}
+
+function saveRecentFilter(queryStr) {
+  if (!queryStr || queryStr.trim().length === 0) return;
+  const q = queryStr.trim();
+  let recent = JSON.parse(localStorage.getItem('oa_recent_filters') || '[]');
+  
+  // Remove if duplicate, prepend to top
+  recent = recent.filter(item => item.toLowerCase() !== q.toLowerCase());
+  recent.unshift(q);
+  
+  // Keep strictly the last 2 skill set memories
+  recent = recent.slice(0, 2);
+  localStorage.setItem('oa_recent_filters', JSON.stringify(recent));
+  renderRecentChips();
+}
+
+function renderRecentChips() {
+  const container = document.getElementById('recentChips');
+  if (!container) return;
+  const recent = JSON.parse(localStorage.getItem('oa_recent_filters') || '[]');
+
+  if (recent.length === 0) {
+    container.innerHTML = `<span class="text-slate-600 italic">No recent searches saved yet</span>`;
+    return;
+  }
+
+  container.innerHTML = recent.map(q => `
+    <button onclick="applyRecentSkillMemory('${escapeAttr(q)}')" 
+            class="bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-lg text-xs font-semibold flex items-center space-x-1 transition shadow-sm">
+      <span>"${escapeHtml(q)}"</span>
+      <span class="text-[10px] text-emerald-400">↺</span>
+    </button>
+  `).join('');
+}
+
+function applyRecentSkillMemory(q) {
+  document.getElementById('inputQuery').value = q;
+  triggerHarvest();
 }
 
 async function triggerHarvest() {
@@ -16,6 +51,8 @@ async function triggerHarvest() {
   const q = document.getElementById('inputQuery').value.trim();
   const loc = document.getElementById('inputLocation').value.trim();
   const minSal = parseInt(document.getElementById('salarySelect').value || "0");
+
+  if (q) saveRecentFilter(q);
 
   banner.className = 'mb-6 p-4 rounded-xl text-sm border bg-emerald-950/60 border-emerald-500/40 text-emerald-300 block flex items-center space-x-3';
   banner.innerHTML = `
