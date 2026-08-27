@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Infrastructure & serving Flowchart</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .flowchart-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        .card-container {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            color: #c9d1d9;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #58a6ff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            color: #ffffff;
+            border-radius: 2px;
+        }
+        .badge-fast { background-color: #238636; }
+        .badge-fail { background-color: #da3633; }
+        .badge-meta { background-color: #8957e5; }
+    </style>
+</head>
+<body>
+
+    <h1>Nexus AI Infrastructure & serving Architecture Flow</h1>
+
+    <div class="flowchart-container">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="100%" height="100%" fill="#0d1117" />
+
+            <!-- User request -->
+            <rect x="300" y="20" width="200" height="50" rx="5" fill="#1f2937" stroke="#38bdf8" stroke-width="2" />
+            <text x="400" y="50" font-size="12" fill="#ffffff" text-anchor="middle">evaluate_candidate Request</text>
+
+            <!-- Arrow 1 -->
+            <path d="M 400 70 L 400 110" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
+
+            <!-- Decision Box (Memory / DB status) -->
+            <polygon points="400,110 520,150 400,190 280,150" fill="#1f1906" stroke="#fbbf24" stroke-width="2" />
+            <text x="400" y="154" font-size="11" fill="#ffffff" text-anchor="middle">Is Qdrant DB Online?</text>
+
+            <!-- Left Fast Route -->
+            <path d="M 280 150 L 180 150 L 180 220" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)" />
+            <text x="210" y="142" font-size="10" fill="#34d399">↙ memory fallback</text>
+
+            <!-- Down Success Route -->
+            <path d="M 400 190 L 400 220" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
+            <text x="410" y="205" font-size="10" fill="#38bdf8">↓ Docker Local</text>
+
+            <!-- VectorStore Ingestion Box -->
+            <rect x="300" y="220" width="200" height="50" rx="5" fill="#161b22" stroke="#38bdf8" stroke-width="2" />
+            <text x="400" y="250" font-size="12" fill="#ffffff" text-anchor="middle">Pipeline Context Compression</text>
+
+            <!-- VectorStore Fallback Box -->
+            <rect x="80" y="220" width="200" height="50" rx="5" fill="#161b22" stroke="#a855f7" stroke-width="2" />
+            <text x="180" y="250" font-size="12" fill="#ffffff" text-anchor="middle">In-Memory Store Ingest</text>
+
+            <!-- Connection lines to client evaluation -->
+            <path d="M 400 270 L 400 320" stroke="#38bdf8" stroke-width="2" />
+            <path d="M 180 270 L 180 300 L 400 300" stroke="#38bdf8" stroke-width="2" />
+
+            <!-- Arrow 2 -->
+            <path d="M 400 300 L 400 320" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
+
+            <!-- LLM Engine Client Box -->
+            <rect x="300" y="320" width="200" height="50" rx="5" fill="#161b22" stroke="#34d399" stroke-width="2" />
+            <text x="400" y="350" font-size="12" fill="#ffffff" text-anchor="middle">Serving Client / Ollama (SSE)</text>
+
+            <!-- Arrow 3 -->
+            <path d="M 400 370 L 400 410" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
+
+            <!-- Gateway Output Box -->
+            <rect x="300" y="410" width="200" height="50" rx="5" fill="#1f2937" stroke="#38bdf8" stroke-width="2" />
+            <text x="400" y="440" font-size="12" fill="#ffffff" text-anchor="middle">Pydantic Enforcer & Gateway</text>
+
+            <!-- Markers -->
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <div class="card-container">
+        <div class="card">
+            <h3><span class="badge badge-fast">↙ LEFT FAST-PATH</span> Memory Fallback</h3>
+            <p><strong>File:</strong> <code>vector_store.py</code></p>
+            <p>Triggered when standard Qdrant Docker endpoints are unreachable. Initializes in-memory storage, avoiding runtime failures.</p>
+        </div>
+        <div class="card">
+            <h3><span class="badge badge-meta">↓ DOWN EXECUTION</span> Context Compression</h3>
+            <p><strong>File:</strong> <code>pipeline.py</code></p>
+            <p>Calculates semantic chunk overlaps, queries vector indices, and feeds the top-3 Cross-Encoder reranked items directly to the LLM context.</p>
+        </div>
+        <div class="card">
+            <h3><span class="badge badge-fail">↘ EXCEPTION ROUTE</span> Parsing Recovery</h3>
+            <p><strong>File:</strong> <code>grammar.py</code></p>
+            <p>Catches schema compliance failures and builds fallback structures, ensuring high-concurrency requests always complete.</p>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+[project]
+name = "nexus-ai-infra"
+version = "0.1.0"
+description = "Enterprise Local AI Infrastructure & LLM Serving Platform"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "httpx>=0.24.1",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "qdrant-client>=1.3.1",
+    "langfuse>=2.0.0",
+    "polars>=0.18.0",
+    "rich>=13.4.2",
+    "psutil>=5.9.5",
+    "numpy>=1.24.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]

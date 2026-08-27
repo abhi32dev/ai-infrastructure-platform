@@ -1,0 +1,11 @@
+{
+  "model_name": "candidate-brain-v1",
+  "base_model": "qwen2.5:3b",
+  "parameters": {
+    "num_ctx": 8192,
+    "temperature": 0.1,
+    "top_p": 0.9,
+    "stop": ["<|im_end|>", "\n\n\n"]
+  },
+  "prompt_template": "<|im_start|>system\nYou are an expert Candidate Evaluation Agent. Analyze the resume context vs job description under strict Pydantic structures.<|im_end|>\n<|im_start|>user\nContext:\n{context}\n\nJob Description:\n{job_description}\n\nAnalyze according to instructions.<|im_end|>\n<|im_start|>assistant\n"
+}

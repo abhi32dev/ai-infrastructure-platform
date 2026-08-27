@@ -48,6 +48,7 @@ To view the **live interactive rendered HTML flowchart** for any project directl
 | **24** | **NCCL Collective Profiler & Topology** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/24-nccl-distributed-collective-profiler/FLOWCHART.html)** | 📄 [Blueprint](24-nccl-distributed-collective-profiler/PROD_ARCHITECTURE_REASONING.md) | 📁 [`24-nccl-distributed-collective-profiler`](24-nccl-distributed-collective-profiler/) |
 | **25** | **Medusa Multi-Head Speculation** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/25-speculative-medusa-multi-head-verifier/FLOWCHART.html)** | 📄 [Blueprint](25-speculative-medusa-multi-head-verifier/PROD_ARCHITECTURE_REASONING.md) | 📁 [`25-speculative-medusa-multi-head-verifier`](25-speculative-medusa-multi-head-verifier/) |
 | **31** | **Realtime Voice Interview Simulator** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/31-realtime-voice-interview-simulator/FLOWCHART.html)** | 📄 [Blueprint](31-realtime-voice-interview-simulator/PROD_ARCHITECTURE_REASONING.md) | 📁 [`31-realtime-voice-interview-simulator`](31-realtime-voice-interview-simulator/) |
+| **32** | **AI Infrastructure & LLM Serving Platform** | 🔀 **[Live Flowchart HTML](https://abhi32dev.github.io/ai-infrastructure-platform/AI%20Infra%20%26%20LLM/FLOWCHART.html)** | 📄 [Blueprint](AI%20Infra%20%26%20LLM/PROD_ARCHITECTURE_REASONING.md) | 📁 [`AI Infra & LLM`](AI%20Infra%20%26%20LLM/) |
 
 ---
 

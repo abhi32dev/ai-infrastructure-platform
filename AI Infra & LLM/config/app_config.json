@@ -1,0 +1,32 @@
+{
+  "serving": {
+    "engine": "ollama",
+    "host": "localhost",
+    "port": 11434,
+    "fallback_port": 8000,
+    "model": "candidate-brain:latest",
+    "fallback_model": "qwen2.5:3b",
+    "temperature": 0.2,
+    "max_tokens": 750,
+    "top_p": 0.9,
+    "stream": true,
+    "num_ctx": 8192
+  },
+  "retrieval": {
+    "qdrant_host": "localhost",
+    "qdrant_port": 6333,
+    "collection_name": "candidate_resumes",
+    "embedding_model": "nomic-embed-text:latest",
+    "reranker_model": "BAAI/bge-reranker-base",
+    "chunk_size": 250,
+    "chunk_overlap": 30,
+    "top_k_retrieve": 15,
+    "top_k_rerank": 3
+  },
+  "observability": {
+    "enable_langfuse": true,
+    "langfuse_public_key": "pk-lf-mock",
+    "langfuse_secret_key": "sk-lf-mock",
+    "langfuse_host": "http://localhost:3000"
+  }
+}

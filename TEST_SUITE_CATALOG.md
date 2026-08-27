@@ -1,8 +1,8 @@
-# Master Production Test Suite Catalog (388 / 388 PASSED)
+# Master Production Test Suite Catalog (402 / 402 PASSED)
 
 This catalog details the **300 unit tests** and **10 production stress scenarios** spanning all 25 Staff/Principal-level AI Platform & Infrastructure projects.
 
-Project 31 adds **78 isolated tests** for the realtime voice interview simulator, bringing the verified repository total to **388 / 388**. Projects 26–30 are intentionally excluded from this count until their normalization/build work is complete.
+Project 31 adds **78 isolated tests** and Project 32 adds **14 isolated tests**, bringing the verified repository total to **402 / 402**. Projects 26–30 are intentionally excluded from this count.
 
 ---
 
@@ -45,6 +45,7 @@ Project 31 adds **78 isolated tests** for the realtime voice interview simulator
 | **24** | `24-nccl-distributed-collective-profiler` | **12** | `test_nccl_profiler.py` | Bus bandwidth formula, 8-GPU All-Reduce, straggler rank thermal throttling detection, zero latency protection | **PASSED** |
 | **25** | `25-speculative-medusa-multi-head-verifier` | **12** | `test_medusa_verifier.py` | 4-head attached MLP candidate prediction, 2D Tree Attention causal mask verification, 2.85x speedup verification | **PASSED** |
 | **31** | `31-realtime-voice-interview-simulator` | **78** | `tests/test_*.py` | State transitions, null/boundary validation, redaction, injection detection, adaptive ordering, SQLite retention, API errors, rate limits, WebRTC relay, scoring synonyms, static UI, metrics, and deletion | **PASSED** |
+| **32** | `AI Infra & LLM` | **14** | `tests/` | Fallback models, metadata tracking, chunking boundaries, search metrics calculations, telemetry spans, concurrency limits | **PASSED** |
 
 ---
 

@@ -1,0 +1,10 @@
+{
+  "model_name": "vllm-qwen-3b",
+  "base_model": "Qwen/Qwen2.5-3B-Instruct",
+  "parameters": {
+    "num_ctx": 4096,
+    "temperature": 0.2,
+    "top_p": 0.85,
+    "gpu_memory_utilization": 0.90
+  }
+}

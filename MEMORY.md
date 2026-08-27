@@ -23,11 +23,11 @@ Before completing any user request or delivering final output, ALWAYS perform th
    - Test that clicking anywhere on the tile card cleanly opens the project directory.
 
 3. **Execute Full Test Suite Verification**:
-   - Run `python3 tests/run_all_20_project_tests.py` or `tests/run_all_25_project_tests.py` unsandboxed.
-   - Enforce **100% Pass Rate** across all 300 unit tests and 10 heavy production stress scenarios (310 total tests).
+   - Run `python3 tests/run_all_20_project_tests.py`, `tests/run_all_25_project_tests.py` unsandboxed, and project 32 tests.
+   - Enforce **100% Pass Rate** across all 402 verified unit and integration test targets.
 
 4. **Verify Documentation & Catalog Integrity**:
-   - Confirm `TEST_SUITE_CATALOG.md`, `README.md`, `index.html`, `INTERVIEW_PREP.md`, and `PROD_ARCHITECTURE_REASONING.md` across all 25 projects are synchronized.
+   - Confirm `TEST_SUITE_CATALOG.md`, `README.md`, `index.html`, `INTERVIEW_PREP.md`, and `PROD_ARCHITECTURE_REASONING.md` across all 27 projects are synchronized.
 
 5. **Git Sync & Deployment**:
    - Stage, commit, and push all changes to GitHub (`main` branch).
@@ -35,7 +35,7 @@ Before completing any user request or delivering final output, ALWAYS perform th
 
 ---
 
-## 3. Architecture Blueprint Standards (25 / 25 Projects)
+## 3. Architecture Blueprint Standards (27 / 27 Projects)
 Every project folder must contain a `PROD_ARCHITECTURE_REASONING.md` file documenting:
 - Business context & real-world necessity.
 - Technical decisions & architectural trade-offs (e.g. FSDP ZeRO-3 vs DeepSpeed vs DDP, PagedAttention vs static KV allocation, Triton vs CUDA C++, Multi-LoRA vs single-tenant, Disaggregated Prefill/Decode vs colocated, FP8 vs FP16, NCCL Ring vs Tree).
@@ -57,3 +57,15 @@ Every project folder must contain a `PROD_ARCHITECTURE_REASONING.md` file docume
 - **NEVER assume a design passed UAT without inspecting the rendered output**.
 - **NEVER use external `<img src="...">` tags inside `FLOWCHART.html`**. If an image fails to load or CDN cache is delayed, it renders a broken icon box.
 - **ALWAYS use 100% self-contained native HTML5 + CSS3 elements + inline SVG** inside `FLOWCHART.html`. PURE HTML/CSS layout CANNOT produce broken image icons and will ALWAYS render cleanly in every browser under all network conditions.
+
+---
+
+## 6. Resume Generation & Versioning Protocols
+- **Always Increment Version by 0.1**: For any new generation/iteration of the resume, increment the minor version by `0.1` (Current: `v2.0` → Next: `v2.1` → `v2.2` → `v2.3`, etc.).
+- **Primary Storage Location**: Save compiled PDFs directly to:
+  `/Users/abhi/Library/CloudStorage/OneDrive-SharedLibraries-oneDrive/2026/Resume/Cloud_BEDev/Gemini/Staff_Principal_Resume_v<X.Y>.pdf`
+- **Dual Delivery (PDF + Antigravity Side Artifact)**:
+  1. Compile the exact 2-page PDF.
+  2. Render high-res PNG pages and update the **side-panel artifact** (`Staff_Principal_Resume.md`) so the user can visually view the document inside the Antigravity app with one click.
+  3. Always output the full absolute path in a single-line text code block for one-click copying.
+
